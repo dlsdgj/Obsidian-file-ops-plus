@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.01
+## 1.0.2
 
 ### Added
 
