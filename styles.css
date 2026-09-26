@@ -1,0 +1,44 @@
+/* 移动模式下：文件夹标题高亮、光标变 copy；文件标题变灰、光标变 not-allowed */
+.file-ops-plus-move-mode .nav-folder-title {
+    cursor: copy !important;
+    background-color: var(--text-highlight-bg);
+    border-radius: 4px;
+}
+
+.file-ops-plus-move-mode .nav-file-title {
+    cursor: not-allowed !important;
+    opacity: 0.5;
+}
+/* 复制/上移/移动到 三个选项合并成同一行，并与其他选项颜色区分 */
+.file-ops-plus-actions-row {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    margin: 4px 6px;
+    padding: 3px;
+    border-radius: 6px;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+}
+
+.file-ops-plus-actions-row .menu-item.file-ops-plus-action-cell {
+    flex: 1 1 0;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 4px 2px;
+    border-radius: 4px;
+    color: var(--interactive-accent);
+    font-size: var(--font-ui-smaller);
+}
+
+.file-ops-plus-actions-row .menu-item.file-ops-plus-action-cell:hover {
+    background-color: var(--background-modifier-hover);
+    color: var(--interactive-accent-hover);
+}
+
+.file-ops-plus-actions-row .menu-item.file-ops-plus-action-cell .menu-item-icon {
+    width: 14px;
+    height: 14px;
+}
