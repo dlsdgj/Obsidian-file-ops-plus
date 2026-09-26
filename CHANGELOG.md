@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.01
+
+### Added
+
+- **Pipeline type** — Chain multiple transforms with `→` separator (e.g. `Strip HTML→Merge Blank Lines`), supports Chinese button names, Tab key inserts `→` in settings input
+- **Action type** — Three built-in actions: Copy as Block Ref (`^block-id`), Extract to New Note (Notion-style convert to page), Copy Heading Link (`[[file#heading]]`)
+- **Keystroke type** — Record and replay keyboard shortcuts via button click; supports modifier keys (Ctrl/Alt/Shift/Meta); common shortcuts mapped to editor API (`Ctrl+C/V/X/A/Z/Y/S/F/H/D/K`); usable in pipeline steps
+- **Flag tooltip** — Hover on regex flag input shows `g=global i=case-insensitive m=multiline s=dotall u=unicode y=sticky`
+- **Custom dropdown** — Custom transform type now uses dropdown selection instead of manual text input
+- **Regex/pipeline without selection** — Regex and pipeline now operate on entire document when no text is selected, instead of showing "Please select text first" notice
+
+### Fixed
+
+- **Select dropdown truncation** — Type selector text was clipped by excessive padding; fixed with `padding:0 2px;box-sizing:border-box`
+- **Keystroke modifier recording** — Modifier-only keydown no longer finishes recording prematurely; waits for non-modifier key to complete combo
+- **Synthetic KeyboardEvent ignored** — `isTrusted=false` events were ignored by CodeMirror; replaced with direct editor API calls (`document.execCommand`, `editor.undo()`, etc.)
+
 ## 1.0.0
 
 ### Added

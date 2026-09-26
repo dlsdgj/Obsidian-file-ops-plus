@@ -80,6 +80,19 @@ const I18N_EN = {
     "当前环境不支持": "Environment not supported",
     "已复制 ": "Copied ", "已复制：": "Copied: ", "复制失败：": "Copy failed: ",
     " 个文件": " files",
+    "拖拽排序": "Drag to sort",
+    "管道": "Pipeline", "管道步骤未找到：": "Pipeline step not found: ",
+    "用→分隔步骤名，如 去HTML标签→合并空行": "Step names separated by \u2192, e.g. Strip HTML\u2192Merge Blank Lines",
+    "按钮名→按钮名（Tab键插入→）": "Name\u2192Name (Tab to insert \u2192)",
+    "g=全局 i=忽略大小写 m=多行 s=dotall u=unicode y=粘附": "g=global i=case-insensitive m=multiline s=dotall u=unicode y=sticky",
+    "复制为块引用": "Copy as Block Ref", "提取为新笔记": "Extract to New Note", "复制标题链接": "Copy Heading Link",
+    "未找到标题": "No heading found", "输入笔记名称": "Enter note name", "文件已存在，是否覆盖？": "File exists, overwrite?",
+    "操作": "Action",
+    "cmd=命令 regex=正则 custom=转换 pipeline=管道 action=操作": "cmd=command regex=regex custom=transform pipeline=chained action=action",
+    "已创建：": "Created: ",
+    "点击后按键录制": "Click then press keys", "请按键…": "Press keys\u2026", "按键": "Keystroke",
+    "粘贴失败": "Paste failed",
+    "cmd=命令 regex=正则 custom=转换 pipeline=管道 action=操作 key=按键": "cmd=command regex=regex custom=transform pipeline=chained action=action key=keystroke",
 };
 const t = (zh) => _isZh() ? zh : (I18N_EN[zh] || zh);
 
@@ -114,6 +127,17 @@ const CUSTOM_TRANSFORMS = {
     toggleMathblock: (s) => s ? "$$\n" + s + "\n$$" : "$$\n\n$$",
 };
 
+const CUSTOM_TRANSFORM_LABELS = {
+    fullwidthToHalf: "全角转半角", toggleChecklist: "任务列表",
+    toggleHeading1: "H1", toggleHeading2: "H2", toggleHeading3: "H3",
+    toggleHeading4: "H4", toggleHeading5: "H5", toggleHeading6: "H6",
+    toggleParagraph: "正文", toggleCodeblock: "代码块", toggleMathblock: "数学块",
+};
+
+const ACTION_LABELS = {
+    copyBlockRef: "复制为块引用", extractToNote: "提取为新笔记", copyHeadingLink: "复制标题链接",
+};
+
 const EDITOR_MENU_CSS = `
 .fop-em-panel{position:fixed;z-index:9999;background:var(--background-secondary);border:1px solid var(--background-modifier-border);border-radius:10px;padding:10px;box-shadow:0 4px 16px rgba(0,0,0,.2);font-size:var(--font-ui-small);box-sizing:border-box;}
 .fop-em-row{display:flex;flex-direction:column;gap:6px;}
@@ -124,6 +148,9 @@ const EDITOR_MENU_CSS = `
 .fop-em-resize{position:absolute;right:0;bottom:0;width:14px;height:14px;cursor:nwse-resize;opacity:.35;background:linear-gradient(135deg,transparent 45%,currentColor 46%,currentColor 54%,transparent 55%);}
 .fop-em-resize:hover{opacity:.7;}
 .fop-em-tile:hover{filter:brightness(.92);}
+.fop-drag-handle{cursor:grab;width:14px;flex-shrink:0;text-align:center;color:var(--text-faint);font-size:9px;line-height:14px;user-select:none;}
+.fop-drag-handle:hover{color:var(--text-normal);}
+.fop-drag-over{background:var(--background-modifier-hover)!important;border-radius:4px;}
 .fop-em-tile[data-c="accent"]{background:#E6F1FB;color:#0C447C;}
 .fop-em-tile[data-c="pro"]{background:#EEEDFE;color:#3C3489;}
 .fop-em-tile[data-c="success"]{background:#EAF3DE;color:#27500A;}
@@ -192,6 +219,12 @@ const DEFAULT_EDITOR_MENU = {
             { icon: "squircle", label: t("合并空行"), type: "regex", pattern: "\\n{3,}", replacement: "\\n\\n", flags: "g" },
             { icon: "align-left", label: t("去行首空白"), type: "regex", pattern: "^[ \\t]+", replacement: "", flags: "gm" },
             { icon: "case-sensitive", label: t("全角转半角"), type: "custom", custom: "fullwidthToHalf" },
+            { icon: "git-merge", label: t("管道"), type: "pipeline", pipeline: t("去HTML标签") + "\u2192" + t("合并空行") },
+        ]},
+        { id: "action", label: t("操作"), color: "accent", items: [
+            { icon: "link", label: t("复制为块引用"), type: "action", action: "copyBlockRef" },
+            { icon: "file-plus", label: t("提取为新笔记"), type: "action", action: "extractToNote" },
+            { icon: "heading", label: t("复制标题链接"), type: "action", action: "copyHeadingLink" },
         ]},
         { id: "mark", label: t("高亮"), color: "warning", items: [
             { icon: "highlighter", label: t("黄"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background:#FFF3A3">$1</mark>', flags: "", color: "#FFF3A3|#5a4a00" },
@@ -1433,7 +1466,7 @@ class FileOpsPlusPlugin extends Plugin {
         }, 0);
     }
 
-    execEditorItem(item, view) {
+    async execEditorItem(item, view) {
         const editor = view.editor;
         if (!editor) { new Notice(t("无法获取编辑器")); return; }
         if (item.type === "cmd") {
@@ -1441,12 +1474,16 @@ class FileOpsPlusPlugin extends Plugin {
             editor.focus();
             this.app.commands.executeCommandById(item.cmd);
         } else if (item.type === "regex") {
-            const sel = editor.getSelection();
-            if (!sel) { new Notice(t("请先选中文本")); return; }
             try {
                 const re = new RegExp(item.pattern, item.flags || "g");
                 const rep = (item.replacement || "").replace(/\\n/g, "\n").replace(/\\t/g, "\t");
-                editor.replaceSelection(sel.replace(re, rep));
+                const sel = editor.getSelection();
+                if (sel) {
+                    editor.replaceSelection(sel.replace(re, rep));
+                } else {
+                    const text = editor.getValue();
+                    editor.replaceRange(text.replace(re, rep), { line: 0, ch: 0 }, { line: editor.lastLine(), ch: editor.getLine(editor.lastLine()).length });
+                }
             } catch (e) { new Notice(t("正则错误：") + e.message); }
         } else if (item.type === "custom") {
             const fn = CUSTOM_TRANSFORMS[item.custom];
@@ -1460,7 +1497,157 @@ class FileOpsPlusPlugin extends Plugin {
                 const result = fn(line);
                 editor.replaceRange(result, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
             }
+        } else if (item.type === "pipeline") {
+            const steps = (item.pipeline || "").split(/\u2192|->|=>/).map(s => s.trim()).filter(Boolean);
+            if (!steps.length) return;
+            const sel = editor.getSelection();
+            let text = sel || editor.getValue();
+            for (const stepName of steps) {
+                const stepItem = this.resolvePipelineStep(stepName);
+                if (!stepItem) { new Notice(t("管道步骤未找到：") + stepName); return; }
+                if (stepItem.type === "key") {
+                    this.execKeystroke(editor, stepItem.keystroke, view);
+                    text = editor.getSelection() || editor.getValue();
+                } else {
+                    text = this.applyPipelineStep(stepItem, text);
+                }
+            }
+            if (sel) {
+                editor.replaceSelection(text);
+            } else {
+                editor.replaceRange(text, { line: 0, ch: 0 }, { line: editor.lastLine(), ch: editor.getLine(editor.lastLine()).length });
+            }
+        } else if (item.type === "action") {
+            const file = view.file;
+            if (!file) { new Notice(t("无法获取编辑器")); return; }
+            if (item.action === "copyBlockRef") {
+                const to = editor.getCursor("to");
+                const lastLine = editor.getLine(to.line);
+                const existing = lastLine.match(/\s\^([a-zA-Z][\w-]+)$/);
+                let blockId;
+                if (existing) { blockId = existing[1]; } else {
+                    const used = new Set((editor.getValue().match(/\^[a-zA-Z][\w-]+/g) || []).map(m => m.slice(1)));
+                    do { blockId = "fop" + Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 5); } while (used.has(blockId));
+                    editor.replaceRange(` ^${blockId}`, { line: to.line, ch: lastLine.length });
+                }
+                const link = `[[${file.basename}#^${blockId}]]`;
+                await navigator.clipboard.writeText(link);
+                new Notice(t("已复制：") + link);
+            } else if (item.action === "copyHeadingLink") {
+                const cursor = editor.getCursor();
+                let headingText = "";
+                for (let i = cursor.line; i >= 0; i--) {
+                    const m = editor.getLine(i).match(/^#{1,6}\s+(.+)$/);
+                    if (m) { headingText = m[1].trim(); break; }
+                }
+                if (!headingText) { new Notice(t("未找到标题")); return; }
+                const link = `[[${file.basename}#${headingText}]]`;
+                await navigator.clipboard.writeText(link);
+                new Notice(t("已复制：") + link);
+            } else if (item.action === "extractToNote") {
+                const sel = editor.getSelection();
+                if (!sel) { new Notice(t("请先选中文本")); return; }
+                const defaultName = sel.split("\n")[0].replace(/^#+\s*/, "").replace(/[#^[\]|\\/:*?<>"]/g, "").trim().slice(0, 50) || t("新笔记");
+                const modal = new Modal(this.app);
+                modal.titleEl.setText(t("输入笔记名称"));
+                const inputEl = modal.contentEl.createEl("input", { type: "text", value: defaultName, attr: { style: "width:100%;padding:6px;margin:8px 0;box-sizing:border-box;" } });
+                const btnRow = modal.contentEl.createEl("div", { attr: { style: "text-align:right;margin-top:8px;" } });
+                const okBtn = btnRow.createEl("button", { text: t("打开"), attr: { style: "margin-left:4px;" } });
+                btnRow.createEl("button", { text: t("取消"), attr: { style: "margin-left:4px;" } }).onclick = () => modal.close();
+                const doExtract = async () => {
+                    const name = inputEl.value.trim().replace(/[#^[\]|\\/:*?<>"]/g, "");
+                    if (!name) return;
+                    const newPath = (file.parent.path ? file.parent.path + "/" : "") + name + ".md";
+                    const existing = this.app.vault.getAbstractFileByPath(newPath);
+                    if (existing instanceof TFile) { await this.app.vault.modify(existing, sel); }
+                    else { await this.app.vault.create(newPath, sel); }
+                    editor.replaceSelection(`[[${name}]]`);
+                    modal.close();
+                    this.app.workspace.openLinkText(name, file.path);
+                    new Notice(t("已创建：") + name);
+                };
+                okBtn.onclick = doExtract;
+                inputEl.addEventListener("keydown", (e) => { if (e.key === "Enter") doExtract(); });
+                modal.open();
+            }
+        } else if (item.type === "key") {
+            this.execKeystroke(editor, item.keystroke, view);
         }
+    }
+
+    async execKeystroke(editor, keystroke, view) {
+        const ks = keystroke || "";
+        if (!ks) return;
+        const parts = ks.split("+");
+        const key = parts[parts.length - 1];
+        const mod = parts.includes("Ctrl") || parts.includes("Meta");
+        const shift = parts.includes("Shift");
+        const alt = parts.includes("Alt");
+        editor.focus();
+        const k = key.toUpperCase();
+        if (mod) {
+            const ops = {
+                C: () => document.execCommand("copy"),
+                X: () => document.execCommand("cut"),
+                V: async () => { try { const t = await navigator.clipboard.readText(); editor.replaceSelection(t); } catch (e) { new Notice(t("粘贴失败")); } },
+                A: () => editor.setSelection({ line: 0, ch: 0 }, { line: editor.lastLine(), ch: editor.getLine(editor.lastLine()).length }),
+                Z: () => shift ? editor.redo() : editor.undo(),
+                Y: () => editor.redo(),
+                S: () => this.app.commands.executeCommandById("editor:save-file"),
+                F: () => this.app.commands.executeCommandById("editor:open-search"),
+                H: () => this.app.commands.executeCommandById("editor:open-search-replace"),
+                D: () => this.app.commands.executeCommandById("editor:delete-line"),
+                K: () => this.app.commands.executeCommandById("editor:insert-link"),
+                Enter: () => this.app.commands.executeCommandById("editor:follow-link"),
+            };
+            if (ops[k]) { await ops[k](); return; }
+        }
+        if (!mod && !alt && !shift) {
+            if (key === "Enter") { editor.replaceSelection("\n"); return; }
+            if (key === "Tab") { editor.replaceSelection("\t"); return; }
+            if (key === "Backspace") { editor.exec("deleteBackward"); return; }
+            if (key === "Delete") { editor.exec("deleteForward"); return; }
+            if (key.length === 1) { editor.replaceSelection(key); return; }
+        }
+        const opts = { key, bubbles: true, cancelable: true, ctrlKey: parts.includes("Ctrl"), metaKey: parts.includes("Meta"), altKey: alt, shiftKey: shift };
+        const cm = editor.cm;
+        const target = (cm && cm.dom) || (cm && cm.getWrapperElement && cm.getWrapperElement()) || (view && view.contentEl);
+        if (target) {
+            target.dispatchEvent(new KeyboardEvent("keydown", opts));
+            target.dispatchEvent(new KeyboardEvent("keyup", opts));
+        }
+    }
+
+    resolvePipelineStep(name) {
+        for (const grp of DEFAULT_EDITOR_MENU.groups) {
+            for (const it of (grp.items || [])) {
+                if (it.label === name) return it;
+            }
+        }
+        const cfg = this.editorMenuConfig;
+        if (cfg && cfg.groups) {
+            for (const grp of cfg.groups) {
+                for (const it of (grp.items || [])) {
+                    if (it.label === name && it.type !== "pipeline") return it;
+                }
+            }
+        }
+        if (CUSTOM_TRANSFORMS[name]) return { type: "custom", custom: name };
+        return null;
+    }
+
+    applyPipelineStep(item, text) {
+        if (item.type === "regex") {
+            try {
+                const re = new RegExp(item.pattern, item.flags || "g");
+                const rep = (item.replacement || "").replace(/\\n/g, "\n").replace(/\\t/g, "\t");
+                return text.replace(re, rep);
+            } catch (e) { return text; }
+        } else if (item.type === "custom") {
+            const fn = CUSTOM_TRANSFORMS[item.custom];
+            return fn ? fn(text) : text;
+        }
+        return text;
     }
 
     async saveEditorMenuConfig() {
@@ -1599,6 +1786,11 @@ class FileOpsPlusPlugin extends Plugin {
             renderPreview();
             root.empty();
             const cfg = this.editorMenuConfig;
+            let dragState = null;
+            const clearDragIndicators = () => {
+                root.querySelectorAll(".fop-drag-over").forEach(el => el.classList.remove("fop-drag-over"));
+                root.querySelectorAll(".fop-drop-zone").forEach(el => { el.style.background = ""; el.style.height = "6px"; });
+            };
 
             const enRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
             const cb = enRow.createEl("input", { type: "checkbox" });
@@ -1650,21 +1842,46 @@ class FileOpsPlusPlugin extends Plugin {
                 };
 
                 const hdr = box.createEl("div", { attr: { style: "display:flex;gap:6px;margin:4px 0 2px;font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+                hdr.createEl("div", { attr: { style: "width:14px;flex-shrink:0;" } });
                 hdr.createEl("div", { text: t("图标"), attr: { style: "width:140px;", title: t("lucide 图标名 / 粘贴 <svg> 代码 / 任意文字（识别不到则按文字显示）") } });
                 hdr.createEl("div", { text: t("名称"), attr: { style: "width:120px;", title: t("tile 鼠标悬停时显示的提示文字") } });
-                hdr.createEl("div", { text: t("类型"), attr: { style: "width:82px;", title: t("cmd=执行命令  regex=正则替换选中文本  custom=预设转换") } });
+                hdr.createEl("div", { text: t("类型"), attr: { style: "width:82px;", title: t("cmd=命令 regex=正则 custom=转换 pipeline=管道 action=操作 key=按键") } });
                 hdr.createEl("div", { text: t("操作"), attr: { style: "margin-left:auto;", title: t("删除该选项") } });
 
                 for (let ii = 0; ii < (grp.items || []).length; ii++) {
                     const item = grp.items[ii];
                     const ir = box.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;" } });
+                    const handle = ir.createEl("div", { cls: "fop-drag-handle", attr: { title: t("拖拽排序") } });
+                    handle.textContent = "⠿";
+                    handle.addEventListener("mousedown", () => { ir.draggable = true; dragState = { fromGroup: gi, fromItem: ii }; });
+                    ir.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", ""); ir.style.opacity = "0.3"; });
+                    ir.addEventListener("dragend", () => { ir.draggable = false; ir.style.opacity = ""; clearDragIndicators(); dragState = null; });
+                    ir.addEventListener("dragover", (e) => {
+                        if (!dragState) return;
+                        e.preventDefault(); e.dataTransfer.dropEffect = "move";
+                        clearDragIndicators(); ir.classList.add("fop-drag-over");
+                    });
+                    ir.addEventListener("drop", (e) => {
+                        if (!dragState) return;
+                        e.preventDefault(); e.stopPropagation();
+                        const fromG = dragState.fromGroup, fromI = dragState.fromItem;
+                        if (fromG === gi && fromI === ii) return;
+                        const rect = ir.getBoundingClientRect();
+                        const after = e.clientY > rect.top + rect.height / 2;
+                        let targetI = ii + (after ? 1 : 0);
+                        const movedItem = cfg.groups[fromG].items[fromI];
+                        cfg.groups[fromG].items.splice(fromI, 1);
+                        if (fromG === gi && fromI < targetI) targetI--;
+                        cfg.groups[gi].items.splice(targetI, 0, movedItem);
+                        this.saveEditorMenuConfig(); render();
+                    });
                     const iconTa = ir.createEl("textarea", { attr: { style: "width:140px;min-width:80px;max-width:280px;padding:2px;resize:horizontal;height:24px;font-size:var(--font-ui-smaller);", placeholder: t("图标/svg/文字") } });
                     iconTa.value = item.icon || "";
                     iconTa.onchange = () => { item.icon = iconTa.value; this.saveEditorMenuConfig(); renderPreview(); };
                     ir.createEl("input", { type: "text", value: item.label || "", attr: { style: "width:120px;padding:2px;", placeholder: t("名称") } }).onchange = (e) => { item.label = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
                     const ts = ir.createEl("select");
-                    ts.style.width = "82px";
-                    for (const t of ["cmd", "regex", "custom"]) ts.createEl("option", { value: t, text: t });
+                    ts.style.cssText = "width:90px;padding:0 2px;box-sizing:border-box;";
+                    for (const t of ["cmd", "regex", "custom", "pipeline", "action", "key"]) ts.createEl("option", { value: t, text: t });
                     ts.value = item.type || "cmd";
                     ts.onchange = () => { item.type = ts.value; this.saveEditorMenuConfig(); render(); };
                     if (item.type === "cmd") {
@@ -1672,13 +1889,77 @@ class FileOpsPlusPlugin extends Plugin {
                     } else if (item.type === "regex") {
                         ir.createEl("input", { type: "text", value: item.pattern || "", attr: { style: "flex:1;min-width:80px;padding:2px;", placeholder: t("正则") } }).onchange = (e) => { item.pattern = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
                         ir.createEl("input", { type: "text", value: item.replacement || "", attr: { style: "flex:1;min-width:80px;padding:2px;", placeholder: t("替换 \\n=换行") } }).onchange = (e) => { item.replacement = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
-                        ir.createEl("input", { type: "text", value: item.flags || "g", attr: { style: "width:46px;padding:2px;", placeholder: t("标志") } }).onchange = (e) => { item.flags = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
+                        ir.createEl("input", { type: "text", value: item.flags || "g", attr: { style: "width:46px;padding:2px;", placeholder: t("标志"), title: t("g=全局 i=忽略大小写 m=多行 s=dotall u=unicode y=粘附") } }).onchange = (e) => { item.flags = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
                     } else if (item.type === "custom") {
-                        ir.createEl("input", { type: "text", value: item.custom || "", attr: { style: "flex:1;min-width:120px;padding:2px;", placeholder: t("转换名，如 fullwidthToHalf") } }).onchange = (e) => { item.custom = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
+                        const cs = ir.createEl("select");
+                        cs.style.cssText = "flex:1;min-width:120px;padding:0 2px;box-sizing:border-box;";
+                        cs.createEl("option", { value: "", text: "" });
+                        for (const k of Object.keys(CUSTOM_TRANSFORMS)) cs.createEl("option", { value: k, text: t(CUSTOM_TRANSFORM_LABELS[k] || k) });
+                        cs.value = item.custom || "";
+                        cs.onchange = () => { item.custom = cs.value; this.saveEditorMenuConfig(); renderPreview(); };
+                    } else if (item.type === "pipeline") {
+                        const plInput = ir.createEl("input", { type: "text", value: item.pipeline || "", attr: { style: "flex:1;min-width:180px;padding:2px;", placeholder: t("按钮名→按钮名（Tab键插入→）") } });
+                        plInput.addEventListener("keydown", (e) => {
+                            if (e.key === "Tab") {
+                                e.preventDefault();
+                                const s = plInput.selectionStart, en = plInput.selectionEnd;
+                                plInput.value = plInput.value.slice(0, s) + "\u2192" + plInput.value.slice(en);
+                                plInput.selectionStart = plInput.selectionEnd = s + 1;
+                                item.pipeline = plInput.value; this.saveEditorMenuConfig(); renderPreview();
+                            }
+                        });
+                        plInput.onchange = () => { item.pipeline = plInput.value; this.saveEditorMenuConfig(); renderPreview(); };
+                    } else if (item.type === "action") {
+                        const as = ir.createEl("select");
+                        as.style.cssText = "flex:1;min-width:120px;padding:0 2px;box-sizing:border-box;";
+                        as.createEl("option", { value: "", text: "" });
+                        for (const k of Object.keys(ACTION_LABELS)) as.createEl("option", { value: k, text: t(ACTION_LABELS[k] || k) });
+                        as.value = item.action || "";
+                        as.onchange = () => { item.action = as.value; this.saveEditorMenuConfig(); renderPreview(); };
+                    } else if (item.type === "key") {
+                        const ksInput = ir.createEl("input", { type: "text", value: item.keystroke || "", attr: { style: "flex:1;min-width:120px;padding:2px;text-align:center;", placeholder: t("点击后按键录制"), readonly: true } });
+                        ksInput.onclick = () => {
+                            ksInput.value = t("请按键…");
+                            const onKey = (e) => {
+                                e.preventDefault(); e.stopPropagation();
+                                if (e.key === "Escape") { ksInput.value = item.keystroke || ""; ksInput.removeEventListener("keydown", onKey, true); ksInput.blur(); return; }
+                                const mods = [];
+                                if (e.ctrlKey) mods.push("Ctrl");
+                                if (e.metaKey) mods.push("Meta");
+                                if (e.altKey) mods.push("Alt");
+                                if (e.shiftKey) mods.push("Shift");
+                                if (["Control", "Meta", "Alt", "Shift"].includes(e.key)) { ksInput.value = mods.join("+"); return; }
+                                mods.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
+                                item.keystroke = mods.join("+");
+                                ksInput.value = item.keystroke;
+                                this.saveEditorMenuConfig(); renderPreview();
+                                ksInput.removeEventListener("keydown", onKey, true);
+                                ksInput.blur();
+                            };
+                            ksInput.addEventListener("keydown", onKey, true);
+                            ksInput.focus();
+                        };
                     }
                     const db = ir.createEl("button", { text: "✕", attr: { style: "margin-left:auto;padding:2px 6px;" } });
                     db.onclick = () => { grp.items.splice(ii, 1); this.saveEditorMenuConfig(); render(); };
                 }
+                const dropZone = box.createEl("div", { cls: "fop-drop-zone", attr: { style: "height:6px;margin:2px 0;border-radius:4px;transition:background 0.15s,height 0.15s;" } });
+                dropZone.addEventListener("dragover", (e) => {
+                    if (!dragState) return;
+                    e.preventDefault(); e.dataTransfer.dropEffect = "move";
+                    clearDragIndicators(); dropZone.style.background = "var(--interactive-accent)"; dropZone.style.height = "20px";
+                });
+                dropZone.addEventListener("dragleave", () => { dropZone.style.background = ""; dropZone.style.height = "6px"; });
+                dropZone.addEventListener("drop", (e) => {
+                    if (!dragState) return;
+                    e.preventDefault(); e.stopPropagation();
+                    const fromG = dragState.fromGroup, fromI = dragState.fromItem;
+                    if (fromG === gi && fromI === grp.items.length - 1) return;
+                    const movedItem = cfg.groups[fromG].items[fromI];
+                    cfg.groups[fromG].items.splice(fromI, 1);
+                    cfg.groups[gi].items.push(movedItem);
+                    this.saveEditorMenuConfig(); render();
+                });
                 const ab = box.createEl("button", { text: t("+ 添加选项"), attr: { style: "margin-top:4px;" } });
                 ab.onclick = () => { grp.items = grp.items || []; grp.items.push({ icon: "square", label: t("新选项"), type: "cmd", cmd: "" }); this.saveEditorMenuConfig(); render(); };
             }
