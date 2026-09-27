@@ -1,6 +1,6 @@
 "use strict";
 
-const { Plugin, TFile, TFolder, FileSystemAdapter, Notice, Modal, Menu, getIcon } = require("obsidian");
+const { Plugin, TFile, TFolder, FileSystemAdapter, Notice, Modal, Menu, getIcon, MarkdownRenderer } = require("obsidian");
 const moment = window.moment;
 
 const _isZh = () => moment.locale().startsWith("zh");
@@ -20,14 +20,14 @@ const I18N_EN = {
     "全角转半角": "Fullwidth to Half",
     "剪贴板": "Clipboard", "剪切": "Cut", "复制": "Copy", "粘贴": "Paste", "纯文本粘贴": "Paste Plain", "全选": "Select All",
     "原生菜单": "Native Menu", "设置": "Settings",
-    "编辑器右键菜单设置": "Editor Context Menu Settings", "恢复默认": "Reset to Default",
-    "实时预览": "Live Preview", "启用增强菜单（关闭则用原生右键）": "Enable enhanced menu (disable for native menu)",
-    "显示分组标题": "Show group labels", "删除组": "Delete Group",
+    "编辑器右键菜单设置": "Editor Context Menu Settings", "右键菜单设置": "Context Menu Settings", "恢复默认": "Reset to Default",
+    "实时预览": "Live Preview", "启用增强菜单（关闭则用原生右键）": "Enable enhanced menu (disable for native menu)", "启用": "Enable",
+    "显示分组标题": "Show group labels", "删除组": "Delete Group", "颜色": "Color", "添加颜色": "Add Color",
     "添加选项": "Add Option", "添加分组": "Add Group",
     "图标": "Icon", "名称": "Name", "类型": "Type", "操作": "Action", "背景": "BG", "文字": "FG",
     "关闭编辑器增强菜单": "Disable Editor Enhanced Menu", "启用编辑器增强菜单": "Enable Editor Enhanced Menu",
     "已启用编辑器增强菜单": "Editor enhanced menu enabled", "已关闭编辑器增强菜单": "Editor enhanced menu disabled",
-    "已关闭增强菜单。重新启用：命令面板(Ctrl+P)搜「编辑器右键菜单设置」": "Enhanced menu disabled. Re-enable via Command Palette (Ctrl+P) search \"Editor Context Menu Settings\"",
+    "已关闭增强菜单。重新启用：命令面板(Ctrl+P)搜「右键菜单设置」": "Enhanced menu disabled. Re-enable via Command Palette (Ctrl+P) search \"Context Menu Settings\"",
     "关闭": "Close", "关闭其他": "Close Others", "关闭右侧": "Close to Right", "全部关闭": "Close All",
     "取消锁定": "Unpin", "锁定": "Pin", "阅读/源码": "Reading/Source",
     "左右分屏": "Split Vertical", "上下分屏": "Split Horizontal", "新窗口": "New Window",
@@ -92,7 +92,24 @@ const I18N_EN = {
     "已创建：": "Created: ",
     "点击后按键录制": "Click then press keys", "请按键…": "Press keys\u2026", "按键": "Keystroke",
     "粘贴失败": "Paste failed",
-    "cmd=命令 regex=正则 custom=转换 pipeline=管道 action=操作 key=按键": "cmd=command regex=regex custom=transform pipeline=chained action=action key=keystroke",
+    "cmd=命令 regex=正则 custom=转换 pipeline=管道 action=操作 key=按键 ai=AI": "cmd=command regex=regex custom=transform pipeline=chained action=action key=keystroke ai=AI",
+    "AI 设置": "AI Settings", "模型": "Model", "温度": "Temp", "API 地址": "API URL",
+    "新建": "New", "至少保留一个 AI 配置": "Keep at least one AI config", "未填写 API Key": "API Key not set",
+    "提示词，{{text}}=选中文本": "Prompt, {{text}}=selected text",
+    "生成中…": "Generating…", "AI 返回为空": "AI returned empty",
+    "AI 返回失败：": "AI failed: ", "AI 请求失败：": "AI request failed: ",
+    "AI 请求超时（60s）": "AI request timed out (60s)",
+    "API Key 未配置，请在编辑器菜单设置的 AI 设置中填写": "API Key not configured. Set it in Editor Menu Settings → AI Settings",
+    "替换选中": "Replace Selection",
+    "根据选中文本提供几个Insight": "Provide a few insights on the selected text",
+    "调整分组顺序": "Reorder Groups", "完成排序": "Done Reordering",
+    "拖动分组标题调整顺序，再次点击完成": "Drag group titles to reorder, click Done when finished",
+    "选中文本显示悬浮球，悬停展开": "Show floating ball on selection, hover to expand",
+    "选中文本设为文档标题": "Set selection as note title",
+    "处理后标题为空": "Title empty after cleanup", "已存在同名文件": "Same-name file exists",
+    "标题未变化": "Title unchanged",     "已重命名：": "Renamed: ",
+    "打开": "Open", "管理": "Manage", "视图": "View", "导航": "Navigate", "编辑": "Edit",
+    "编辑器菜单": "Editor Menu", "文件菜单": "File Menu", "标签页菜单": "Tab Menu",
 };
 const t = (zh) => _isZh() ? zh : (I18N_EN[zh] || zh);
 
@@ -135,7 +152,88 @@ const CUSTOM_TRANSFORM_LABELS = {
 };
 
 const ACTION_LABELS = {
-    copyBlockRef: "复制为块引用", extractToNote: "提取为新笔记", copyHeadingLink: "复制标题链接",
+    copyBlockRef: "复制为块引用", extractToNote: "提取为新笔记", copyHeadingLink: "复制标题链接", setSelectionAsTitle: "选中文本设为文档标题",
+};
+
+const FILE_ACTIONS = {
+    newTab: { label: "新标签页", icon: "file-plus", available: (c) => c.isFile && !c.multi, fn: (c) => () => c.plugin.app.workspace.getLeaf().openFile(c.file) },
+    newWindow: { label: "新窗口", icon: "app-window", available: (c) => c.isFile && !c.multi, fn: (c) => () => c.plugin.openInNewWindow(c.file) },
+    defaultApp: { label: "默认应用", icon: "external-link", available: (c) => c.isFile && !c.multi, fn: (c) => () => c.plugin.openWithDefaultApp(c.file) },
+    externalEditor: { label: "外部编辑器", icon: "square-pen", available: (c) => c.isFile && !c.multi, fn: (c) => () => c.plugin.openWithExternalEditor(c.file) },
+    revealInExplorer: { label: "资源管理器", icon: "folder-search", available: (c) => !c.multi, fn: (c) => () => c.plugin.revealInExplorer(c.file) },
+    rename: { label: "重命名", icon: "pencil", inline: true, available: (c) => !c.multi, fn: (c) => (m, r) => c.plugin.renameInline(m, r, c.file) },
+    duplicate: { label: "创建副本", icon: "copy", available: (c) => c.isFile && !c.multi, fn: (c) => () => c.plugin.createDuplicate(c.file) },
+    togglePin: { label: "置顶", icon: "pin", dynamicLabel: "pin", available: (c) => !c.multi, fn: (c) => () => c.plugin.togglePin(c.file) },
+    newFolder: { label: "新建文件夹", icon: "folder-plus", inline: true, available: (c) => !c.isFile && !c.multi, fn: (c) => (m, r) => c.plugin.createInline(m, r, c.file, true) },
+    newFile: { label: "新建文件", icon: "file-plus", inline: true, available: (c) => !c.isFile && !c.multi, fn: (c) => (m, r) => c.plugin.createInline(m, r, c.file, false) },
+    absPath: { label: "绝对路径", icon: "link", fn: (c) => () => c.plugin.copyAbsolutePath(c.allTargets) },
+    relPath: { label: "相对路径", icon: "link-2", fn: (c) => () => c.plugin.copyRelativePath(c.allTargets) },
+    wikilink: { label: "wikilink", icon: "link", available: (c) => !c.multi, fn: (c) => () => c.plugin.copyAsWikilink(c.file) },
+    mdLink: { label: "md链接", icon: "link", available: (c) => !c.multi, fn: (c) => () => c.plugin.copyAsMarkdownLink(c.file) },
+    copyFiles: { label: "复制", icon: "copy", available: (c) => c.isFile && c.files.length > 0, fn: (c) => () => c.plugin.copyFilesToClipboard(c.files) },
+    moveUp: { label: "文件上移", icon: "arrow-up", available: (c) => c.isFile && c.files.length > 0, fn: (c) => () => c.plugin.moveFilesUp(c.files) },
+    moveTo: { label: "移动到…", icon: "folder-input", available: (c) => c.isFile && c.files.length > 0, fn: (c) => () => c.plugin.startMoveMode(c.files) },
+    delete: { label: "删除", icon: "trash-2", dynamicLabel: "delete", danger: true, fn: (c) => () => c.plugin.deleteFiles(c.allTargets) },
+    colorRow: { label: "颜色", icon: "palette", special: "colorRow", available: (c) => !c.multi },
+    toggleEditorMenu: { label: "关闭编辑器增强菜单", icon: "settings", dynamicLabel: "editorMenu", fn: (c) => () => { c.plugin.editorMenuConfig.enabled = c.plugin.editorMenuConfig.enabled === false; c.plugin.saveEditorMenuConfig(); new Notice(c.plugin.editorMenuConfig.enabled ? t("已启用编辑器增强菜单") : t("已关闭编辑器增强菜单")); } },
+};
+
+const TAB_ACTIONS = {
+    close: { label: "关闭", icon: "x", fn: (c) => () => c.safeDetach(c.leaf) },
+    closeOthers: { label: "关闭其他", icon: "x-circle", fn: (c) => () => c.plugin.closeOtherTabs(c.leaf) },
+    closeRight: { label: "关闭右侧", icon: "x-square", fn: (c) => () => c.plugin.closeRightTabs(c.leaf) },
+    closeAll: { label: "全部关闭", icon: "x-square", fn: (c) => () => c.plugin.closeAllTabs(c.leaf) },
+    togglePin: { label: "锁定", icon: "pin", dynamicLabel: "tabPin", fn: (c) => () => c.leaf.setPinned(!c.isPinned) },
+    togglePreview: { label: "阅读/源码", icon: "book-open", fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["markdown:toggle-preview", "obsidian:toggle-preview"], t("阅读视图")) },
+    splitV: { label: "左右分屏", icon: "columns", fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["workspace:split-vertical"], t("左右分屏")) },
+    splitH: { label: "上下分屏", icon: "rows", fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["workspace:split-horizontal"], t("上下分屏")) },
+    newWindow: { label: "新窗口", icon: "app-window", fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["workspace:move-to-new-window"], t("移动至新窗口")) },
+    defaultApp: { label: "默认应用", icon: "external-link", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.openWithDefaultApp(c.file) },
+    externalEditor: { label: "外部编辑器", icon: "square-pen", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.openWithExternalEditor(c.file) },
+    revealInExplorer: { label: "资源管理器", icon: "folder-search", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.revealInExplorer(c.file) },
+    localGraph: { label: "局部图", icon: "git-fork", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["graph:open-local", "graph:open"], t("局部关系图")) },
+    backlink: { label: "反链", icon: "links-coming-in", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["backlink:open", "backlink:open-tab"], t("反向链接")) },
+    outgoingLink: { label: "出链", icon: "links-going-out", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["outgoing-link:open", "outgoing-link:open-tab", "outgoing-links:open"], t("出链")) },
+    outline: { label: "大纲", icon: "list", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["outline:open", "outline:open-tab"], t("大纲")) },
+    rename: { label: "重命名", icon: "pencil", inline: true, available: (c) => c.file instanceof TFile, fn: (c) => (m, r) => c.plugin.renameInline(m, r, c.file) },
+    duplicate: { label: "创建副本", icon: "copy", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.createDuplicate(c.file) },
+    toggleFilePin: { label: "置顶", icon: "pin", dynamicLabel: "filePin", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.togglePin(c.file) },
+    absPath: { label: "绝对路径", icon: "link", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.copyAbsolutePath([c.file]) },
+    relPath: { label: "相对路径", icon: "link-2", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.copyRelativePath([c.file]) },
+    wikilink: { label: "wikilink", icon: "link", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.copyAsWikilink(c.file) },
+    mdLink: { label: "md链接", icon: "link", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.copyAsMarkdownLink(c.file) },
+    copyFiles: { label: "复制", icon: "copy", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.copyFilesToClipboard([c.file]) },
+    moveUp: { label: "文件上移", icon: "arrow-up", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.moveFilesUp([c.file]) },
+    moveTo: { label: "移动到…", icon: "folder-input", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.startMoveMode([c.file]) },
+    find: { label: "查找", icon: "search", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["editor:open-search", "editor:find"], t("查找")) },
+    replace: { label: "替换", icon: "replace", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["editor:open-replace", "editor:replace"], t("替换")) },
+    exportPDF: { label: "导出PDF", icon: "file-text", available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.execOnLeaf(c.leaf, ["markdown:export-pdf", "obsidian:export-pdf"], t("导出")) },
+    colorRow: { label: "颜色", icon: "palette", special: "colorRow", available: (c) => c.file instanceof TFile },
+    delete: { label: "删除", icon: "trash-2", danger: true, available: (c) => c.file instanceof TFile, fn: (c) => () => c.plugin.deleteFiles([c.file]) },
+};
+
+const DEFAULT_FILE_MENU = {
+    enabled: true,
+    groups: [
+        { id: "open", label: t("打开"), color: "accent", items: [{ action: "newTab" }, { action: "newWindow" }, { action: "defaultApp" }, { action: "externalEditor" }, { action: "revealInExplorer" }] },
+        { id: "manage", label: t("管理"), color: "pro", items: [{ action: "rename" }, { action: "duplicate" }, { action: "togglePin" }, { action: "newFolder" }, { action: "newFile" }] },
+        { id: "copy", label: t("复制"), color: "success", items: [{ action: "absPath" }, { action: "relPath" }, { action: "wikilink" }, { action: "mdLink" }, { action: "copyFiles" }, { action: "moveUp" }, { action: "moveTo" }] },
+        { id: "color", label: t("高亮"), color: "warning", items: [{ action: "colorRow" }] },
+        { id: "danger", label: t("删除"), color: "regex", items: [{ action: "delete" }, { action: "toggleEditorMenu" }] },
+    ],
+};
+
+const DEFAULT_TAB_MENU = {
+    enabled: true,
+    groups: [
+        { id: "close", label: t("关闭"), color: "regex", items: [{ action: "close" }, { action: "closeOthers" }, { action: "closeRight" }, { action: "closeAll" }, { action: "togglePin" }] },
+        { id: "view", label: t("视图"), color: "accent", items: [{ action: "togglePreview" }, { action: "splitV" }, { action: "splitH" }, { action: "newWindow" }, { action: "defaultApp" }, { action: "externalEditor" }, { action: "revealInExplorer" }] },
+        { id: "nav", label: t("导航"), color: "pro", items: [{ action: "localGraph" }, { action: "backlink" }, { action: "outgoingLink" }, { action: "outline" }, { action: "rename" }, { action: "duplicate" }, { action: "toggleFilePin" }] },
+        { id: "copy", label: t("复制"), color: "success", items: [{ action: "absPath" }, { action: "relPath" }, { action: "wikilink" }, { action: "mdLink" }, { action: "copyFiles" }, { action: "moveUp" }, { action: "moveTo" }] },
+        { id: "edit", label: t("编辑"), color: "neutral", items: [{ action: "find" }, { action: "replace" }, { action: "exportPDF" }] },
+        { id: "color", label: t("高亮"), color: "warning", items: [{ action: "colorRow" }] },
+        { id: "danger", label: t("删除"), color: "regex", items: [{ action: "delete" }] },
+    ],
 };
 
 const EDITOR_MENU_CSS = `
@@ -169,6 +267,7 @@ const EDITOR_MENU_CSS = `
 const DEFAULT_EDITOR_MENU = {
     enabled: true,
     showGroupLabels: true,
+    selectionBall: false,
     groups: [
         { id: "link", label: t("链接"), color: "accent", items: [
             { icon: "link", label: t("新增链接"), type: "cmd", cmd: "editor:insert-link" },
@@ -243,6 +342,9 @@ const DEFAULT_EDITOR_MENU = {
             { icon: "clipboard-list", label: t("纯文本粘贴"), type: "cmd", cmd: "editor:paste-plain" },
             { icon: "check-line", label: t("全选"), type: "cmd", cmd: "editor:select-all" },
         ]},
+        { id: "ai", label: t("AI"), color: "pro", items: [
+            { icon: "sparkles", label: "AI", type: "ai", prompt: t("根据选中文本提供几个Insight") },
+        ]},
     ],
 };
 
@@ -267,6 +369,7 @@ class FileOpsPlusPlugin extends Plugin {
             this.pinSet = new Set();
             this.boldSet = new Set();
         }
+        this.colorPalette = Array.isArray(data.colorPalette) ? data.colorPalette : null;
         this.editorMenuConfig = data.editorMenu ? data.editorMenu : JSON.parse(JSON.stringify(DEFAULT_EDITOR_MENU));
         if (data.editorMenu) {
             if (this.editorMenuConfig.showGroupLabels === undefined) this.editorMenuConfig.showGroupLabels = true;
@@ -290,6 +393,14 @@ class FileOpsPlusPlugin extends Plugin {
             }
             if (needSave) this.saveEditorMenuConfig();
         }
+        if (!Array.isArray(this.editorMenuConfig.aiConfigs) || this.editorMenuConfig.aiConfigs.length === 0) {
+            this.editorMenuConfig.aiConfigs = [{ name: "DeepSeek", model: "deepseek-v4-flash", base_url: "https://api.deepseek.com/chat/completions", apiKey: "", temperature: 0.7 }];
+            this.editorMenuConfig.currentAI = 0;
+            this.saveEditorMenuConfig();
+        }
+        if (this.editorMenuConfig.currentAI == null || this.editorMenuConfig.currentAI >= this.editorMenuConfig.aiConfigs.length) this.editorMenuConfig.currentAI = 0;
+        this.fileMenuConfig = data.fileMenu ? data.fileMenu : JSON.parse(JSON.stringify(DEFAULT_FILE_MENU));
+        this.tabMenuConfig = data.tabMenu ? data.tabMenu : JSON.parse(JSON.stringify(DEFAULT_TAB_MENU));
         if (!document.getElementById("fop-em-style")) {
             const s = document.createElement("style");
             s.id = "fop-em-style";
@@ -298,13 +409,15 @@ class FileOpsPlusPlugin extends Plugin {
         }
         this.contextMenuHandler = (evt) => this.onContextMenu(evt);
         document.addEventListener("contextmenu", this.contextMenuHandler, { capture: true });
+        this.selectionChangeHandler = () => { if (this._selBallTimer) clearTimeout(this._selBallTimer); this._selBallTimer = setTimeout(() => this._updateSelectionBall(), 150); };
+        document.addEventListener("selectionchange", this.selectionChangeHandler);
         this.colorInterval = window.setInterval(() => this.applyColors(), 500);
         this.applyColors();
         this.registerEvent(this.app.workspace.on("active-leaf-change", (leaf) => this.onActiveLeafChange(leaf)));
 
         this.addCommand({
             id: "open-editor-menu-settings",
-            name: t("编辑器右键菜单设置"),
+            name: t("右键菜单设置"),
             callback: () => this.openEditorMenuSettings(),
         });
 
@@ -314,14 +427,52 @@ class FileOpsPlusPlugin extends Plugin {
         if (this.contextMenuHandler) {
             document.removeEventListener("contextmenu", this.contextMenuHandler, { capture: true });
         }
+        if (this.selectionChangeHandler) document.removeEventListener("selectionchange", this.selectionChangeHandler);
+        this._hideSelectionBall();
         if (this.colorInterval) window.clearInterval(this.colorInterval);
         if (this.revealTimer) clearTimeout(this.revealTimer);
         this.cancelMoveMode();
     }
 
+    _updateSelectionBall() {
+        const cfg = this.editorMenuConfig;
+        if (!cfg || cfg.enabled === false || cfg.selectionBall !== true) { this._hideSelectionBall(); return; }
+        const leaf = this.app.workspace.activeLeaf;
+        const view = leaf && leaf.view;
+        if (!view || !view.getViewType || view.getViewType() !== "markdown" || !view.editor) { this._hideSelectionBall(); return; }
+        if (!view.editor.getSelection()) { this._hideSelectionBall(); return; }
+        const domSel = window.getSelection();
+        if (!domSel || domSel.rangeCount === 0) { this._hideSelectionBall(); return; }
+        const anchor = domSel.anchorNode;
+        if (!anchor || !anchor.parentElement || !anchor.parentElement.closest(".cm-editor, .markdown-source-view, .markdown-reading-view")) { this._hideSelectionBall(); return; }
+        const rect = domSel.getRangeAt(0).getBoundingClientRect();
+        if (!rect || (rect.width === 0 && rect.height === 0)) { this._hideSelectionBall(); return; }
+        if (!this.selectionBallEl) {
+            const ball = document.createElement("div");
+            ball.className = "fop-sel-ball";
+            ball.style.cssText = "position:fixed;z-index:9998;width:20px;height:20px;border-radius:50%;background:var(--interactive-accent);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3);opacity:.65;transition:opacity .15s,transform .15s;font-size:13px;line-height:1;";
+            ball.textContent = "≡";
+            ball.addEventListener("mouseenter", () => {
+                ball.style.opacity = "1"; ball.style.transform = "scale(1.15)";
+                const r = ball.getBoundingClientRect();
+                this.showEditorMenu(r.left, r.bottom + 4, view);
+            });
+            document.body.appendChild(ball);
+            this.selectionBallEl = ball;
+        }
+        const ball = this.selectionBallEl;
+        ball.style.left = Math.min(rect.right + 6, window.innerWidth - 26) + "px";
+        ball.style.top = Math.max(4, rect.top - 24) + "px";
+    }
+
+    _hideSelectionBall() {
+        if (this.selectionBallEl) { this.selectionBallEl.remove(); this.selectionBallEl = null; }
+    }
+
     onContextMenu(evt) {
         const tabHeader = evt.target.closest(".workspace-tab-header");
         if (tabHeader) {
+            if (!this.tabMenuConfig || this.tabMenuConfig.enabled === false) return;
             evt.preventDefault();
             evt.stopPropagation();
             this.showTabMenu(evt.clientX, evt.clientY, tabHeader);
@@ -342,6 +493,7 @@ class FileOpsPlusPlugin extends Plugin {
         }
         const fileEl = evt.target.closest(".nav-file-title, .nav-folder-title");
         if (!fileEl) return;
+        if (!this.fileMenuConfig || this.fileMenuConfig.enabled === false) return;
         evt.preventDefault();
         evt.stopPropagation();
 
@@ -360,6 +512,57 @@ class FileOpsPlusPlugin extends Plugin {
             selectedFiles = [file];
         }
         this.showCustomMenu(evt.clientX, evt.clientY, file, selectedFiles);
+    }
+
+    createFopMenuPanel(x, y) {
+        const existing = document.querySelector(".file-ops-plus-menu");
+        if (existing) existing.remove();
+        const panel = document.createElement("div");
+        panel.className = "file-ops-plus-menu";
+        panel.style.cssText = "position:fixed;left:" + x + "px;top:" + y + "px;background:var(--background-secondary);border:1px solid var(--background-modifier-border);border-radius:10px;padding:8px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-size:var(--font-ui-small);";
+        const addRow = (items, colorKey) => {
+            const row = document.createElement("div");
+            row.style.cssText = "display:flex;gap:3px;flex-wrap:wrap;margin:2px 0;";
+            const gc = GROUP_COLORS[colorKey];
+            const baseBg = gc ? gc.bg : "transparent";
+            for (const item of items) {
+                const btn = document.createElement("div");
+                btn.style.cssText = "padding:5px 8px;border-radius:5px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px;";
+                btn.style.background = baseBg;
+                btn.style.color = gc ? gc.fg : "var(--text-normal)";
+                if (item.danger) btn.style.color = "var(--text-error)";
+                if (item.icon) { try { const ic = getIcon(item.icon); if (ic) { ic.style.width = "14px"; ic.style.height = "14px"; btn.appendChild(ic); } } catch (e) {} }
+                if (item.title) { const sp = document.createElement("span"); sp.textContent = item.title; btn.appendChild(sp); }
+                btn.addEventListener("mouseenter", () => (btn.style.background = "var(--background-modifier-hover)"));
+                btn.addEventListener("mouseleave", () => (btn.style.background = baseBg));
+                if (item.inline) btn.addEventListener("click", () => item.fn(panel, row));
+                else btn.addEventListener("click", () => { panel.remove(); item.fn(); });
+                row.appendChild(btn);
+            }
+            panel.appendChild(row);
+            return row;
+        };
+        const finish = () => {
+            document.body.appendChild(panel);
+            const rect = panel.getBoundingClientRect();
+            if (x + rect.width > window.innerWidth - 10) panel.style.left = window.innerWidth - rect.width - 10 + "px";
+            if (y + rect.height > window.innerHeight - 10) panel.style.top = window.innerHeight - rect.height - 10 + "px";
+            const isBlank = (el) => el === panel || (el.parentElement === panel && el.tagName === "DIV" && el.style.cursor !== "pointer");
+            panel.addEventListener("mousedown", (e) => {
+                if (e.button !== 0 || !isBlank(e.target)) return;
+                e.preventDefault();
+                let dragging = true, sx = e.clientX, sy = e.clientY, sl = panel.offsetLeft, st = panel.offsetTop;
+                const mv = (ev) => { if (dragging) { panel.style.left = (sl + ev.clientX - sx) + "px"; panel.style.top = (st + ev.clientY - sy) + "px"; } };
+                const up = () => { dragging = false; document.removeEventListener("mousemove", mv); document.removeEventListener("mouseup", up); };
+                document.addEventListener("mousemove", mv);
+                document.addEventListener("mouseup", up);
+            });
+            const closeHandler = (e) => { if (!panel.contains(e.target)) { panel.remove(); cleanup(); } };
+            const escHandler = (e) => { if (e.key === "Escape") { if (e.target.tagName === "INPUT") return; panel.remove(); cleanup(); } };
+            const cleanup = () => { document.removeEventListener("mousedown", closeHandler, true); document.removeEventListener("keydown", escHandler, true); };
+            setTimeout(() => { document.addEventListener("mousedown", closeHandler, true); document.addEventListener("keydown", escHandler, true); }, 0);
+        };
+        return { panel, addRow, finish };
     }
 
     showTabMenu(x, y, tabHeader) {
@@ -382,46 +585,7 @@ class FileOpsPlusPlugin extends Plugin {
             }
         }
 
-        const existing = document.querySelector(".file-ops-plus-menu");
-        if (existing) existing.remove();
-
-        const menu = document.createElement("div");
-        menu.className = "file-ops-plus-menu";
-        menu.style.cssText =
-            "position:fixed;left:" + x + "px;top:" + y + "px;" +
-            "background:var(--background-secondary);" +
-            "border:1px solid var(--background-modifier-border);" +
-            "border-radius:8px;padding:4px;z-index:9999;" +
-            "box-shadow:0 4px 16px rgba(0,0,0,0.2);" +
-            "font-size:var(--font-ui-small);";
-
-        const addRow = (items, accent) => {
-            const row = document.createElement("div");
-            row.style.cssText = "display:flex;gap:2px;" +
-                (accent ? "padding:3px;background:var(--background-primary);border:1px solid var(--background-modifier-border);border-radius:5px;margin:2px 0;" : "");
-            for (const item of items) {
-                const btn = document.createElement("div");
-                btn.style.cssText =
-                    "padding:6px 8px;border-radius:4px;cursor:pointer;text-align:center;" +
-                    "white-space:nowrap;" +
-                    (accent
-                        ? "color:var(--interactive-accent);font-size:var(--font-ui-smaller);"
-                        : "color:var(--text-normal);");
-                if (item.danger) btn.style.color = "var(--text-error)";
-                btn.textContent = item.title;
-                btn.addEventListener("mouseenter", () => (btn.style.background = "var(--background-modifier-hover)"));
-                btn.addEventListener("mouseleave", () => (btn.style.background = "transparent"));
-                if (item.inline) {
-                    btn.addEventListener("click", () => item.fn(menu, row));
-                } else {
-                    btn.addEventListener("click", () => { menu.remove(); item.fn(); });
-                }
-                row.appendChild(btn);
-            }
-            menu.appendChild(row);
-            return row;
-        };
-
+        const { panel, addRow, finish } = this.createFopMenuPanel(x, y);
         const isPinned = leaf && leaf.pinned;
         const safeDetach = (l) => {
             if (!l || !l.view) return;
@@ -432,87 +596,9 @@ class FileOpsPlusPlugin extends Plugin {
             }
             l.detach();
         };
-        addRow([
-            { title: t("关闭"), fn: () => safeDetach(leaf) },
-            { title: t("关闭其他"), fn: () => this.closeOtherTabs(leaf) },
-            { title: t("关闭右侧"), fn: () => this.closeRightTabs(leaf) },
-            { title: t("全部关闭"), fn: () => this.closeAllTabs(leaf) },
-            { title: isPinned ? t("取消锁定") : t("锁定"), fn: () => leaf.setPinned(!isPinned) },
-        ]);
-
-        addRow([
-            { title: t("阅读/源码"), fn: () => this.execOnLeaf(leaf, ["markdown:toggle-preview", "obsidian:toggle-preview"], t("阅读视图")) },
-            { title: t("左右分屏"), fn: () => this.execOnLeaf(leaf, ["workspace:split-vertical"], t("左右分屏")) },
-            { title: t("上下分屏"), fn: () => this.execOnLeaf(leaf, ["workspace:split-horizontal"], t("上下分屏")) },
-            { title: t("新窗口"), fn: () => this.execOnLeaf(leaf, ["workspace:move-to-new-window"], t("移动至新窗口")) },
-        ]);
-
-        if (file instanceof TFile) {
-            addRow([
-                { title: t("默认应用"), fn: () => this.openWithDefaultApp(file) },
-                { title: t("外部编辑器"), fn: () => this.openWithExternalEditor(file) },
-                { title: t("资源管理器"), fn: () => this.revealInExplorer(file) },
-            ]);
-
-            addRow([
-                { title: t("局部图"), fn: () => this.execOnLeaf(leaf, ["graph:open-local", "graph:open"], t("局部关系图")) },
-                { title: t("反链"), fn: () => this.execOnLeaf(leaf, ["backlink:open", "backlink:open-tab"], t("反向链接")) },
-                { title: t("出链"), fn: () => this.execOnLeaf(leaf, ["outgoing-link:open", "outgoing-link:open-tab", "outgoing-links:open"], t("出链")) },
-
-                { title: t("大纲"), fn: () => this.execOnLeaf(leaf, ["outline:open", "outline:open-tab"], t("大纲")) },
-            ]);
-
-            const renameItem = { title: t("重命名"), inline: true, fn: (m, r) => this.renameInline(m, r, file) };
-            const pinTitle = this.pinSet.has(file.path) ? t("取消置顶") : t("置顶");
-            addRow([
-                renameItem,
-                { title: t("创建副本"), fn: () => this.createDuplicate(file) },
-                { title: pinTitle, fn: () => this.togglePin(file) },
-            ]);
-
-            addRow([
-                { title: t("绝对路径"), fn: () => this.copyAbsolutePath([file]) },
-                { title: t("相对路径"), fn: () => this.copyRelativePath([file]) },
-                { title: "wikilink", fn: () => this.copyAsWikilink(file) },
-                { title: t("md链接"), fn: () => this.copyAsMarkdownLink(file) },
-            ]);
-
-            addRow([
-                { title: t("查找"), fn: () => this.execOnLeaf(leaf, ["editor:open-search", "editor:find"], t("查找")) },
-                { title: t("替换"), fn: () => this.execOnLeaf(leaf, ["editor:open-replace", "editor:replace"], t("替换")) },
-                { title: t("导出PDF"), fn: () => this.execOnLeaf(leaf, ["markdown:export-pdf", "obsidian:export-pdf"], t("导出")) },
-            ]);
-
-            this.addColorRow(menu, file);
-
-            addRow([
-                { title: t("删除"), fn: () => this.deleteFiles([file]), danger: true },
-            ]);
-        }
-
-        document.body.appendChild(menu);
-
-        const rect = menu.getBoundingClientRect();
-        if (x + rect.width > window.innerWidth - 10) menu.style.left = window.innerWidth - rect.width - 10 + "px";
-        if (y + rect.height > window.innerHeight - 10) menu.style.top = window.innerHeight - rect.height - 10 + "px";
-
-        const closeHandler = (e) => {
-            if (!menu.contains(e.target)) { menu.remove(); cleanup(); }
-        };
-        const escHandler = (e) => {
-            if (e.key === "Escape") {
-                if (e.target.tagName === "INPUT") return;
-                menu.remove(); cleanup();
-            }
-        };
-        const cleanup = () => {
-            document.removeEventListener("mousedown", closeHandler, true);
-            document.removeEventListener("keydown", escHandler, true);
-        };
-        setTimeout(() => {
-            document.addEventListener("mousedown", closeHandler, true);
-            document.addEventListener("keydown", escHandler, true);
-        }, 0);
+        const ctx = { plugin: this, leaf, file, isPinned, safeDetach };
+        this.renderMenuByConfig(panel, addRow, this.tabMenuConfig, TAB_ACTIONS, ctx);
+        finish();
     }
 
     closeOtherTabs(leaf) {
@@ -594,139 +680,49 @@ class FileOpsPlusPlugin extends Plugin {
 
 
     showCustomMenu(x, y, file, files) {
-        const existing = document.querySelector(".file-ops-plus-menu");
-        if (existing) existing.remove();
-
-        const menu = document.createElement("div");
-        menu.className = "file-ops-plus-menu";
-        menu.style.cssText =
-            "position:fixed;left:" + x + "px;top:" + y + "px;" +
-            "background:var(--background-secondary);" +
-            "border:1px solid var(--background-modifier-border);" +
-            "border-radius:8px;padding:4px;z-index:9999;" +
-            "box-shadow:0 4px 16px rgba(0,0,0,0.2);" +
-            "font-size:var(--font-ui-small);";
-
+        const { panel, addRow, finish } = this.createFopMenuPanel(x, y);
         const isFile = file instanceof TFile;
         const multi = files.length > 1;
         const allTargets = files.length > 0 ? files : [file];
+        const ctx = { plugin: this, file, files, multi, isFile, allTargets };
+        this.renderMenuByConfig(panel, addRow, this.fileMenuConfig, FILE_ACTIONS, ctx);
+        finish();
+    }
 
-        const addRow = (items, accent) => {
-            const row = document.createElement("div");
-            row.style.cssText = "display:flex;gap:2px;" +
-                (accent ? "padding:3px;background:var(--background-primary);border:1px solid var(--background-modifier-border);border-radius:5px;margin:2px 0;" : "");
-            for (const item of items) {
-                const btn = document.createElement("div");
-                btn.style.cssText =
-                    "padding:6px 8px;border-radius:4px;cursor:pointer;text-align:center;" +
-                    "white-space:nowrap;" +
-                    (accent
-                        ? "color:var(--interactive-accent);font-size:var(--font-ui-smaller);"
-                        : "color:var(--text-normal);");
-                if (item.danger) btn.style.color = "var(--text-error)";
-                btn.textContent = item.title;
-                btn.addEventListener("mouseenter", () => (btn.style.background = "var(--background-modifier-hover)"));
-                btn.addEventListener("mouseleave", () => (btn.style.background = "transparent"));
-                if (item.inline) {
-                    btn.addEventListener("click", () => item.fn(menu, row));
-                } else {
-                    btn.addEventListener("click", () => { menu.remove(); item.fn(); });
+    renderMenuByConfig(panel, addRow, config, actionTable, ctx) {
+        for (const grp of (config.groups || [])) {
+            const items = [];
+            for (const item of (grp.items || [])) {
+                const a = actionTable[item.action];
+                if (!a) continue;
+                if (a.available && !a.available(ctx)) continue;
+                if (a.special === "colorRow") { this.addColorRow(panel, ctx.file); continue; }
+                const entry = { title: item.label || this._actionLabel(a, ctx) };
+                entry.icon = item.icon || a.icon || null;
+                if (a.danger) entry.danger = true;
+                if (a.inline) entry.inline = true;
+                entry.fn = a.fn(ctx);
+                items.push(entry);
+            }
+            if (items.length) {
+                if (config.showGroupLabels !== false && grp.label) {
+                    const lbl = document.createElement("div");
+                    lbl.textContent = grp.label;
+                    lbl.style.cssText = "font-size:10px;margin:4px 0 1px 2px;color:var(--text-muted);";
+                    panel.appendChild(lbl);
                 }
-                row.appendChild(btn);
+                addRow(items, grp.color);
             }
-            menu.appendChild(row);
-            return row;
-        };
-
-        const renameItem = { title: t("重命名"), inline: true, fn: (m, r) => this.renameInline(m, r, file) };
-        const pinTitle = this.pinSet.has(file.path) ? t("取消置顶") : t("置顶");
-        const pinItem = { title: pinTitle, fn: () => this.togglePin(file) };
-        const revealItem = { title: t("资源管理器"), fn: () => this.revealInExplorer(file) };
-        const editorItem = { title: t("外部编辑器"), fn: () => this.openWithExternalEditor(file) };
-        const wikilinkItem = { title: "wikilink", fn: () => this.copyAsWikilink(file) };
-        const mdLinkItem = { title: t("md链接"), fn: () => this.copyAsMarkdownLink(file) };
-
-        if (isFile && !multi) {
-            addRow([
-                { title: t("新标签页"), fn: () => this.app.workspace.getLeaf().openFile(file) },
-                { title: t("新窗口"), fn: () => this.openInNewWindow(file) },
-                { title: t("默认应用"), fn: () => this.openWithDefaultApp(file) },
-                editorItem,
-                revealItem,
-            ]);
-            addRow([
-                renameItem,
-                { title: t("创建副本"), fn: () => this.createDuplicate(file) },
-                pinItem,
-            ]);
-            addRow([
-                { title: t("绝对路径"), fn: () => this.copyAbsolutePath(allTargets) },
-                { title: t("相对路径"), fn: () => this.copyRelativePath(allTargets) },
-                wikilinkItem,
-                mdLinkItem,
-            ]);
-        } else if (!multi) {
-            const newFolderItem = { title: t("新建文件夹"), inline: true, fn: (m, r) => this.createInline(m, r, file, true) };
-            const newFileItem = { title: t("新建文件"), inline: true, fn: (m, r) => this.createInline(m, r, file, false) };
-            addRow([newFolderItem, newFileItem]);
-            addRow([
-                renameItem,
-                pinItem,
-                revealItem,
-            ]);
-            addRow([
-                { title: t("绝对路径"), fn: () => this.copyAbsolutePath(allTargets) },
-                { title: t("相对路径"), fn: () => this.copyRelativePath(allTargets) },
-                wikilinkItem,
-                mdLinkItem,
-            ]);
-        } else {
-            addRow([
-                { title: t("绝对路径"), fn: () => this.copyAbsolutePath(allTargets) },
-                { title: t("相对路径"), fn: () => this.copyRelativePath(allTargets) },
-            ]);
         }
+    }
 
-        if (isFile && files.length > 0) {
-            addRow([
-                { title: t("复制"), fn: () => this.copyFilesToClipboard(files) },
-                { title: t("文件上移"), fn: () => this.moveFilesUp(files) },
-                { title: t("移动到…"), fn: () => this.startMoveMode(files) },
-            ], true);
-        }
-
-        if (!multi) {
-            this.addColorRow(menu, file);
-        }
-
-        addRow([
-            { title: multi ? t("删除 ") + files.length + t(" 个") : t("删除"), fn: () => this.deleteFiles(allTargets), danger: true },
-            { title: this.editorMenuConfig.enabled !== false ? t("关闭编辑器增强菜单") : t("启用编辑器增强菜单"), fn: () => { this.editorMenuConfig.enabled = this.editorMenuConfig.enabled === false; this.saveEditorMenuConfig(); new Notice(this.editorMenuConfig.enabled ? t("已启用编辑器增强菜单") : t("已关闭编辑器增强菜单")); } },
-        ]);
-
-        document.body.appendChild(menu);
-
-        const rect = menu.getBoundingClientRect();
-        if (x + rect.width > window.innerWidth - 10) menu.style.left = window.innerWidth - rect.width - 10 + "px";
-        if (y + rect.height > window.innerHeight - 10) menu.style.top = window.innerHeight - rect.height - 10 + "px";
-
-        const closeHandler = (e) => {
-            if (!menu.contains(e.target)) { menu.remove(); cleanup(); }
-        };
-        const escHandler = (e) => {
-            if (e.key === "Escape") {
-                if (e.target.tagName === "INPUT") return;
-                menu.remove(); cleanup();
-            }
-        };
-        const cleanup = () => {
-            document.removeEventListener("mousedown", closeHandler, true);
-            document.removeEventListener("keydown", escHandler, true);
-        };
-        setTimeout(() => {
-            document.addEventListener("mousedown", closeHandler, true);
-            document.addEventListener("keydown", escHandler, true);
-        }, 0);
+    _actionLabel(a, ctx) {
+        if (a.dynamicLabel === "pin") return this.pinSet.has(ctx.file.path) ? t("取消置顶") : t("置顶");
+        if (a.dynamicLabel === "delete") return ctx.multi ? t("删除 ") + ctx.files.length + t(" 个") : t("删除");
+        if (a.dynamicLabel === "editorMenu") return this.editorMenuConfig.enabled !== false ? t("关闭编辑器增强菜单") : t("启用编辑器增强菜单");
+        if (a.dynamicLabel === "tabPin") return ctx.isPinned ? t("取消锁定") : t("锁定");
+        if (a.dynamicLabel === "filePin") return this.pinSet.has(ctx.file.path) ? t("取消置顶") : t("置顶");
+        return t(a.label);
     }
 
     renameInline(menu, row, file) {
@@ -1104,63 +1100,60 @@ class FileOpsPlusPlugin extends Plugin {
     }
 
     addColorRow(menu, file) {
-        const COLORS = [
-            { c: "#e74c3c", n: t("红") },
-            { c: "#e67e22", n: t("橙") },
-            { c: "#f1c40f", n: t("黄") },
-            { c: "#2ecc71", n: t("绿") },
-            { c: "#1abc9c", n: t("青") },
-            { c: "#3498db", n: t("蓝") },
-            { c: "#9b59b6", n: t("紫") },
-            { c: "#95a5a6", n: t("灰") },
+        const DEFAULT_COLORS = [
+            { c: "#e74c3c", n: t("红") }, { c: "#e67e22", n: t("橙") }, { c: "#f1c40f", n: t("黄") },
+            { c: "#2ecc71", n: t("绿") }, { c: "#1abc9c", n: t("青") }, { c: "#3498db", n: t("蓝") },
+            { c: "#9b59b6", n: t("紫") }, { c: "#95a5a6", n: t("灰") },
         ];
+        const palette = this.colorPalette || DEFAULT_COLORS;
         const row = document.createElement("div");
-        row.style.cssText = "display:flex;gap:3px;padding:2px 4px;align-items:center;";
-
-        const updateBoldVisual = (btn, active) => {
-            btn.style.cssText =
-                "width:18px;height:18px;border-radius:4px;cursor:pointer;" +
-                "display:flex;align-items:center;justify-content:center;" +
-                "font-size:12px;font-weight:bold;" +
-                (active
-                    ? "background:var(--interactive-accent);color:var(--text-on-accent);border:1px solid var(--interactive-accent);"
-                    : "border:1px solid var(--background-modifier-border);color:var(--text-normal);");
-        };
-        const updateDotVisual = (dot, color, active) => {
-            dot.style.cssText =
-                "width:18px;height:18px;border-radius:50%;cursor:pointer;" +
-                "background:" + color + ";" +
-                (active ? "border:2px solid var(--text-accent);box-shadow:0 0 4px var(--text-accent);" : "border:1px solid var(--background-modifier-border);");
-        };
+        row.style.cssText = "display:flex;gap:3px;padding:4px;align-items:center;flex-wrap:wrap;border:1px solid var(--background-modifier-border);border-radius:6px;margin:2px 0;";
 
         const isBold = this.boldSet.has(file.path);
         const boldBtn = document.createElement("div");
         boldBtn.textContent = "B";
-        updateBoldVisual(boldBtn, isBold);
+        boldBtn.style.cssText = "width:20px;height:20px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;" + (isBold ? "background:var(--interactive-accent);color:var(--text-on-accent);border:1px solid var(--interactive-accent);" : "border:1px solid var(--background-modifier-border);color:var(--text-normal);");
         boldBtn.title = t("加粗");
-        boldBtn.addEventListener("click", async () => {
-            await this.toggleBold(file);
-            updateBoldVisual(boldBtn, this.boldSet.has(file.path));
-        });
+        boldBtn.addEventListener("click", async () => { await this.toggleBold(file); boldBtn.style.cssText = "width:20px;height:20px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;" + (this.boldSet.has(file.path) ? "background:var(--interactive-accent);color:var(--text-on-accent);border:1px solid var(--interactive-accent);" : "border:1px solid var(--background-modifier-border);color:var(--text-normal);"); });
         row.appendChild(boldBtn);
 
+        const dotsWrap = document.createElement("div");
+        dotsWrap.style.cssText = "display:flex;gap:3px;align-items:center;flex-wrap:wrap;";
+        row.appendChild(dotsWrap);
+
         const current = this.colorMap[file.path];
-        for (const color of COLORS) {
-            const dot = document.createElement("div");
-            updateDotVisual(dot, color.c, current === color.c);
-            dot.title = color.n;
-            dot.addEventListener("click", async () => {
-                const now = this.colorMap[file.path];
-                await this.setColor(file, now === color.c ? null : color.c);
-                for (const d of row.querySelectorAll(".file-ops-plus-color-dot")) {
-                    const c = d.getAttribute("data-color");
-                    updateDotVisual(d, c, this.colorMap[file.path] === c);
-                }
-            });
-            dot.className = "file-ops-plus-color-dot";
-            dot.setAttribute("data-color", color.c);
-            row.appendChild(dot);
-        }
+        const renderDots = () => {
+            while (dotsWrap.firstChild) dotsWrap.removeChild(dotsWrap.firstChild);
+            const cur = this.colorMap[file.path];
+            for (let i = 0; i < palette.length; i++) {
+                const color = palette[i];
+                const dot = document.createElement("div");
+                dot.style.cssText = "width:18px;height:18px;border-radius:50%;cursor:pointer;background:" + color.c + ";" + (cur === color.c ? "border:2px solid var(--text-accent);box-shadow:0 0 4px var(--text-accent);" : "border:1px solid var(--background-modifier-border);");
+                dot.title = color.n + " — " + t("右键删除");
+                dot.addEventListener("click", async () => { const now = this.colorMap[file.path]; await this.setColor(file, now === color.c ? null : color.c); renderDots(); });
+                dot.addEventListener("contextmenu", (e) => { e.preventDefault(); e.stopPropagation(); palette.splice(i, 1); this.colorPalette = palette; this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet), colorPalette: palette }); renderDots(); });
+                dotsWrap.appendChild(dot);
+            }
+        };
+        renderDots();
+
+        const addBtn = document.createElement("div");
+        addBtn.textContent = "+";
+        addBtn.style.cssText = "width:20px;height:20px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;border:1px dashed var(--background-modifier-border);color:var(--text-muted);font-size:14px;";
+        addBtn.title = t("添加颜色");
+        addBtn.addEventListener("click", () => {
+            const input = document.createElement("input");
+            input.type = "color";
+            input.value = "#3498db";
+            input.style.cssText = "width:20px;height:20px;border:none;cursor:pointer;padding:0;";
+            const confirm = () => { const c = input.value; if (c && !palette.some(p => p.c === c)) { palette.push({ c, n: c }); this.colorPalette = palette; this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet), colorPalette: palette }); } renderDots(); addBtn.style.display = ""; };
+            addBtn.style.display = "none";
+            input.addEventListener("change", confirm);
+            input.addEventListener("blur", confirm);
+            row.appendChild(input);
+            input.click();
+        });
+        row.appendChild(addBtn);
 
         menu.appendChild(row);
     }
@@ -1171,7 +1164,7 @@ class FileOpsPlusPlugin extends Plugin {
         } else {
             delete this.colorMap[file.path];
         }
-        await this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet) });
+        await this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet), colorPalette: this.colorPalette || undefined });
         this.applyColors();
     }
 
@@ -1183,7 +1176,7 @@ class FileOpsPlusPlugin extends Plugin {
             this.pinSet.add(file.path);
             new Notice(t("已置顶"));
         }
-        await this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet) });
+        await this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet), colorPalette: this.colorPalette || undefined });
         this.applyColors();
     }
 
@@ -1195,7 +1188,7 @@ class FileOpsPlusPlugin extends Plugin {
         } else {
             this.boldSet.add(file.path);
         }
-        await this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet) });
+        await this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet), colorPalette: this.colorPalette || undefined });
         this.applyColors();
     }
 
@@ -1454,6 +1447,18 @@ class FileOpsPlusPlugin extends Plugin {
         panel.style.left = (x + rect.width > window.innerWidth - 10 ? window.innerWidth - rect.width - 10 : x) + "px";
         panel.style.top = (y + rect.height > window.innerHeight - 10 ? window.innerHeight - rect.height - 10 : y) + "px";
 
+        const isBlank = (el) => el === panel || el === row || el.classList.contains("fop-em-row") || el.classList.contains("fop-em-grid") || el.classList.contains("fop-em-group-label");
+        panel.addEventListener("mousedown", (e) => {
+            if (e.button !== 0 || !isBlank(e.target)) return;
+            e.preventDefault();
+            let dragging = true, sx = e.clientX, sy = e.clientY, sl = panel.offsetLeft, st = panel.offsetTop;
+            panel.style.cursor = "grabbing";
+            const mv = (ev) => { if (!dragging) return; panel.style.left = (sl + ev.clientX - sx) + "px"; panel.style.top = (st + ev.clientY - sy) + "px"; };
+            const up = () => { dragging = false; panel.style.cursor = ""; document.removeEventListener("mousemove", mv); document.removeEventListener("mouseup", up); };
+            document.addEventListener("mousemove", mv);
+            document.addEventListener("mouseup", up);
+        });
+
         const close = (e) => { if (!panel.contains(e.target)) { panel.remove(); cleanup(); } };
         const esc = (e) => { if (e.key === "Escape") { panel.remove(); cleanup(); } };
         const cleanup = () => {
@@ -1544,6 +1549,16 @@ class FileOpsPlusPlugin extends Plugin {
                 const link = `[[${file.basename}#${headingText}]]`;
                 await navigator.clipboard.writeText(link);
                 new Notice(t("已复制：") + link);
+            } else if (item.action === "setSelectionAsTitle") {
+                const sel = editor.getSelection().trim();
+                if (!sel) { new Notice(t("请先选中文本")); return; }
+                const cleaned = sel.replace(/[#^[\]|\\/:*?<>"]+/g, "").replace(/\s+/g, " ").trim();
+                if (!cleaned) { new Notice(t("处理后标题为空")); return; }
+                const newPath = (file.parent.path ? file.parent.path + "/" : "") + cleaned + ".md";
+                if (newPath === file.path) { new Notice(t("标题未变化")); return; }
+                if (this.app.vault.getAbstractFileByPath(newPath)) { new Notice(t("已存在同名文件")); return; }
+                await this.app.fileManager.renameFile(file, newPath);
+                new Notice(t("已重命名：") + cleaned);
             } else if (item.action === "extractToNote") {
                 const sel = editor.getSelection();
                 if (!sel) { new Notice(t("请先选中文本")); return; }
@@ -1570,6 +1585,10 @@ class FileOpsPlusPlugin extends Plugin {
                 inputEl.addEventListener("keydown", (e) => { if (e.key === "Enter") doExtract(); });
                 modal.open();
             }
+        } else if (item.type === "ai") {
+            const sel = editor.getSelection();
+            if (!sel) { new Notice(t("请先选中文本")); return; }
+            this.showAIPanel(item, view, sel);
         } else if (item.type === "key") {
             this.execKeystroke(editor, item.keystroke, view);
         }
@@ -1618,6 +1637,112 @@ class FileOpsPlusPlugin extends Plugin {
         }
     }
 
+    showAIPanel(item, view, sel) {
+        const existing = document.querySelector(".fop-ai-panel");
+        if (existing) existing.remove();
+        const cfg = this.editorMenuConfig;
+        const promptTpl = (item.prompt || "").trim();
+        const fullPrompt = promptTpl.includes("{{text}}") ? promptTpl.replace(/\{\{text\}\}/g, sel) : (promptTpl ? promptTpl + "\n\n" + sel : sel);
+        const sourcePath = view && view.file ? view.file.path : "";
+        let result = "";
+
+        const panel = document.createElement("div");
+        panel.className = "fop-ai-panel";
+        panel.style.cssText = "position:fixed;z-index:10000;width:380px;max-width:92vw;background:var(--background-secondary);border:1px solid var(--background-modifier-border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.3);display:flex;flex-direction:column;box-sizing:border-box;overflow:hidden;";
+        const header = document.createElement("div");
+        header.style.cssText = "display:flex;align-items:center;gap:6px;padding:6px 10px;cursor:grab;border-bottom:1px solid var(--background-modifier-border);";
+        const ttl = document.createElement("div");
+        ttl.textContent = item.label || "AI";
+        ttl.style.cssText = "font-weight:600;flex:1;font-size:var(--font-ui-small);";
+        header.appendChild(ttl);
+        const closeBtn = document.createElement("div");
+        closeBtn.textContent = "✕";
+        closeBtn.style.cssText = "cursor:pointer;padding:0 6px;color:var(--text-muted);";
+        header.appendChild(closeBtn);
+        panel.appendChild(header);
+        const body = document.createElement("div");
+        body.style.cssText = "flex:1;overflow:auto;padding:10px;min-height:40px;max-height:55vh;font-size:var(--font-ui-small);";
+        body.setText(t("生成中…"));
+        panel.appendChild(body);
+        const foot = document.createElement("div");
+        foot.style.cssText = "display:flex;gap:6px;padding:6px 10px;border-top:1px solid var(--background-modifier-border);";
+        const mkBtn = (text, fn) => {
+            const b = foot.createEl("button", { text, attr: { style: "font-size:var(--font-ui-smaller);padding:2px 10px;" } });
+            b.disabled = true; b.onclick = () => { if (result) fn(); };
+            return b;
+        };
+        const copyBtn = mkBtn(t("复制"), () => { navigator.clipboard.writeText(result).then(() => new Notice(t("已复制"))).catch(() => {}); });
+        const insBtn = mkBtn(t("插入"), () => { try { const ed = view.editor; if (ed) { ed.focus(); ed.replaceRange("\n\n" + result, ed.getCursor("to")); } } catch (e) {} });
+        const repBtn = mkBtn(t("替换选中"), () => { try { const ed = view.editor; if (ed) { ed.focus(); ed.replaceSelection(result); } } catch (e) {} });
+        panel.appendChild(foot);
+
+        document.body.appendChild(panel);
+        const px = cfg.aiPanelX != null ? cfg.aiPanelX : window.innerWidth - 400;
+        const py = cfg.aiPanelY != null ? cfg.aiPanelY : 80;
+        panel.style.left = Math.max(10, Math.min(px, window.innerWidth - panel.offsetWidth - 10)) + "px";
+        panel.style.top = Math.max(10, Math.min(py, window.innerHeight - panel.offsetHeight - 10)) + "px";
+
+        let drag = false, dgx = 0, dgy = 0;
+        header.addEventListener("mousedown", (e) => {
+            if (e.target === closeBtn) return;
+            drag = true; dgx = e.clientX - panel.getBoundingClientRect().left; dgy = e.clientY - panel.getBoundingClientRect().top;
+            e.preventDefault();
+        });
+        const dm = (e) => { if (!drag) return; panel.style.left = (e.clientX - dgx) + "px"; panel.style.top = (e.clientY - dgy) + "px"; };
+        const du = () => { if (drag) { drag = false; cfg.aiPanelX = parseInt(panel.style.left); cfg.aiPanelY = parseInt(panel.style.top); this.saveEditorMenuConfig(); } };
+        document.addEventListener("mousemove", dm);
+        document.addEventListener("mouseup", du);
+        const closePanel = () => { panel.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("keydown", escH); };
+        const escH = (e) => { if (e.key === "Escape") closePanel(); };
+        document.addEventListener("keydown", escH);
+        closeBtn.onclick = closePanel;
+
+        this.callAI(fullPrompt).then(async (res) => {
+            result = (res || "").trim();
+            if (!result) { body.setText(t("AI 返回为空")); return; }
+            body.empty();
+            const md = body.createDiv();
+            try { await MarkdownRenderer.render(this.app, result, md, sourcePath, this); }
+            catch (e) {
+                try { await MarkdownRenderer.renderMarkdown(result, md, sourcePath, this); }
+                catch (e2) { md.setText(result); }
+            }
+            copyBtn.disabled = insBtn.disabled = repBtn.disabled = false;
+        }).catch((err) => {
+            body.setText(t("AI 返回失败：") + (err && err.message ? err.message : err));
+        });
+    }
+
+    async callAI(prompt) {
+        const cfg = this.editorMenuConfig || {};
+        const conf = (cfg.aiConfigs || [])[cfg.currentAI || 0] || {};
+        const apiUrl = conf.base_url || "https://api.openai.com/v1/chat/completions";
+        const apiKey = conf.apiKey;
+        if (!apiKey) throw new Error(t("API Key 未配置，请在编辑器菜单设置的 AI 设置中填写"));
+        const model = conf.model || "gpt-3.5-turbo";
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+        try {
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], max_tokens: 3000, temperature: conf.temperature != null && conf.temperature !== "" ? Number(conf.temperature) : 0.7 }),
+                signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(t("AI 请求失败：") + response.status + " - " + String(errText).slice(0, 200));
+            }
+            const data = await response.json();
+            return data.choices && data.choices[0] && data.choices[0].message ? (data.choices[0].message.content || "") : "";
+        } catch (e) {
+            clearTimeout(timeoutId);
+            if (e && e.name === "AbortError") throw new Error(t("AI 请求超时（60s）"));
+            throw e;
+        }
+    }
+
     resolvePipelineStep(name) {
         for (const grp of DEFAULT_EDITOR_MENU.groups) {
             for (const it of (grp.items || [])) {
@@ -1657,6 +1782,8 @@ class FileOpsPlusPlugin extends Plugin {
             pins: data.pins || Array.from(this.pinSet),
             bolds: data.bolds || Array.from(this.boldSet),
             editorMenu: this.editorMenuConfig,
+            fileMenu: this.fileMenuConfig,
+            tabMenu: this.tabMenuConfig,
         });
     }
 
@@ -1677,15 +1804,11 @@ class FileOpsPlusPlugin extends Plugin {
         const header = document.createElement("div");
         header.style.cssText = "display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:grab;border-bottom:1px solid var(--background-modifier-border);";
         const ttl = document.createElement("div");
-        ttl.textContent = t("编辑器右键菜单设置");
+        ttl.textContent = t("右键菜单设置") + " — " + (this.manifest.name || "File Ops Plus") + " v" + (this.manifest.version || "");
         ttl.style.fontWeight = "600";
         ttl.style.flex = "1";
         header.appendChild(ttl);
-        const rsBtn = document.createElement("button");
-        rsBtn.textContent = t("恢复默认");
-        rsBtn.className = "mod-warning";
-        rsBtn.style.cssText = "font-size:var(--font-ui-smaller);padding:2px 8px;cursor:pointer;";
-        header.appendChild(rsBtn);
+
         const closeBtn = document.createElement("div");
         closeBtn.textContent = "✕";
         closeBtn.style.cssText = "cursor:pointer;padding:2px 8px;color:var(--text-muted);font-size:16px;";
@@ -1704,6 +1827,7 @@ class FileOpsPlusPlugin extends Plugin {
         body.appendChild(root);
 
         panel.appendChild(body);
+
 
         const handle = document.createElement("div");
         handle.style.cssText = "position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;z-index:10;background:linear-gradient(135deg,transparent 50%,var(--text-muted) 50%);";
@@ -1782,9 +1906,141 @@ class FileOpsPlusPlugin extends Plugin {
             }
         };
 
+        const renderFileTabPreview = (config, actionTable) => {
+            previewArea.empty();
+            previewArea.createEl("div", { text: t("实时预览"), attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);margin-bottom:8px;" } });
+            for (const grp of (config.groups || [])) {
+                const items = (grp.items || []).filter(item => actionTable[item.action]);
+                if (!items.length) continue;
+                const gc = GROUP_COLORS[grp.color];
+                const grpDiv = previewArea.createEl("div", { attr: { style: "margin-bottom:8px;" } });
+                if (config.showGroupLabels !== false) grpDiv.createEl("div", { text: grp.label || "", attr: { style: "font-size:10px;margin-bottom:2px;color:" + (gc ? gc.fg : "var(--text-muted)") + ";" } });
+                const row = grpDiv.createEl("div", { attr: { style: "display:flex;gap:3px;flex-wrap:wrap;" } });
+                for (const item of items) {
+                    const a = actionTable[item.action];
+                    const btn = row.createEl("div", { attr: { style: "padding:3px 6px;border-radius:4px;cursor:default;display:flex;align-items:center;gap:3px;white-space:nowrap;" + (gc ? "background:" + gc.bg + ";color:" + gc.fg + ";" : "color:var(--text-normal);") } });
+                    const iconName = item.icon || a.icon;
+                    if (iconName) { try { const ic = getIcon(iconName); if (ic) { ic.style.width = "12px"; ic.style.height = "12px"; btn.appendChild(ic); } } catch (e) {} }
+                    const label = item.label || a.label || "";
+                    if (label) btn.createEl("span", { text: t(label) });
+                }
+            }
+        };
+        let sortMode = false;
+        let currentTab = "editor";
         const render = () => {
-            renderPreview();
+            if (currentTab === "editor") renderPreview();
+            else renderFileTabPreview(currentTab === "file" ? this.fileMenuConfig : this.tabMenuConfig, currentTab === "file" ? FILE_ACTIONS : TAB_ACTIONS);
             root.empty();
+            const tabRow = root.createEl("div", { attr: { style: "display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid var(--background-modifier-border);padding-bottom:8px;" } });
+            for (const [key, label] of [["editor", t("编辑器菜单")], ["file", t("文件菜单")], ["tab", t("标签页菜单")]]) {
+                const b = tabRow.createEl("button", { text: label, attr: { style: "padding:2px 10px;" + (currentTab === key ? "border-bottom:2px solid var(--interactive-accent);font-weight:600;" : "") } });
+                b.onclick = () => { currentTab = key; sortMode = false; render(); };
+            }
+            if (currentTab !== "editor") {
+                const config = currentTab === "file" ? this.fileMenuConfig : this.tabMenuConfig;
+                const actionTable = currentTab === "file" ? FILE_ACTIONS : TAB_ACTIONS;
+                const defaultConfig = currentTab === "file" ? DEFAULT_FILE_MENU : DEFAULT_TAB_MENU;
+                const enRow2 = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
+                const cb2 = enRow2.createEl("input", { type: "checkbox" });
+                cb2.checked = config.enabled !== false;
+                enRow2.createEl("span", { text: t("启用") });
+                cb2.onchange = () => { config.enabled = cb2.checked; this.saveEditorMenuConfig(); };
+                const lblRow2 = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
+                const lblCb2 = lblRow2.createEl("input", { type: "checkbox" });
+                lblCb2.checked = config.showGroupLabels !== false;
+                lblRow2.createEl("span", { text: t("显示分组标题") });
+                lblCb2.onchange = () => { config.showGroupLabels = lblCb2.checked; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
+                const sortRow2 = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
+                const sortBtn2 = sortRow2.createEl("button", { text: sortMode ? t("完成排序") : t("调整分组顺序"), attr: { style: "padding:2px 10px;" } });
+                sortBtn2.onclick = () => { sortMode = !sortMode; render(); };
+                if (sortMode) {
+                    for (let gi = 0; gi < config.groups.length; gi++) {
+                        const grp = config.groups[gi];
+                        const row = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--background-modifier-border);border-radius:6px;margin-bottom:4px;background:var(--background-primary);" } });
+                        row.createEl("span", { text: "⠿", attr: { style: "color:var(--text-faint);cursor:grab;font-size:14px;" } });
+                        row.createEl("span", { text: grp.label || "", attr: { style: "font-weight:600;flex:1;" } });
+                        row.createEl("span", { text: "(" + ((grp.items || []).length) + ")", attr: { style: "color:var(--text-muted);font-size:var(--font-ui-smaller);" } });
+                        const c = grp.color || "neutral";
+                        const sw = row.createEl("div", { attr: { style: "width:14px;height:14px;border-radius:3px;border:1px solid var(--background-modifier-border);" } });
+                        if (GROUP_COLORS[c]) sw.style.background = GROUP_COLORS[c].bg;
+                        else if (c.includes("|")) sw.style.background = c.split("|")[0];
+                        else if (c) sw.style.background = c;
+                        row.draggable = true;
+                        row.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(gi)); row.style.opacity = "0.4"; });
+                        row.addEventListener("dragend", () => { row.style.opacity = ""; });
+                        row.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; root.querySelectorAll(".fop-drag-over").forEach(el => el.classList.remove("fop-drag-over")); row.classList.add("fop-drag-over"); });
+                        row.addEventListener("drop", (e) => {
+                            e.preventDefault(); e.stopPropagation();
+                            const from = parseInt(e.dataTransfer.getData("text/plain"));
+                            if (isNaN(from) || from === gi) return;
+                            const rect = row.getBoundingClientRect();
+                            const after = e.clientY > rect.top + rect.height / 2;
+                            const moved = config.groups.splice(from, 1)[0];
+                            let target = gi + (after ? 1 : 0);
+                            if (from < target) target--;
+                            config.groups.splice(target, 0, moved);
+                            this.saveEditorMenuConfig(); render();
+                        });
+                    }
+                    return;
+                }
+                for (let gi = 0; gi < config.groups.length; gi++) {
+                    const grp = config.groups[gi];
+                    const box = root.createEl("div", { attr: { style: "border:1px solid var(--background-modifier-border);border-radius:6px;padding:8px;margin-bottom:8px;" } });
+                    const head = box.createEl("div", { attr: { style: "display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;" } });
+                    const ni = head.createEl("input", { type: "text", value: grp.label || "", attr: { style: "width:120px;padding:2px 4px;" } });
+                    ni.onchange = () => { grp.label = ni.value; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
+                    const swatchRow = head.createEl("div", { attr: { style: "display:flex;gap:3px;" } });
+                    for (const k of Object.keys(GROUP_COLORS)) {
+                        const sw = swatchRow.createEl("div", { text: "Aa", attr: { style: "width:24px;height:16px;border-radius:3px;cursor:pointer;border:1px solid var(--background-modifier-border);background:" + GROUP_COLORS[k].bg + ";color:" + GROUP_COLORS[k].fg + ";font-size:9px;display:flex;align-items:center;justify-content:center;", title: GROUP_COLORS[k].label } });
+                        if (grp.color === k) sw.style.outline = "2px solid var(--interactive-accent)";
+                        sw.onclick = () => { grp.color = k; this.saveEditorMenuConfig(); render(); };
+                    }
+                    const dg = head.createEl("button", { text: t("删除组"), cls: "mod-warning", attr: { style: "margin-left:auto;" } });
+                    dg.onclick = () => { config.groups.splice(gi, 1); this.saveEditorMenuConfig(); render(); };
+                    for (let ii = 0; ii < (grp.items || []).length; ii++) {
+                        const item = grp.items[ii];
+                        const ir = box.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;" } });
+                        ir.createEl("span", { text: "⠿", attr: { style: "cursor:grab;color:var(--text-faint);" } });
+                        ir.draggable = true;
+                        ir.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", JSON.stringify({ g: gi, i: ii })); ir.style.opacity = "0.3"; });
+                        ir.addEventListener("dragend", () => { ir.style.opacity = ""; });
+                        ir.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
+                        ir.addEventListener("drop", (e) => {
+                            e.preventDefault(); e.stopPropagation();
+                            let from; try { from = JSON.parse(e.dataTransfer.getData("text/plain")); } catch (_) { return; }
+                            if (!from || (from.g === gi && from.i === ii)) return;
+                            const moved = config.groups[from.g].items[from.i];
+                            config.groups[from.g].items.splice(from.i, 1);
+                            const rect = ir.getBoundingClientRect();
+                            const after = e.clientY > rect.top + rect.height / 2;
+                            let target = ii + (after ? 1 : 0);
+                            if (from.g === gi && from.i < target) target--;
+                            config.groups[gi].items.splice(target, 0, moved);
+                            this.saveEditorMenuConfig(); render();
+                        });
+                        const as = ir.createEl("select");
+                        as.style.cssText = "min-width:100px;padding:0 2px;box-sizing:border-box;";
+                        for (const ak of Object.keys(actionTable)) as.createEl("option", { value: ak, text: t(actionTable[ak].label) });
+                        as.value = item.action || "";
+                        as.onchange = () => { item.action = as.value; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
+                        const icIn = ir.createEl("input", { type: "text", value: item.icon || "", attr: { placeholder: "icon", style: "width:70px;padding:1px 4px;font-size:var(--font-ui-smaller);" } });
+                        icIn.onchange = () => { item.icon = icIn.value.trim() || undefined; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
+                        const lbIn = ir.createEl("input", { type: "text", value: item.label || "", attr: { placeholder: t("名称"), style: "width:80px;padding:1px 4px;font-size:var(--font-ui-smaller);" } });
+                        lbIn.onchange = () => { item.label = lbIn.value.trim() || undefined; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
+                        const db = ir.createEl("button", { text: "✕", attr: { style: "padding:2px 6px;" } });
+                        db.onclick = () => { grp.items.splice(ii, 1); this.saveEditorMenuConfig(); render(); };
+                    }
+                    const ab = box.createEl("button", { text: t("+ 添加选项"), attr: { style: "margin-top:4px;" } });
+                    ab.onclick = () => { grp.items = grp.items || []; grp.items.push({ action: Object.keys(actionTable)[0] }); this.saveEditorMenuConfig(); render(); };
+                }
+                const ag = root.createEl("button", { text: t("+ 添加分组"), attr: { style: "margin-top:8px;" } });
+                ag.onclick = () => { config.groups.push({ id: "g" + Date.now(), label: t("新分组"), color: "neutral", items: [] }); this.saveEditorMenuConfig(); render(); };
+                const rs2 = root.createEl("button", { text: t("恢复默认"), cls: "mod-warning", attr: { style: "margin-top:8px;float:right;" } });
+                rs2.onclick = () => { this[currentTab === "file" ? "fileMenuConfig" : "tabMenuConfig"] = JSON.parse(JSON.stringify(defaultConfig)); this.saveEditorMenuConfig(); render(); };
+                return;
+            }
             const cfg = this.editorMenuConfig;
             let dragState = null;
             const clearDragIndicators = () => {
@@ -1799,7 +2055,7 @@ class FileOpsPlusPlugin extends Plugin {
             cb.onchange = () => {
                 cfg.enabled = cb.checked;
                 this.saveEditorMenuConfig();
-                if (!cb.checked) new Notice(t("已关闭增强菜单。重新启用：命令面板(Ctrl+P)搜「编辑器右键菜单设置」"));
+                if (!cb.checked) new Notice(t("已关闭增强菜单。重新启用：命令面板(Ctrl+P)搜「右键菜单设置」"));
             };
 
             const lblRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
@@ -1807,6 +2063,95 @@ class FileOpsPlusPlugin extends Plugin {
             lblCb.checked = cfg.showGroupLabels !== false;
             lblRow.createEl("span", { text: t("显示分组标题") });
             lblCb.onchange = () => { cfg.showGroupLabels = lblCb.checked; this.saveEditorMenuConfig(); renderPreview(); };
+
+            const ballRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
+            const ballCb = ballRow.createEl("input", { type: "checkbox" });
+            ballCb.checked = cfg.selectionBall === true;
+            ballRow.createEl("span", { text: t("选中文本显示悬浮球，悬停展开") });
+            ballCb.onchange = () => { cfg.selectionBall = ballCb.checked; this.saveEditorMenuConfig(); if (!ballCb.checked) this._hideSelectionBall(); };
+
+            const sortRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
+            const sortBtn = sortRow.createEl("button", { text: sortMode ? t("完成排序") : t("调整分组顺序"), attr: { style: "padding:2px 10px;" } });
+            sortBtn.onclick = () => { sortMode = !sortMode; render(); };
+            if (sortMode) sortRow.createEl("span", { text: t("拖动分组标题调整顺序，再次点击完成"), attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+
+            if (sortMode) {
+                for (let gi = 0; gi < cfg.groups.length; gi++) {
+                    const grp = cfg.groups[gi];
+                    const row = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--background-modifier-border);border-radius:6px;margin-bottom:4px;background:var(--background-primary);" } });
+                    const handle = row.createEl("span", { text: "⠿", attr: { style: "color:var(--text-faint);cursor:grab;font-size:14px;" } });
+                    row.createEl("span", { text: grp.label || "", attr: { style: "font-weight:600;flex:1;" } });
+                    row.createEl("span", { text: "(" + ((grp.items || []).length) + ")", attr: { style: "color:var(--text-muted);font-size:var(--font-ui-smaller);" } });
+                    const c = grp.color || "neutral";
+                    const sw = row.createEl("div", { attr: { style: "width:14px;height:14px;border-radius:3px;border:1px solid var(--background-modifier-border);" } });
+                    if (GROUP_COLORS[c]) sw.style.background = GROUP_COLORS[c].bg;
+                    else if (c.includes("|")) sw.style.background = c.split("|")[0];
+                    else if (c) sw.style.background = c;
+                    row.draggable = true;
+                    row.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(gi)); row.style.opacity = "0.4"; });
+                    row.addEventListener("dragend", () => { row.style.opacity = ""; clearDragIndicators(); });
+                    row.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; clearDragIndicators(); row.classList.add("fop-drag-over"); });
+                    row.addEventListener("drop", (e) => {
+                        e.preventDefault(); e.stopPropagation();
+                        const from = parseInt(e.dataTransfer.getData("text/plain"));
+                        if (isNaN(from) || from === gi) return;
+                        const rect = row.getBoundingClientRect();
+                        const after = e.clientY > rect.top + rect.height / 2;
+                        const moved = cfg.groups.splice(from, 1)[0];
+                        let target = gi + (after ? 1 : 0);
+                        if (from < target) target--;
+                        cfg.groups.splice(target, 0, moved);
+                        this.saveEditorMenuConfig(); render();
+                    });
+                }
+                return;
+            }
+
+            const aiBox = root.createEl("div", { attr: { style: "border:1px solid var(--background-modifier-border);border-radius:6px;padding:8px;margin-bottom:12px;" } });
+            const aiHead = aiBox.createEl("div", { attr: { style: "display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;" } });
+            aiHead.createEl("span", { text: t("AI 设置"), attr: { style: "font-weight:600;" } });
+            const aiBtnRow = aiHead.createEl("div", { attr: { style: "display:flex;gap:4px;flex-wrap:wrap;" } });
+            const aiCfg = () => cfg.aiConfigs[cfg.currentAI || 0];
+            const renderAiBtns = () => {
+                aiBtnRow.empty();
+                cfg.aiConfigs.forEach((ac, idx) => {
+                    const b = aiBtnRow.createEl("button", { text: (ac.apiKey ? "" : "⚠ ") + (ac.name || "AI" + (idx + 1)), attr: { style: "font-size:var(--font-ui-smaller);padding:1px 8px;" } });
+                    if (idx === (cfg.currentAI || 0)) b.style.outline = "2px solid var(--interactive-accent)";
+                    b.title = ac.apiKey ? (ac.model || "") : t("未填写 API Key");
+                    b.onclick = () => { cfg.currentAI = idx; this.saveEditorMenuConfig(); render(); };
+                });
+            };
+            const aiOps = aiHead.createEl("div", { attr: { style: "display:flex;gap:4px;margin-left:auto;" } });
+            aiOps.createEl("button", { text: t("新建"), attr: { style: "font-size:var(--font-ui-smaller);padding:1px 8px;" } }).onclick = () => {
+                cfg.aiConfigs.push({ name: "AI" + (cfg.aiConfigs.length + 1), model: "", base_url: "https://api.openai.com/v1/chat/completions", apiKey: "", temperature: 0.7 });
+                cfg.currentAI = cfg.aiConfigs.length - 1; this.saveEditorMenuConfig(); render();
+            };
+            aiOps.createEl("button", { text: t("删除"), cls: "mod-warning", attr: { style: "font-size:var(--font-ui-smaller);padding:1px 8px;" } }).onclick = () => {
+                if (cfg.aiConfigs.length <= 1) { new Notice(t("至少保留一个 AI 配置")); return; }
+                cfg.aiConfigs.splice(cfg.currentAI || 0, 1);
+                cfg.currentAI = Math.max(0, (cfg.currentAI || 0) - 1);
+                this.saveEditorMenuConfig(); render();
+            };
+            const mkAiRow = () => aiBox.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:4px 0;flex-wrap:wrap;" } });
+            const r1 = mkAiRow();
+            r1.createEl("span", { text: t("名称"), attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+            const nameIn = r1.createEl("input", { type: "text", attr: { style: "width:90px;padding:2px 4px;" } });
+            r1.createEl("span", { text: t("模型"), attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+            const modelIn = r1.createEl("input", { type: "text", attr: { style: "width:150px;padding:2px 4px;", placeholder: "deepseek-chat / gpt-4o…" } });
+            r1.createEl("span", { text: t("温度"), attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+            const tempIn = r1.createEl("input", { type: "text", attr: { style: "width:50px;padding:2px 4px;" } });
+            const r2 = mkAiRow();
+            r2.createEl("span", { text: t("API 地址"), attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+            const urlIn = r2.createEl("input", { type: "text", attr: { style: "flex:1;min-width:220px;padding:2px 4px;", placeholder: "https://api.openai.com/v1/chat/completions" } });
+            const r3 = mkAiRow();
+            r3.createEl("span", { text: "API Key", attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+            const keyIn = r3.createEl("input", { type: "password", attr: { style: "flex:1;min-width:220px;padding:2px 4px;", placeholder: "sk-…" } });
+            const fillAiFields = () => { const ac = aiCfg(); nameIn.value = ac.name || ""; modelIn.value = ac.model || ""; urlIn.value = ac.base_url || ""; keyIn.value = ac.apiKey || ""; tempIn.value = ac.temperature != null ? ac.temperature : 0.7; };
+            fillAiFields();
+            const bindAi = (input, key) => { input.onchange = () => { const ac = aiCfg(); ac[key] = input.value.trim(); this.saveEditorMenuConfig(); renderAiBtns(); }; };
+            bindAi(nameIn, "name"); bindAi(modelIn, "model"); bindAi(urlIn, "base_url"); bindAi(keyIn, "apiKey");
+            tempIn.onchange = () => { const v = parseFloat(tempIn.value); const ac = aiCfg(); ac.temperature = isNaN(v) ? 0.7 : v; this.saveEditorMenuConfig(); };
+            renderAiBtns();
 
             for (let gi = 0; gi < cfg.groups.length; gi++) {
                 const grp = cfg.groups[gi];
@@ -1845,7 +2190,7 @@ class FileOpsPlusPlugin extends Plugin {
                 hdr.createEl("div", { attr: { style: "width:14px;flex-shrink:0;" } });
                 hdr.createEl("div", { text: t("图标"), attr: { style: "width:140px;", title: t("lucide 图标名 / 粘贴 <svg> 代码 / 任意文字（识别不到则按文字显示）") } });
                 hdr.createEl("div", { text: t("名称"), attr: { style: "width:120px;", title: t("tile 鼠标悬停时显示的提示文字") } });
-                hdr.createEl("div", { text: t("类型"), attr: { style: "width:82px;", title: t("cmd=命令 regex=正则 custom=转换 pipeline=管道 action=操作 key=按键") } });
+                hdr.createEl("div", { text: t("类型"), attr: { style: "width:82px;", title: t("cmd=命令 regex=正则 custom=转换 pipeline=管道 action=操作 key=按键 ai=AI") } });
                 hdr.createEl("div", { text: t("操作"), attr: { style: "margin-left:auto;", title: t("删除该选项") } });
 
                 for (let ii = 0; ii < (grp.items || []).length; ii++) {
@@ -1882,10 +2227,24 @@ class FileOpsPlusPlugin extends Plugin {
                     const ts = ir.createEl("select");
                     ts.style.cssText = "width:90px;padding:0 2px;box-sizing:border-box;";
                     for (const t of ["cmd", "regex", "custom", "pipeline", "action", "key"]) ts.createEl("option", { value: t, text: t });
+                    ts.createEl("option", { value: "ai", text: "AI Prompt" });
                     ts.value = item.type || "cmd";
                     ts.onchange = () => { item.type = ts.value; this.saveEditorMenuConfig(); render(); };
                     if (item.type === "cmd") {
-                        ir.createEl("input", { type: "text", value: item.cmd || "", attr: { style: "flex:1;min-width:140px;padding:2px;", placeholder: t("命令ID，如 editor:toggle-bold") } }).onchange = (e) => { item.cmd = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
+                        const cmdSel = ir.createEl("select");
+                        cmdSel.style.cssText = "flex:1;min-width:140px;padding:0 2px;box-sizing:border-box;";
+                        const allCmds = this.app.commands.commands;
+                        const cmdIds = Object.keys(allCmds).sort((a, b) => (allCmds[a].name || a).localeCompare(allCmds[b].name || b));
+                        cmdSel.createEl("option", { value: "", text: "" });
+                        let hasCurrent = !item.cmd;
+                        for (const cid of cmdIds) {
+                            const nm = allCmds[cid].name || cid;
+                            cmdSel.createEl("option", { value: cid, text: nm });
+                            if (cid === item.cmd) hasCurrent = true;
+                        }
+                        if (!hasCurrent && item.cmd) cmdSel.createEl("option", { value: item.cmd, text: item.cmd });
+                        cmdSel.value = item.cmd || "";
+                        cmdSel.onchange = () => { item.cmd = cmdSel.value; this.saveEditorMenuConfig(); renderPreview(); };
                     } else if (item.type === "regex") {
                         ir.createEl("input", { type: "text", value: item.pattern || "", attr: { style: "flex:1;min-width:80px;padding:2px;", placeholder: t("正则") } }).onchange = (e) => { item.pattern = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
                         ir.createEl("input", { type: "text", value: item.replacement || "", attr: { style: "flex:1;min-width:80px;padding:2px;", placeholder: t("替换 \\n=换行") } }).onchange = (e) => { item.replacement = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
@@ -1909,6 +2268,8 @@ class FileOpsPlusPlugin extends Plugin {
                             }
                         });
                         plInput.onchange = () => { item.pipeline = plInput.value; this.saveEditorMenuConfig(); renderPreview(); };
+                    } else if (item.type === "ai") {
+                        ir.createEl("input", { type: "text", value: item.prompt || "", attr: { style: "flex:1;min-width:180px;padding:2px;", placeholder: t("提示词，{{text}}=选中文本") } }).onchange = (e) => { item.prompt = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
                     } else if (item.type === "action") {
                         const as = ir.createEl("select");
                         as.style.cssText = "flex:1;min-width:120px;padding:0 2px;box-sizing:border-box;";
@@ -1965,9 +2326,14 @@ class FileOpsPlusPlugin extends Plugin {
             }
             const ag = root.createEl("button", { text: t("+ 添加分组"), attr: { style: "margin-top:8px;" } });
             ag.onclick = () => { cfg.groups.push({ id: "g" + Date.now(), label: t("新分组"), color: "neutral", items: [] }); this.saveEditorMenuConfig(); render(); };
-
+            const rsBtn = root.createEl("button", { text: t("恢复默认"), cls: "mod-warning", attr: { style: "margin-top:8px;float:right;" } });
+            rsBtn.onclick = () => {
+                const aiConfigs = this.editorMenuConfig.aiConfigs, curAI = this.editorMenuConfig.currentAI;
+                this.editorMenuConfig = JSON.parse(JSON.stringify(DEFAULT_EDITOR_MENU));
+                this.editorMenuConfig.aiConfigs = aiConfigs; this.editorMenuConfig.currentAI = curAI;
+                this.saveEditorMenuConfig(); render();
+            };
         };
-        rsBtn.onclick = () => { this.editorMenuConfig = JSON.parse(JSON.stringify(DEFAULT_EDITOR_MENU)); this.saveEditorMenuConfig(); render(); };
         render();
     }
 }

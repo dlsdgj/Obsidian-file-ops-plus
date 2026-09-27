@@ -1,5 +1,34 @@
 # Changelog
 
+## 1.0.3
+
+### Added
+
+- **Unified menu shell** — Editor, file, and tab menus now share a common panel container (rounded corners, shadow, Esc/outside-click close, blank-area drag)
+- **Configurable file & tab menus** — File and tab context menus are now fully configurable via the settings panel, with enable toggle, group add/remove/rename/color, item drag-to-reorder, action dropdown, icon and label customization
+- **Icons for file & tab menus** — All file and tab menu actions now have lucide icons; each option's icon and label can be customized in settings
+- **Live preview for file & tab menus** — Settings panel shows real-time preview for file and tab menu configurations, with show/hide group labels toggle
+- **Tab menu new actions** — Added Copy, Move Up, and Move To… to the tab context menu
+- **AI Prompt type** — New editor menu option type that sends selected text to an AI (OpenAI-compatible API) and displays the result in a non-modal floating panel with Copy/Insert/Replace buttons
+- **Selection hover ball** — Selecting text in the editor shows a hover ball at the selection's top-right; hovering expands the editor enhanced menu
+- **cmd dropdown** — cmd type now uses a dropdown listing all available Obsidian commands (sorted by name) instead of manual ID entry
+- **Set selection as title** — New action that sets the selected text as the current document's title (strips illegal characters)
+- **Color palette add/remove** — Color tag row now displays colors inline with a + button to add custom colors (color picker) and right-click to delete; custom palette is persisted
+- **Group labels in file & tab menus** — File and tab menus now show group labels (configurable via show/hide toggle)
+- **Settings panel title** — Title now includes plugin name and version (e.g. "Context Menu Settings — File Ops Plus v1.0.3")
+- **Three settings tabs** — Settings panel has three tabs: Editor Menu / File Menu / Tab Menu
+
+### Changed
+
+- **Button coloring** — Menu buttons now have their own background and text color (matching editor menu style) instead of coloring the entire row
+- **Reset button placement** — Reset to Default buttons moved to bottom-right of settings panel (removed extra footer border)
+- **Settings panel title** — Renamed from "Editor Context Menu Settings" to "Context Menu Settings" (covers all three menus now)
+- **README** — Comprehensive update with new features, option types table, and screenshot references
+
+### Fixed
+
+- **i18n missing keys** — Added translations for "Enable", "Color", "Add Color" that were previously untranslated
+
 ## 1.0.2
 
 ### Added
