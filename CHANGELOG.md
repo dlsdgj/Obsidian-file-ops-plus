@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.4
+
+### Added
+
+- **Export/Import settings** — Settings panel header now has ⬇/⬆ buttons to export all menu configs as JSON or import from a JSON file
+- **Collapsible sections** — AI settings and each group in all three menus (editor/file/tab) have a ▼/▶ collapse toggle; collapsed state is persisted across sessions
+- **SVG icon support for file & tab menus** — File and tab menu icon fields now accept `<svg>` code (textarea), matching the editor menu's icon input
+- **Preset icon prefill** — File and tab menu icon fields are pre-filled with the action's default icon for immediate visibility
+
+### Fixed
+
+- **Empty label hides menu name** — File and tab menu items with an empty name field no longer show a label in the menu (icon-only); `undefined` still falls back to the action's default label
+- **Name input i18n** — File and tab menu name fields now show translated labels in English mode instead of raw Chinese
+- **Text selection triggers drag** — Drag-to-reorder in file and tab menu settings no longer activates when selecting text in icon/name inputs; draggable is now only enabled on drag handle mousedown
+
 ## 1.0.3
 
 ### Added

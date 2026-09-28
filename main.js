@@ -110,6 +110,10 @@ const I18N_EN = {
     "标题未变化": "Title unchanged",     "已重命名：": "Renamed: ",
     "打开": "Open", "管理": "Manage", "视图": "View", "导航": "Navigate", "编辑": "Edit",
     "编辑器菜单": "Editor Menu", "文件菜单": "File Menu", "标签页菜单": "Tab Menu",
+    "导出设置": "Export Settings", "导入设置": "Import Settings",
+    "设置已导出": "Settings exported", "设置已导入": "Settings imported",
+    "导入失败：": "Import failed: ", "导出失败：": "Export failed: ",
+    "折叠/展开": "Collapse/Expand",
 };
 const t = (zh) => _isZh() ? zh : (I18N_EN[zh] || zh);
 
@@ -531,7 +535,16 @@ class FileOpsPlusPlugin extends Plugin {
                 btn.style.background = baseBg;
                 btn.style.color = gc ? gc.fg : "var(--text-normal)";
                 if (item.danger) btn.style.color = "var(--text-error)";
-                if (item.icon) { try { const ic = getIcon(item.icon); if (ic) { ic.style.width = "14px"; ic.style.height = "14px"; btn.appendChild(ic); } } catch (e) {} }
+                if (item.icon) {
+                    if (typeof item.icon === "string" && item.icon.includes("<svg")) {
+                        const wrapper = document.createElement("span");
+                        wrapper.style.cssText = "display:inline-flex;align-items:center;width:14px;height:14px;";
+                        wrapper.innerHTML = item.icon;
+                        const svg = wrapper.querySelector("svg");
+                        if (svg) { svg.style.width = "14px"; svg.style.height = "14px"; }
+                        btn.appendChild(wrapper);
+                    } else { try { const ic = getIcon(item.icon); if (ic) { ic.style.width = "14px"; ic.style.height = "14px"; btn.appendChild(ic); } } catch (e) {} }
+                }
                 if (item.title) { const sp = document.createElement("span"); sp.textContent = item.title; btn.appendChild(sp); }
                 btn.addEventListener("mouseenter", () => (btn.style.background = "var(--background-modifier-hover)"));
                 btn.addEventListener("mouseleave", () => (btn.style.background = baseBg));
@@ -697,7 +710,9 @@ class FileOpsPlusPlugin extends Plugin {
                 if (!a) continue;
                 if (a.available && !a.available(ctx)) continue;
                 if (a.special === "colorRow") { this.addColorRow(panel, ctx.file); continue; }
-                const entry = { title: item.label || this._actionLabel(a, ctx) };
+                const entry = {};
+                if (item.label === undefined) entry.title = this._actionLabel(a, ctx);
+                else entry.title = item.label;
                 entry.icon = item.icon || a.icon || null;
                 if (a.danger) entry.danger = true;
                 if (a.inline) entry.inline = true;
@@ -1809,11 +1824,57 @@ class FileOpsPlusPlugin extends Plugin {
         ttl.style.flex = "1";
         header.appendChild(ttl);
 
+        const exportBtn = document.createElement("div");
+        exportBtn.textContent = "⬇";
+        exportBtn.style.cssText = "cursor:pointer;padding:2px 6px;color:var(--text-muted);font-size:14px;";
+        exportBtn.title = t("导出设置");
+        exportBtn.addEventListener("mouseenter", () => exportBtn.style.color = "var(--text-normal)");
+        exportBtn.addEventListener("mouseleave", () => exportBtn.style.color = "var(--text-muted)");
+        header.appendChild(exportBtn);
+        const importBtn = document.createElement("div");
+        importBtn.textContent = "⬆";
+        importBtn.style.cssText = "cursor:pointer;padding:2px 6px;color:var(--text-muted);font-size:14px;";
+        importBtn.title = t("导入设置");
+        importBtn.addEventListener("mouseenter", () => importBtn.style.color = "var(--text-normal)");
+        importBtn.addEventListener("mouseleave", () => importBtn.style.color = "var(--text-muted)");
+        header.appendChild(importBtn);
         const closeBtn = document.createElement("div");
         closeBtn.textContent = "✕";
         closeBtn.style.cssText = "cursor:pointer;padding:2px 8px;color:var(--text-muted);font-size:16px;";
         header.appendChild(closeBtn);
         panel.appendChild(header);
+
+        exportBtn.onclick = () => {
+            try {
+                const data = { editorMenu: this.editorMenuConfig, fileMenu: this.fileMenuConfig, tabMenu: this.tabMenuConfig, version: this.manifest.version };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url; a.download = "file-ops-plus-settings.json";
+                document.body.appendChild(a); a.click(); a.remove();
+                URL.revokeObjectURL(url);
+                new Notice(t("设置已导出"));
+            } catch (e) { new Notice(t("导出失败：") + e.message); }
+        };
+        importBtn.onclick = () => {
+            const input = document.createElement("input");
+            input.type = "file"; input.accept = ".json,application/json";
+            input.onchange = async () => {
+                const file = input.files[0];
+                if (!file) return;
+                try {
+                    const text = await file.text();
+                    const data = JSON.parse(text);
+                    if (data.editorMenu) this.editorMenuConfig = data.editorMenu;
+                    if (data.fileMenu) this.fileMenuConfig = data.fileMenu;
+                    if (data.tabMenu) this.tabMenuConfig = data.tabMenu;
+                    this.saveEditorMenuConfig();
+                    new Notice(t("设置已导入"));
+                    render();
+                } catch (e) { new Notice(t("导入失败：") + e.message); }
+            };
+            input.click();
+        };
 
         const body = document.createElement("div");
         body.style.cssText = "flex:1;display:flex;gap:0;min-height:0;overflow:hidden;";
@@ -1920,8 +1981,15 @@ class FileOpsPlusPlugin extends Plugin {
                     const a = actionTable[item.action];
                     const btn = row.createEl("div", { attr: { style: "padding:3px 6px;border-radius:4px;cursor:default;display:flex;align-items:center;gap:3px;white-space:nowrap;" + (gc ? "background:" + gc.bg + ";color:" + gc.fg + ";" : "color:var(--text-normal);") } });
                     const iconName = item.icon || a.icon;
-                    if (iconName) { try { const ic = getIcon(iconName); if (ic) { ic.style.width = "12px"; ic.style.height = "12px"; btn.appendChild(ic); } } catch (e) {} }
-                    const label = item.label || a.label || "";
+                    if (iconName) {
+                        if (typeof iconName === "string" && iconName.includes("<svg")) {
+                            const wrapper = btn.createEl("span", { attr: { style: "display:inline-flex;align-items:center;width:12px;height:12px;" } });
+                            wrapper.innerHTML = iconName;
+                            const svg = wrapper.querySelector("svg");
+                            if (svg) { svg.style.width = "12px"; svg.style.height = "12px"; }
+                        } else { try { const ic = getIcon(iconName); if (ic) { ic.style.width = "12px"; ic.style.height = "12px"; btn.appendChild(ic); } } catch (e) {} }
+                    }
+                    const label = item.label === undefined ? (a.label || "") : item.label;
                     if (label) btn.createEl("span", { text: t(label) });
                 }
             }
@@ -1989,6 +2057,18 @@ class FileOpsPlusPlugin extends Plugin {
                     const grp = config.groups[gi];
                     const box = root.createEl("div", { attr: { style: "border:1px solid var(--background-modifier-border);border-radius:6px;padding:8px;margin-bottom:8px;" } });
                     const head = box.createEl("div", { attr: { style: "display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;" } });
+                    config.collapsedState = config.collapsedState || {};
+                    const ftCollapsed = config.collapsedState[grp.id] === true;
+                    const ftChevron = head.createEl("span", { text: ftCollapsed ? "▶" : "▼", attr: { style: "cursor:pointer;font-size:10px;color:var(--text-muted);user-select:none;", title: t("折叠/展开") } });
+                    const grpContent = box.createEl("div");
+                    if (ftCollapsed) grpContent.style.display = "none";
+                    ftChevron.onclick = () => {
+                        const isCol = grpContent.style.display === "none";
+                        grpContent.style.display = isCol ? "" : "none";
+                        ftChevron.textContent = isCol ? "▼" : "▶";
+                        config.collapsedState[grp.id] = !isCol;
+                        this.saveEditorMenuConfig();
+                    };
                     const ni = head.createEl("input", { type: "text", value: grp.label || "", attr: { style: "width:120px;padding:2px 4px;" } });
                     ni.onchange = () => { grp.label = ni.value; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
                     const swatchRow = head.createEl("div", { attr: { style: "display:flex;gap:3px;" } });
@@ -2001,11 +2081,12 @@ class FileOpsPlusPlugin extends Plugin {
                     dg.onclick = () => { config.groups.splice(gi, 1); this.saveEditorMenuConfig(); render(); };
                     for (let ii = 0; ii < (grp.items || []).length; ii++) {
                         const item = grp.items[ii];
-                        const ir = box.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;" } });
-                        ir.createEl("span", { text: "⠿", attr: { style: "cursor:grab;color:var(--text-faint);" } });
-                        ir.draggable = true;
+                        const a = actionTable[item.action] || {};
+                        const ir = grpContent.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;" } });
+                        const handle = ir.createEl("span", { text: "⠿", attr: { style: "cursor:grab;color:var(--text-faint);" } });
+                        handle.addEventListener("mousedown", () => { ir.draggable = true; });
                         ir.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", JSON.stringify({ g: gi, i: ii })); ir.style.opacity = "0.3"; });
-                        ir.addEventListener("dragend", () => { ir.style.opacity = ""; });
+                        ir.addEventListener("dragend", () => { ir.draggable = false; ir.style.opacity = ""; });
                         ir.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
                         ir.addEventListener("drop", (e) => {
                             e.preventDefault(); e.stopPropagation();
@@ -2025,14 +2106,15 @@ class FileOpsPlusPlugin extends Plugin {
                         for (const ak of Object.keys(actionTable)) as.createEl("option", { value: ak, text: t(actionTable[ak].label) });
                         as.value = item.action || "";
                         as.onchange = () => { item.action = as.value; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
-                        const icIn = ir.createEl("input", { type: "text", value: item.icon || "", attr: { placeholder: "icon", style: "width:70px;padding:1px 4px;font-size:var(--font-ui-smaller);" } });
+                        const icIn = ir.createEl("textarea", { attr: { placeholder: t("图标/svg/文字"), style: "width:90px;min-width:60px;max-width:200px;padding:1px 4px;resize:horizontal;height:24px;font-size:var(--font-ui-smaller);" } });
+                        icIn.value = item.icon || a.icon || "";
                         icIn.onchange = () => { item.icon = icIn.value.trim() || undefined; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
-                        const lbIn = ir.createEl("input", { type: "text", value: item.label || "", attr: { placeholder: t("名称"), style: "width:80px;padding:1px 4px;font-size:var(--font-ui-smaller);" } });
-                        lbIn.onchange = () => { item.label = lbIn.value.trim() || undefined; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
+                        const lbIn = ir.createEl("input", { type: "text", value: item.label !== undefined ? item.label : (a.label ? t(a.label) : ""), attr: { placeholder: t("名称"), style: "width:80px;padding:1px 4px;font-size:var(--font-ui-smaller);" } });
+                        lbIn.onchange = () => { item.label = lbIn.value.trim(); this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
                         const db = ir.createEl("button", { text: "✕", attr: { style: "padding:2px 6px;" } });
                         db.onclick = () => { grp.items.splice(ii, 1); this.saveEditorMenuConfig(); render(); };
                     }
-                    const ab = box.createEl("button", { text: t("+ 添加选项"), attr: { style: "margin-top:4px;" } });
+                    const ab = grpContent.createEl("button", { text: t("+ 添加选项"), attr: { style: "margin-top:4px;" } });
                     ab.onclick = () => { grp.items = grp.items || []; grp.items.push({ action: Object.keys(actionTable)[0] }); this.saveEditorMenuConfig(); render(); };
                 }
                 const ag = root.createEl("button", { text: t("+ 添加分组"), attr: { style: "margin-top:8px;" } });
@@ -2109,7 +2191,19 @@ class FileOpsPlusPlugin extends Plugin {
 
             const aiBox = root.createEl("div", { attr: { style: "border:1px solid var(--background-modifier-border);border-radius:6px;padding:8px;margin-bottom:12px;" } });
             const aiHead = aiBox.createEl("div", { attr: { style: "display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;" } });
+            cfg.collapsedState = cfg.collapsedState || {};
+            const aiCollapsed = cfg.collapsedState["ai"] === true;
+            const aiChevron = aiHead.createEl("span", { text: aiCollapsed ? "▶" : "▼", attr: { style: "cursor:pointer;font-size:10px;color:var(--text-muted);user-select:none;", title: t("折叠/展开") } });
             aiHead.createEl("span", { text: t("AI 设置"), attr: { style: "font-weight:600;" } });
+            const aiContent = aiBox.createEl("div");
+            if (aiCollapsed) aiContent.style.display = "none";
+            aiChevron.onclick = () => {
+                const isCol = aiContent.style.display === "none";
+                aiContent.style.display = isCol ? "" : "none";
+                aiChevron.textContent = isCol ? "▼" : "▶";
+                cfg.collapsedState["ai"] = !isCol;
+                this.saveEditorMenuConfig();
+            };
             const aiBtnRow = aiHead.createEl("div", { attr: { style: "display:flex;gap:4px;flex-wrap:wrap;" } });
             const aiCfg = () => cfg.aiConfigs[cfg.currentAI || 0];
             const renderAiBtns = () => {
@@ -2132,7 +2226,7 @@ class FileOpsPlusPlugin extends Plugin {
                 cfg.currentAI = Math.max(0, (cfg.currentAI || 0) - 1);
                 this.saveEditorMenuConfig(); render();
             };
-            const mkAiRow = () => aiBox.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:4px 0;flex-wrap:wrap;" } });
+            const mkAiRow = () => aiContent.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:4px 0;flex-wrap:wrap;" } });
             const r1 = mkAiRow();
             r1.createEl("span", { text: t("名称"), attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
             const nameIn = r1.createEl("input", { type: "text", attr: { style: "width:90px;padding:2px 4px;" } });
@@ -2157,6 +2251,17 @@ class FileOpsPlusPlugin extends Plugin {
                 const grp = cfg.groups[gi];
                 const box = root.createEl("div", { attr: { style: "border:1px solid var(--background-modifier-border);border-radius:6px;padding:8px;margin-bottom:8px;" } });
                 const head = box.createEl("div", { attr: { style: "display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;" } });
+                const grpCollapsed = cfg.collapsedState[grp.id] === true;
+                const grpChevron = head.createEl("span", { text: grpCollapsed ? "▶" : "▼", attr: { style: "cursor:pointer;font-size:10px;color:var(--text-muted);user-select:none;", title: t("折叠/展开") } });
+                const grpContent = box.createEl("div");
+                if (grpCollapsed) grpContent.style.display = "none";
+                grpChevron.onclick = () => {
+                    const isCol = grpContent.style.display === "none";
+                    grpContent.style.display = isCol ? "" : "none";
+                    grpChevron.textContent = isCol ? "▼" : "▶";
+                    cfg.collapsedState[grp.id] = !isCol;
+                    this.saveEditorMenuConfig();
+                };
                 const ni = head.createEl("input", { type: "text", value: grp.label || "", attr: { style: "width:120px;padding:2px 4px;" } });
                 ni.onchange = () => { grp.label = ni.value; this.saveEditorMenuConfig(); renderPreview(); };
                 const swatchRow = head.createEl("div", { attr: { style: "display:flex;gap:3px;" } });
@@ -2186,7 +2291,7 @@ class FileOpsPlusPlugin extends Plugin {
                     cfg.groups.splice(gi, 1); this.saveEditorMenuConfig(); render();
                 };
 
-                const hdr = box.createEl("div", { attr: { style: "display:flex;gap:6px;margin:4px 0 2px;font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+                const hdr = grpContent.createEl("div", { attr: { style: "display:flex;gap:6px;margin:4px 0 2px;font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
                 hdr.createEl("div", { attr: { style: "width:14px;flex-shrink:0;" } });
                 hdr.createEl("div", { text: t("图标"), attr: { style: "width:140px;", title: t("lucide 图标名 / 粘贴 <svg> 代码 / 任意文字（识别不到则按文字显示）") } });
                 hdr.createEl("div", { text: t("名称"), attr: { style: "width:120px;", title: t("tile 鼠标悬停时显示的提示文字") } });
@@ -2195,7 +2300,7 @@ class FileOpsPlusPlugin extends Plugin {
 
                 for (let ii = 0; ii < (grp.items || []).length; ii++) {
                     const item = grp.items[ii];
-                    const ir = box.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;" } });
+                    const ir = grpContent.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;" } });
                     const handle = ir.createEl("div", { cls: "fop-drag-handle", attr: { title: t("拖拽排序") } });
                     handle.textContent = "⠿";
                     handle.addEventListener("mousedown", () => { ir.draggable = true; dragState = { fromGroup: gi, fromItem: ii }; });
@@ -2304,7 +2409,7 @@ class FileOpsPlusPlugin extends Plugin {
                     const db = ir.createEl("button", { text: "✕", attr: { style: "margin-left:auto;padding:2px 6px;" } });
                     db.onclick = () => { grp.items.splice(ii, 1); this.saveEditorMenuConfig(); render(); };
                 }
-                const dropZone = box.createEl("div", { cls: "fop-drop-zone", attr: { style: "height:6px;margin:2px 0;border-radius:4px;transition:background 0.15s,height 0.15s;" } });
+                const dropZone = grpContent.createEl("div", { cls: "fop-drop-zone", attr: { style: "height:6px;margin:2px 0;border-radius:4px;transition:background 0.15s,height 0.15s;" } });
                 dropZone.addEventListener("dragover", (e) => {
                     if (!dragState) return;
                     e.preventDefault(); e.dataTransfer.dropEffect = "move";
@@ -2321,7 +2426,7 @@ class FileOpsPlusPlugin extends Plugin {
                     cfg.groups[gi].items.push(movedItem);
                     this.saveEditorMenuConfig(); render();
                 });
-                const ab = box.createEl("button", { text: t("+ 添加选项"), attr: { style: "margin-top:4px;" } });
+                const ab = grpContent.createEl("button", { text: t("+ 添加选项"), attr: { style: "margin-top:4px;" } });
                 ab.onclick = () => { grp.items = grp.items || []; grp.items.push({ icon: "square", label: t("新选项"), type: "cmd", cmd: "" }); this.saveEditorMenuConfig(); render(); };
             }
             const ag = root.createEl("button", { text: t("+ 添加分组"), attr: { style: "margin-top:8px;" } });
