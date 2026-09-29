@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.0.5
+
+### Added
+
+- **Searchable icon & command pickers** — Settings panel icon selector and command dropdown now have a search popup with keyboard navigation, replacing the plain dropdown/textarea
+- **Text type for editor menu** — New `text` option type that inserts fixed text (supports `{{text}}` placeholder for selected text)
+- **Clipboard to new note action** — New action `clipboardToNote` that reads clipboard text, prompts for a filename, and creates a new note
+- **Floating ball offset setting** — Selection hover ball position offset (X/Y) is now configurable via numeric inputs in the settings panel
+- **Selection ball mouse-aware timing** — Ball only appears after mouse release (not during drag-selection), positioned relative to mouse cursor
+
+### Fixed
+
+- **Config merge fallback mismatch** — Onload config merge fallback using pattern+replacement no longer mismatches cmd/pipeline/action items (which have undefined pattern/replacement), preventing user-added commands from being overwritten by preset values on restart
+- **Settings panel scroll jump** — Deleting options, switching type, and other render-triggering actions no longer reset scroll position to top (try/finally preserves scrollTop)
+- **Duplicate menu trigger** — Hover ball no longer re-triggers the editor menu when one is already open
+- **Stash panel toggle disabled** — Stash panel checkbox in settings is now disabled (feature under refactor)
+
 ## 1.0.4
 
 ### Added

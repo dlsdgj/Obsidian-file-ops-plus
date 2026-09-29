@@ -1,7 +1,7 @@
 {
 	"id": "file-ops-plus",
 	"name": "File Ops Plus",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"minAppVersion": "1.2.7",
 	"description": "在文件列表右键菜单添加：复制（到系统剪贴板，可在资源管理器粘贴）、文件上移（移到上一级目录）、移动到…（两步式选择目标文件夹）.",
 	"author": "swiSwift",
