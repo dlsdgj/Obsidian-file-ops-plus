@@ -133,7 +133,7 @@ Obsidian 文件操作增强插件，为文件管理器、标签页、编辑器�
 ![设置面板 / Settings Panel](screenshots/settings-panel.png)
 
 - 标题显示插件名称和版本号
-- 三个标签页：**编辑器菜单** / **文件菜单** / **标签页菜单**
+- 六个标签页：**编辑器菜单** / **文件菜单** / **标签页菜单** / **文件管理器** / **外观** / **杂项**
 - 左侧实时预览区，右侧配置区
 - 启用/关闭增强菜单、显示/隐藏分组标题
 - 分组增删、改名、配色（6 种预设色 + 自定义）
@@ -145,7 +145,7 @@ Obsidian 文件操作增强插件，为文件管理器、标签页、编辑器�
 - 恢复默认按钮位于底部靠右
 
 > - Title shows plugin name and version
-> - Three tabs: **Editor Menu** / **File Menu** / **Tab Menu**
+> - Six tabs: **Editor Menu** / **File Menu** / **Tab Menu** / **File Explorer** / **Appearance** / **Misc**
 > - Left: live preview area; right: configuration area
 > - Enable/disable enhanced menu, show/hide group labels
 > - Add/remove groups, rename, color (6 presets + custom)
@@ -155,6 +155,24 @@ Obsidian 文件操作增强插件，为文件管理器、标签页、编辑器�
 > - Color tags displayed inline, supports add/remove custom colors
 > - Panel is draggable, resizable; position and size are persisted
 > - Reset to default button at bottom-right
+
+### 外观自定义 / Appearance Customization
+
+![外观设置 — 配色方案与风格 / Appearance Settings — Color Themes & Styles](screenshots/appearance-flat.png)
+
+![孟菲斯风格预览 / Memphis Style Preview](screenshots/appearance-memphis.png)
+
+![孟菲斯风格实际使用 / Memphis Style in Use](screenshots/appearance-memphis-in-use.png)
+
+- **配色方案**：27 套预设配色（柔彩粉彩、莫兰迪灰调、单色墨线、深色霓虹、纸墨国风、高饱和实色、孟菲斯、霓虹夜城、合成波日落、糖果波普、故宫红墙、浮世绘、黑金暗房、蒸汽铜绿、莫奈睡莲、墨绿书房、火星基地、海盐薄荷、落日蜜桃、北欧雾蓝、樱花绿茶、茶咖大地、复古胶片、青花瓷、敦煌矿彩、Nord极光、终端荧光），每组含 6 色系 + 8 色高亮
+- **按钮风格**：12 套按钮形态（扁平、新拟态、玻璃拟态、新粗野、赛博朋克、蒸汽波、Win95、果冻、包豪斯、手绘、和纸、孟菲斯），含边框、阴影、圆角等视觉变化
+- **间距设置**：按钮间距、分组间距数值可调
+- 设置面板左侧实时预览，点击配色/风格卡片即时切换
+
+> - **Color themes**: 27 preset palettes (Soft Pastel, Morandi Gray, Monochrome Ink, Dark Neon, Paper Ink, Solid Vivid, Memphis, Neon City, Synthwave Sunset, Candy Pop, Forbidden City, Ukiyo-e, Black Gold, Steam Patina, Monet Lily, Green Study, Mars Base, Mint Salt, Sunset Peach, Nord Fog, Sakura Mint, Tea Earth, Vintage Film, Porcelain, Dunhuang, Nord Aurora, Terminal Glow), each with 6 color groups + 8 highlight colors
+> - **Button styles**: 12 style presets (Flat, Neumorphism, Glassmorphism, Neo-Brutalism, Cyberpunk, Vaporwave, Win95, Jelly, Bauhaus, Hand Drawn, Washi, Memphis), with border, shadow, radius variations
+> - **Spacing**: Adjustable button spacing and group spacing
+> - Live preview on the left side of settings panel; click theme/style card to switch instantly
 
 ### 其他功能 / Other Features
 

@@ -1,4 +1,4 @@
-/* 移动模式下：文件夹标题高亮、光标变 copy；文件标题变灰、光标变 not-allowed */
+/* 移动模式下：文件夹标题高亮、光标变 copy；文件标题隐藏 */
 .file-ops-plus-move-mode .nav-folder-title {
     cursor: copy !important;
     background-color: var(--text-highlight-bg);
@@ -6,8 +6,7 @@
 }
 
 .file-ops-plus-move-mode .nav-file-title {
-    cursor: not-allowed !important;
-    opacity: 0.5;
+    display: none !important;
 }
 /* 复制/上移/移动到 三个选项合并成同一行，并与其他选项颜色区分 */
 .file-ops-plus-actions-row {
@@ -42,3 +41,59 @@
     width: 14px;
     height: 14px;
 }
+/* ===== 按钮风格 ===== */
+/* 新拟态 */
+.fop-em-panel.fop-style-neu{background:var(--background-secondary);}
+.fop-em-panel.fop-style-neu .fop-em-tile{border-radius:10px;box-shadow:3px 3px 6px rgba(0,0,0,.12),-3px -3px 6px rgba(255,255,255,.06);}
+.fop-em-panel.fop-style-neu .fop-em-tile:active{box-shadow:inset 2px 2px 5px rgba(0,0,0,.12),inset -2px -2px 5px rgba(255,255,255,.06);}
+
+/* 玻璃拟态 */
+.fop-em-panel.fop-style-gl{background:rgba(255,255,255,.22);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5);}
+.fop-em-panel.fop-style-gl .fop-em-tile{border:1px solid rgba(255,255,255,.55);backdrop-filter:blur(6px);box-shadow:inset 0 1px 0 rgba(255,255,255,.4);}
+
+/* 新粗野 */
+.fop-em-panel.fop-style-nb{border:2px solid #000;box-shadow:6px 6px 0 #000;}
+.fop-em-panel.fop-style-nb .fop-em-tile{border:2px solid #000;border-radius:0;font-weight:700;box-shadow:3px 3px 0 #000;}
+.fop-em-panel.fop-style-nb .fop-em-tile:active{transform:translate(3px,3px);box-shadow:none;}
+
+/* 赛博朋克 */
+.fop-em-panel.fop-style-cy{border:1px solid var(--text-normal);box-shadow:0 0 16px rgba(0,255,240,.2);}
+.fop-em-panel.fop-style-cy .fop-em-tile{border:1px solid currentColor;border-radius:2px 9px 2px 9px;font-family:ui-monospace,Menlo,monospace;box-shadow:0 0 8px rgba(0,255,240,.3);}
+
+/* 蒸汽波 */
+.fop-em-panel.fop-style-vp{border:2px solid rgba(255,255,255,.7);box-shadow:4px 4px 0 rgba(0,0,0,.35);}
+.fop-em-panel.fop-style-vp .fop-em-tile{border:2px solid rgba(255,255,255,.7);border-radius:3px;text-shadow:1px 1px 0 rgba(0,0,0,.3);box-shadow:2px 2px 0 rgba(0,0,0,.2);}
+
+/* Win95 */
+.fop-em-panel.fop-style-w95{border:2px solid;border-color:#fff #404040 #404040 #fff;font-family:"MS Gothic","SimSun",monospace;}
+.fop-em-panel.fop-style-w95 .fop-em-tile{border:2px solid;border-color:#fff #404040 #404040 #fff;border-radius:0;font-weight:700;}
+.fop-em-panel.fop-style-w95 .fop-em-tile:active{border-color:#404040 #fff #fff #404040;}
+
+/* 果冻 */
+.fop-em-panel.fop-style-jl{border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,.14);}
+.fop-em-panel.fop-style-jl .fop-em-tile{border-radius:999px;font-weight:600;text-shadow:0 1px 1px rgba(0,0,0,.2);box-shadow:0 3px 0 rgba(0,0,0,.15),inset 0 2px 0 rgba(255,255,255,.55);}
+.fop-em-panel.fop-style-jl .fop-em-tile:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.15);}
+
+/* 包豪斯 */
+.fop-em-panel.fop-style-bh{border:3px solid #111;box-shadow:-6px 6px 0 #111;}
+.fop-em-panel.fop-style-bh .fop-em-tile{border:2px solid #111;border-radius:0;font-weight:700;}
+.fop-em-panel.fop-style-bh .fop-em-tile:nth-child(3n){border-radius:999px;}
+
+/* 手绘 */
+.fop-em-panel.fop-style-dd{border:2.5px solid var(--text-normal);border-radius:14px 4px 16px 5px;}
+.fop-em-panel.fop-style-dd .fop-em-tile{border:2px solid var(--text-normal);border-radius:255px 15px 225px 15px/15px 225px 15px 255px;font-family:"Kaiti SC","STKaiti","KaiTi",cursive;}
+.fop-em-panel.fop-style-dd .fop-em-tile:nth-child(2n){transform:rotate(-1.5deg);}
+.fop-em-panel.fop-style-dd .fop-em-tile:nth-child(3n){transform:rotate(1.2deg);}
+
+/* 和纸 */
+.fop-em-panel.fop-style-wa{border:1px solid var(--background-modifier-border);border-top:4px solid var(--text-normal);font-family:"Songti SC","Noto Serif SC",serif;}
+.fop-em-panel.fop-style-wa .fop-em-tile{border:1px solid var(--background-modifier-border);border-radius:3px;font-family:"Songti SC","Noto Serif SC",serif;letter-spacing:.05em;}
+/* 孟菲斯 */
+.fop-em-panel.fop-style-memphis{border:3px solid #111;border-radius:6px;box-shadow:8px 8px 0 #111;overflow:visible;}
+.fop-em-panel.fop-style-memphis::before{content:"";position:absolute;top:-26px;right:-22px;width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-bottom:38px solid #ff5fa2;transform:rotate(18deg);filter:drop-shadow(3px 3px 0 #111);pointer-events:none;}
+.fop-em-panel.fop-style-memphis::after{content:"";position:absolute;bottom:-20px;left:-24px;width:48px;height:48px;border-radius:50%;background:#2ec4b6;border:3px solid #111;box-shadow:4px 4px 0 #111;pointer-events:none;}
+.fop-em-panel.fop-style-memphis .fop-em-tile{border:2.5px solid #111;border-radius:4px;font-weight:700;box-shadow:3px 3px 0 #111;}
+.fop-em-panel.fop-style-memphis .fop-em-tile:nth-child(3n+2){border-radius:999px;}
+.fop-em-panel.fop-style-memphis .fop-em-tile:nth-child(4n){border-radius:0;}
+.fop-em-panel.fop-style-memphis .fop-em-tile:hover{transform:translate(-1px,-1px) rotate(-2deg);box-shadow:5px 5px 0 #111;}
+.fop-em-panel.fop-style-memphis .fop-em-tile:active{transform:translate(3px,3px);box-shadow:0 0 0 #111;}

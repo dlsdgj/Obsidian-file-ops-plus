@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.0.6
+
+### Added
+
+- **Stash panel** — New stash feature for the editor menu: save selected text or clipboard content to a temporary list, click to insert into the editor; panel docks below the local relation list when present
+- **Stash add/clear buttons** — "+" button in stash panel header adds selected text (or clipboard fallback) to the list; 🗑 button clears all items
+- **Panel resize handles** — Both local relation list and stash panels now have a bottom-right resize handle; panel width and height are persisted across sessions
+- **27 color themes** — Appearance tab now offers 27 preset color palettes (Soft Pastel, Morandi Gray, Monochrome Ink, Dark Neon, Paper Ink, Solid Vivid, Memphis, Neon City, Synthwave Sunset, Candy Pop, Forbidden City, Ukiyo-e, Black Gold, Steam Patina, Monet Lily, Green Study, Mars Base, Mint Salt, Sunset Peach, Nord Fog, Sakura Mint, Tea Earth, Vintage Film, Porcelain, Dunhuang, Nord Aurora, Terminal Glow)
+- **12 button styles** — 12 visual style presets for menu tiles (Flat, Neumorphism, Glassmorphism, Neo-Brutalism, Cyberpunk, Vaporwave, Win95, Jelly, Bauhaus, Hand Drawn, Washi, Memphis) with distinct borders, shadows, and border-radius treatments
+- **Spacing controls** — Adjustable button spacing and group spacing via numeric inputs in the Appearance tab
+- **README appearance section** — Added "Appearance Customization" section to README with three screenshots
+- **i18n for appearance & file/tab menus** — Added English translations for filename color, colorize, spacing, all 27 theme names, and 12 style names
+
+### Changed
+
+- **Stash toggle behavior** — Stash tile in editor menu is now a pure show/hide toggle; adding text is done via the "+" button in the stash panel header
+- **Stash accordion + hover** — Stash items now use accordion mode (expanding one collapses others) with hover-to-expand instead of click-to-toggle
+- **Settings panel tabs** — Settings panel now has six tabs: Editor Menu / File Menu / Tab Menu / File Explorer / Appearance / Misc
+- **Memphis decorations on panels** — Graph and stash panels now use `overflow:visible` so Memphis style corner decorations (triangle and circle) display fully, matching the menu panel
+
+### Fixed
+
+- **`opts is not defined` in file/tab menus** — Removed erroneous `opts.skipClose` references from `createFopMenuPanel`'s `finish` function that caused `ReferenceError` when opening file or tab menus, preventing them from auto-closing
+- **Graph/stash panel overlap on menu reopen** — Stash panel positioning now uses `requestAnimationFrame` to ensure the graph panel updates its position first, preventing vertical overlap when the menu is reopened
+- **AI panel header drag** — Fixed incorrect `addBtn` reference in the AI panel's header mousedown handler (was mistakenly applied during stash panel edit)
+
 ## 1.0.5
 
 ### Added
