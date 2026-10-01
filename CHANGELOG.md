@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.8
+
+### Changed
+
+- **New file creation embedded in AI panel** — Clicking "New File" button no longer opens a separate popup; instead the AI panel's bottom button row is replaced inline with a filename editor (input + ▾ + ✨ + ✓ + ✕), candidate list pops up above the editor row; ✕ restores the original button row
+
+### Fixed
+
+- **AI filename candidates source** — AI-generated filename candidates now explicitly use the AI response content (not the selected text) as the basis for name suggestions
+
 ## 1.0.7
 
 ### Fixed

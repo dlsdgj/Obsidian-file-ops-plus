@@ -2243,7 +2243,7 @@ class FileOpsPlusPlugin extends Plugin {
         const copyBtn = mkBtn(t("复制"), () => { navigator.clipboard.writeText(result).then(() => new Notice(t("已复制"))).catch(() => {}); });
         const insBtn = mkBtn(t("插入"), () => { try { const ed = view.editor; if (ed) { ed.focus(); ed.replaceRange("\n\n" + result, ed.getCursor("to")); } } catch (e) {} });
         const repBtn = mkBtn(t("替换选中"), () => { try { const ed = view.editor; if (ed) { ed.focus(); ed.replaceSelection(result); } } catch (e) {} });
-        const newFileBtn = mkBtn(t("新建文件"), () => { this.aiCreateNewFile(result, sel, view, panel); });
+        const newFileBtn = mkBtn(t("新建文件"), () => { this.aiCreateNewFile(result, sel, view, foot, panel, closePanel); });
 
         panel.appendChild(foot);
         const resizeHandle = document.createElement("div");
@@ -2268,7 +2268,7 @@ class FileOpsPlusPlugin extends Plugin {
         let drag = false, dgx = 0, dgy = 0;
         header.addEventListener("mousedown", (e) => {
             if (e.target === closeBtn) return;
-            drag = true; dragged = false; dgx = e.clientX - panel.getBoundingClientRect().left; dgy = e.clientY - panel.getBoundingClientRect().top;
+            drag = true; dgx = e.clientX - panel.getBoundingClientRect().left; dgy = e.clientY - panel.getBoundingClientRect().top;
             e.preventDefault();
         });
         const dm = (e) => { if (!drag) return; let nl = e.clientX - dgx, nt = e.clientY - dgy; nl = Math.max(10, Math.min(nl, window.innerWidth - panel.offsetWidth - 10)); nt = Math.max(10, Math.min(nt, window.innerHeight - 60)); panel.style.left = nl + "px"; panel.style.top = nt + "px"; if (!hasSavedH) { const availH = window.innerHeight - nt - 10; const nonBody = panel.offsetHeight - body.offsetHeight; body.style.maxHeight = Math.max(80, availH - nonBody) + "px"; } };
@@ -2407,7 +2407,8 @@ class FileOpsPlusPlugin extends Plugin {
         const outgoing = [];
         const fileCache = mc.getCache(file.path);
         for (const link of (fileCache?.links || [])) {
-            const tf = mc.getFirstLinkpathDest(link.link, file.path);
+            const linkPath = link.link.split("#")[0];
+            const tf = mc.getFirstLinkpathDest(linkPath, file.path);
             if (tf && tf instanceof TFile && !outgoing.some(f => f.path === tf.path)) outgoing.push(tf);
         }
         const incoming = [];
@@ -2753,45 +2754,50 @@ class FileOpsPlusPlugin extends Plugin {
         closeBtn.onclick = () => { cfg.stashEnabled = false; this.saveEditorMenuConfig(); closePanel(); };
     }
 
-    async aiCreateNewFile(content, sel, view, parentPanel) {
+    async aiCreateNewFile(content, sel, view, foot, panel, closePanel) {
         try {
             const file = view && view.file;
             const editor = view && view.editor;
             const now = Date.now();
             const defaultName = "AI-" + new Date(now).toISOString().slice(0, 10) + "-" + (now % 100000);
-            const popup = document.createElement("div");
-            popup.className = "fop-em-panel";
-            popup.style.cssText = "position:fixed;z-index:10001;width:300px;max-width:90vw;padding:10px;overflow:visible;";
-            const rect = parentPanel.getBoundingClientRect();
-            popup.style.left = rect.left + "px";
-            popup.style.top = rect.bottom + 4 + "px";
-            const inputEl = popup.createEl("input", { type: "text", value: defaultName, attr: { style: "width:100%;padding:4px 6px;margin-bottom:6px;border:1px solid var(--background-modifier-border);border-radius:4px;background:var(--background-primary);color:var(--text-normal);font-size:var(--font-ui-small);box-sizing:border-box;" } });
-            const aiNameBtn = popup.createEl("button", { text: t("AI命名"), attr: { style: "width:100%;padding:3px;margin-bottom:6px;font-size:var(--font-ui-smaller);" } });
-            const suggest = popup.createEl("div", { attr: { style: "margin-bottom:6px;" } });
-            const okBtn = popup.createEl("button", { text: t("新建文件"), attr: { style: "width:100%;padding:4px;" } });
-            document.body.appendChild(popup);
-            popup.style.left = Math.max(10, Math.min(rect.left, window.innerWidth - popup.offsetWidth - 10)) + "px";
-            popup.style.top = Math.max(10, Math.min(rect.bottom + 4, window.innerHeight - popup.offsetHeight - 10)) + "px";
+            const origChildren = Array.from(foot.childNodes);
+            foot.empty();
+            foot.style.position = "relative";
+            let pop = null, cache = null;
+            const inputEl = foot.createEl("input", { type: "text", value: defaultName, attr: { style: "flex:1;min-width:0;padding:4px 8px;border:1px solid var(--interactive-accent);border-radius:4px;background:var(--background-primary);color:var(--text-normal);font-size:var(--font-ui-small);box-sizing:border-box;" } });
+            const togBtn = foot.createEl("button", { text: "▾", attr: { style: "padding:4px 8px;border:1px solid var(--background-modifier-border);border-radius:4px;cursor:pointer;background:var(--background-primary);color:var(--text-normal);font-size:var(--font-ui-small);" } });
+            togBtn.title = t("候选名称");
+            const aiBtn = foot.createEl("button", { text: "✨", attr: { style: "padding:4px 8px;border:1px solid var(--background-modifier-border);border-radius:4px;cursor:pointer;background:var(--background-primary);color:var(--text-normal);font-size:var(--font-ui-small);" } });
+            aiBtn.title = t("AI 生成候选");
+            const okBtn = foot.createEl("button", { text: "✓", attr: { style: "padding:4px 10px;border:1px solid var(--interactive-accent);border-radius:4px;cursor:pointer;background:var(--interactive-accent);color:var(--text-on-accent);font-size:var(--font-ui-small);font-weight:700;" } });
+            okBtn.title = t("确认");
+            const noBtn = foot.createEl("button", { text: "✕", attr: { style: "padding:4px 8px;border:1px solid var(--background-modifier-border);border-radius:4px;cursor:pointer;background:var(--background-primary);color:var(--text-error);font-size:var(--font-ui-small);" } });
+            noBtn.title = t("取消");
+            const closePop = () => { if (pop) { pop.remove(); pop = null; } };
+            const openPop = () => {
+                closePop();
+                if (!cache || cache.length === 0) return;
+                pop = document.createElement("div");
+                pop.style.cssText = "position:absolute;left:6px;right:6px;bottom:100%;margin-bottom:4px;background:var(--background-primary);border:1px solid var(--background-modifier-border);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.18);padding:4px;max-height:132px;overflow-y:auto;z-index:2;";
+                for (const n of cache) {
+                    const b = pop.createEl("button", { text: n, attr: { style: "display:block;width:100%;text-align:left;padding:4px 8px;margin:1px 0;font-size:var(--font-ui-small);border:0;border-radius:4px;cursor:pointer;background:none;color:var(--text-normal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" } });
+                    b.title = n;
+                    if (n === inputEl.value) b.style.background = "var(--background-modifier-hover)";
+                    b.onmouseenter = () => b.style.background = "var(--background-modifier-hover)";
+                    b.onmouseleave = () => b.style.background = (n === inputEl.value) ? "var(--background-modifier-hover)" : "none";
+                    b.onclick = () => { inputEl.value = n; closePop(); inputEl.focus(); inputEl.setSelectionRange(0, 0); };
+                    pop.appendChild(b);
+                }
+                foot.appendChild(pop);
+            };
+            const restoreFoot = () => {
+                closePop();
+                foot.empty();
+                foot.style.position = "";
+                for (const child of origChildren) foot.appendChild(child);
+            };
             inputEl.focus();
             inputEl.select();
-            aiNameBtn.onclick = async () => {
-                suggest.empty();
-                suggest.textContent = t("正在生成文件名…");
-                aiNameBtn.disabled = true;
-                try {
-                    const res = await this.callAI("Based on this content, suggest 3 short file names (without .md extension), one per line, no numbering:\n\n" + content.slice(0, 500));
-                    const names = res.split("\n").map(n => n.trim().replace(/^\d+[.)]\s*/, "")).filter(n => n && n.length <= 50).slice(0, 5);
-                    suggest.empty();
-                    if (names.length === 0) { suggest.textContent = t("AI 返回为空"); aiNameBtn.disabled = false; return; }
-                    for (const name of names) {
-                        const b = suggest.createEl("button", { text: name, attr: { style: "display:block;width:100%;text-align:left;padding:4px 8px;margin:2px 0;font-size:var(--font-ui-small);border:1px solid var(--background-modifier-border);border-radius:4px;cursor:pointer;background:var(--background-primary);" } });
-                        b.onmouseenter = () => b.style.background = "var(--background-modifier-hover)";
-                        b.onmouseleave = () => b.style.background = "var(--background-primary)";
-                        b.onclick = () => { inputEl.value = name; inputEl.focus(); };
-                    }
-                } catch (e) { suggest.textContent = t("AI 返回失败：") + (e && e.message ? e.message : e); }
-                aiNameBtn.disabled = false;
-            };
             const doCreate = async () => {
                 let name = inputEl.value.trim();
                 if (!name) return;
@@ -2814,13 +2820,33 @@ class FileOpsPlusPlugin extends Plugin {
                     .replace(/\{\{aiResult\}\}/g, content);
                 try {
                     const f = await this.app.vault.create(name, fileContent);
-                    popup.remove();
+                    closePanel();
                     this.app.workspace.getLeaf().openFile(f);
                     new Notice(t("已创建文件：") + name);
                 } catch (e) { new Notice(t("创建文件失败：") + e.message); }
             };
             okBtn.onclick = doCreate;
-            inputEl.addEventListener("keydown", (e) => { if (e.key === "Enter") doCreate(); if (e.key === "Escape") popup.remove(); });
+            noBtn.onclick = restoreFoot;
+            togBtn.onclick = () => { if (pop) closePop(); else if (cache) openPop(); else aiBtn.click(); };
+            inputEl.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") { e.preventDefault(); doCreate(); }
+                else if (e.key === "Escape") { if (pop) closePop(); else restoreFoot(); }
+                else if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); openPop(); }
+            });
+            aiBtn.onclick = async () => {
+                aiBtn.textContent = "…"; aiBtn.disabled = true;
+                const oldVal = inputEl.value;
+                inputEl.disabled = true; inputEl.value = t("命名中…");
+                try {
+                    const res = await this.callAI("Based on the following AI-generated content, suggest 3 short file names (without .md extension), one per line, no numbering:\n\n" + content.slice(0, 500));
+                    const names = res.split("\n").map(n => n.trim().replace(/^\d+[.)]\s*/, "")).filter(n => n && n.length <= 50).slice(0, 5);
+                    cache = names;
+                    inputEl.disabled = false; inputEl.value = oldVal;
+                    if (names.length > 0) openPop();
+                    else new Notice(t("AI 返回为空"));
+                } catch (e) { inputEl.disabled = false; inputEl.value = oldVal; new Notice(t("AI 返回失败：") + (e && e.message ? e.message : e)); }
+                aiBtn.textContent = "✨"; aiBtn.disabled = false;
+            };
         } catch (e) { new Notice(t("创建文件失败：") + e.message); }
     }
 
