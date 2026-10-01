@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.7
+
+### Fixed
+
+- **Manifest description contained "Obsidian"** — Removed the word "Obsidian" from the plugin description field to comply with Obsidian plugin submission requirements
+
 ## 1.0.6
 
 ### Added
