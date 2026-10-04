@@ -24,6 +24,7 @@ const I18N_EN = {
     "文件管理器": "File Explorer", "外观": "Appearance", "配色": "Color Theme", "风格": "Button Style",
     "实时预览": "Live Preview", "启用增强菜单（关闭则用原生右键）": "Enable enhanced menu (disable for native menu)", "启用": "Enable",
     "显示分组标题": "Show group labels", "删除组": "Delete Group", "颜色": "Color", "添加颜色": "Add Color",
+    "分组标题样式": "Group label style", "不显示": "None", "标签": "Label", "水印标题": "Watermark title",
     "显示": "Show", "隐藏": "Hide",
     "添加选项": "Add Option", "添加分组": "Add Group",
     "图标": "Icon", "名称": "Name", "类型": "Type", "操作": "Action", "背景": "BG", "文字": "FG",
@@ -39,6 +40,7 @@ const I18N_EN = {
     "重命名": "Rename", "取消置顶": "Unpin", "置顶": "Pin", "创建副本": "Duplicate",
     "定位": "Reveal", "折叠所在文件夹": "Collapse Folder", "已在根目录": "Already at root", "未找到文件夹": "Folder not found",
     "自动定位到当前文档": "Auto reveal current file", "自动折叠文件夹": "Auto collapse folder",
+    "自动合并标签页": "Auto merge tabs", "切换自动合并标签页": "Toggle auto merge tabs", "已开启自动合并标签页": "Auto merge tabs enabled", "已关闭自动合并标签页": "Auto merge tabs disabled",
     "绝对路径": "Absolute Path", "相对路径": "Relative Path", "md链接": "MD Link", "wikilink": "Wikilink",
     "导出PDF": "Export PDF", "删除": "Delete", "新标签页": "New Tab",
     "新建文件夹": "New Folder", "新建文件": "New File",
@@ -71,14 +73,16 @@ const I18N_EN = {
     "移动模式：点击目标文件夹移动 ": "Move mode: click target folder to move ",
     "（Esc 取消）": " (Esc to cancel)",
     "移动完成：成功 ": "Move done: ", " 到 ": " to ", "根目录": "root",
-    "新选项": "New Option", "新分组": "New Group",
-    "+ 添加选项": "+ Add Option", "+ 添加分组": "+ Add Group",
+    "新选项": "New Option", "新分组": "New Group", "新文件夹": "New Folder",
+    "+ 添加选项": "+ Add Option", "+ 添加分组": "+ Add Group", "+ 添加文件夹": "+ Add Folder",
+    "拖动文件夹排序": "Drag to reorder folder", "文件夹名称": "Folder name", "删除文件夹（选项移回自由区）": "Delete folder (items moved back)", "拖动选项到此处": "Drag options here", "文件夹": "Folder", "空文件夹": "Empty folder",
     "删除该选项": "Delete this option",
     "命令": "Command", "选择该选项执行的命令": "Command to-Option", "直接插入文本": "Insert Text", "插入的文本，{{text}}=选中文本": "Text to insert, {{text}}=selected text",
 
     "阅读视图": "Reading View", "导出": "Export",
-    "无活动文件": "No active file", "未找到关联笔记": "No linked notes found", "透明": "Opacity", "拖动调整面板宽高": "Drag to resize", "关系图": "Graph", "设置面板分组手风琴模式": "Settings panel group accordion mode", "局部关系列表": "Local relation list", "提及文档": "Mentions", "被提及文档": "Mentioned by", "吸附/脱离": "Dock/Undock",
+    "无活动文件": "No active file", "未找到关联笔记": "No linked notes found", "透明": "Opacity", "拖动调整面板宽高": "Drag to resize", "关系图": "Graph", "设置面板分组手风琴模式": "Settings panel group accordion mode", "局部关系列表": "Local relation list", "提及文档": "Mentions", "被提及文档": "Mentioned by", "吸附/脱离": "Dock/Undock", "开": "On", "关": "Off",
     "暂存": "Stash", "暂存列表": "Stash List", "插入到光标位置": "Insert at cursor", "空暂存": "Empty stash", "暂存为空": "Stash is empty",
+    "关联": "Links", "双向": "Bidirectional", "提及": "Mention", "被提及": "Mentioned by", "个页面": " pages", "个双向": " bidirectional", "自动折叠": "Auto fold", "添加选中文本到暂存": "Add selection to stash", "无选中文本或剪贴板内容": "No selection or clipboard", "清空暂存": "Clear stash", "已插入": "Inserted",
     "已删除 ": "Deleted ", " 项": " item(s)",
     "确认删除": "Confirm Delete", "确定要删除 ": "Delete ",
     " 个文件吗？": " files?", "取消": "Cancel",
@@ -101,16 +105,20 @@ const I18N_EN = {
     "已创建：": "Created: ",
     "点击后按键录制": "Click then press keys", "请按键…": "Press keys\u2026", "按键": "Keystroke",
     "粘贴失败": "Paste failed",
-    "cmd=命令 regex=正则 custom=转换 pipeline=管道 action=操作 key=按键 ai=AI": "cmd=command regex=regex custom=transform pipeline=chained action=action key=keystroke ai=AI",
-    "cmd=命令 regex=正则 text=文本 custom=转换 pipeline=管道 action=操作 key=按键 ai=AI": "cmd=command regex=regex text=text custom=transform pipeline=chained action=action key=keystroke ai=AI",
+    "cmd=命令 regex=正则 custom=转换 pipeline=管道 action=操作 key=按键 subwindow=子窗口": "cmd=command regex=regex custom=transform pipeline=chained action=action key=keystroke subwindow=subwindow",
+    "cmd=命令 regex=正则 text=文本 custom=转换 pipeline=管道 action=操作 key=按键 subwindow=子窗口": "cmd=command regex=regex text=text custom=transform pipeline=chained action=action key=keystroke subwindow=subwindow",
+    "cmd=命令 regex=正则 text=文本 custom=转换 pipeline=管道 action=操作 key=按键 prompt=提示词 subwindow=子窗口": "cmd=command regex=regex text=text custom=transform pipeline=chained action=action key=keystroke prompt=prompt subwindow=subwindow",
     "AI 设置": "AI Settings", "模型": "Model", "温度": "Temp", "API 地址": "API URL",
     "新建": "New", "至少保留一个 AI 配置": "Keep at least one AI config", "未填写 API Key": "API Key not set",
     "提示词，{{text}}=选中文本": "Prompt, {{text}}=selected text",
+    "当前日期": "Current date", "当前时间": "Current time", "日期时间": "Date time", "时间戳": "Timestamp", "年份": "Year", "月份": "Month", "日": "Day", "选中文本": "Selected text", "选中的文字": "Selected text", "换行": "Newline",
     "生成中…": "Generating…", "AI 返回为空": "AI returned empty",
     "AI 返回失败：": "AI failed: ", "AI 请求失败：": "AI request failed: ",
     "AI 请求超时（60s）": "AI request timed out (60s)",
     "API Key 未配置，请在编辑器菜单设置的 AI 设置中填写": "API Key not configured. Set it in Editor Menu Settings → AI Settings",
     "替换选中": "Replace Selection",
+    "历史": "History", "子窗口": "Subwindow", "局部关系": "Local Relation", "清空历史": "Clear History", "无历史": "No History",
+    "预设": "Preset", "预设=预设命令 cmd=任意命令": "Preset=preset command cmd=any command",
     "新建文件": "New File", "AI命名": "AI Name", "请选择文件名": "Choose a file name", "创建文件失败：": "File creation failed: ",
     "已创建文件：": "File created: ", "正在生成文件名…": "Generating file name…", "流式输出": "Stream",
     "新文件模板": "New File Template", "{{blockRef}}=块引用 {{embedRef}}=嵌入引用 {{aiResult}}=AI返回": "{{blockRef}}=block ref {{embedRef}}=embed ref {{aiResult}}=AI result",
@@ -405,6 +413,37 @@ function autoContrast(color) {
     const r = parseInt(color.substr(1, 2), 16), g = parseInt(color.substr(3, 2), 16), b = parseInt(color.substr(5, 2), 16);
     return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.55 ? "#1a1a1a" : "#fff";
 }
+function _fopRelLum(c) {
+    if (!c || !c.startsWith("#")) return null;
+    let h = c.substr(1);
+    if (h.length === 3) h = h.split("").map(x => x + x).join("");
+    if (h.length < 6) return null;
+    const rs = parseInt(h.substr(0, 2), 16) / 255, gs = parseInt(h.substr(2, 2), 16) / 255, bs = parseInt(h.substr(4, 2), 16) / 255;
+    const lin = (v) => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    return 0.2126 * lin(rs) + 0.7152 * lin(gs) + 0.0722 * lin(bs);
+}
+function _fopContrastRatio(c1, c2) {
+    const l1 = _fopRelLum(c1), l2 = _fopRelLum(c2);
+    if (l1 == null || l2 == null) return 0;
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+function _fopPickTitleColor(bg, fg) {
+    let panelBg = "#ffffff";
+    try {
+        const tmp = document.createElement("div");
+        tmp.style.cssText = "background:var(--background-secondary);position:absolute;left:-9999px;";
+        document.body.appendChild(tmp);
+        const rgb = getComputedStyle(tmp).backgroundColor;
+        tmp.remove();
+        const m = rgb.match(/\d+/g);
+        if (m && m.length >= 3) panelBg = "#" + m.slice(0, 3).map(n => parseInt(n).toString(16).padStart(2, "0")).join("");
+    } catch (e) {}
+    const rBg = bg ? _fopContrastRatio(bg, panelBg) : 0;
+    const rFg = fg ? _fopContrastRatio(fg, panelBg) : 0;
+    if (rBg >= rFg && rBg > 0) return bg;
+    if (rFg > 0) return fg;
+    return bg || fg || "var(--text-normal)";
+}
 
 const CUSTOM_TRANSFORMS = {
     fullwidthToHalf: (s) => s.replace(/[，。；：！？]/g, (c) => ({ "，": ",", "。": ".", "；": ";", "：": ":", "！": "!", "？": "?" }[c])),
@@ -532,12 +571,29 @@ const EDITOR_MENU_CSS = `
 .fop-em-panel{position:fixed;z-index:9999;background:var(--background-secondary);border:1px solid var(--background-modifier-border);border-radius:10px;padding:10px;box-shadow:0 4px 16px rgba(0,0,0,.2);font-size:var(--font-ui-small);box-sizing:border-box;}
 .fop-em-row{display:flex;flex-direction:column;gap:var(--fop-group-gap,6px);}
 .fop-em-group-label{font-size:10px;margin-bottom:4px;padding-left:2px;}
+.fop-em-col-wm{position:relative;border-radius:8px;}
+.fop-em-wm{position:absolute;right:8px;bottom:0;font-size:22px;line-height:1;font-weight:700;font-style:italic;letter-spacing:-.02em;opacity:.5;pointer-events:none;z-index:0;white-space:nowrap;}
 .fop-em-grid{display:flex;flex-wrap:wrap;gap:var(--fop-tile-gap,3px);}
 .fop-em-tile{min-width:var(--fop-tile-sz,28px);height:var(--fop-tile-sz,28px);display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;font-size:calc(var(--fop-tile-sz,28px)*0.42);overflow:visible;padding:0 4px;box-sizing:border-box;}
 .fop-em-tile svg{width:calc(var(--fop-tile-sz,28px)*0.58);height:calc(var(--fop-tile-sz,28px)*0.58);}
-.fop-em-resize{position:absolute;right:0;bottom:0;width:14px;height:14px;cursor:nwse-resize;opacity:.35;background:linear-gradient(135deg,transparent 45%,currentColor 46%,currentColor 54%,transparent 55%);}
+.fop-em-resize{position:absolute;right:0;bottom:0;width:14px;height:14px;cursor:nwse-resize;opacity:.35;background:linear-gradient(135deg,transparent 45%,currentColor 46%,currentColor 54%,transparent 55%);z-index:3;}
 .fop-em-resize:hover{opacity:.7;}
 .fop-em-tile:hover{filter:brightness(.92);}
+.fop-em-footer-trigger{position:absolute;bottom:0;left:0;right:0;height:26px;z-index:0;}
+.fop-em-footer{position:absolute;right:20px;bottom:3px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-muted);user-select:none;z-index:2;opacity:0;transition:opacity .2s;pointer-events:none;}
+.fop-em-footer-trigger:hover ~ .fop-em-footer,.fop-em-footer:hover{opacity:1;pointer-events:auto;}
+.fop-em-footer-name{opacity:.5;white-space:nowrap;}
+.fop-em-footer-pill{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 7px;border-radius:9px;background:var(--background-primary);border:1px solid var(--background-modifier-border);cursor:ns-resize;transition:border-color .15s;white-space:nowrap;}
+.fop-em-footer-pill:hover{border-color:var(--text-muted);}
+.fop-em-footer-dot{width:8px;height:8px;border-radius:50%;flex:none;border:1px solid var(--background-modifier-border);}
+.fop-em-footer-flash{animation:fop-em-fl .35s;}
+@keyframes fop-em-fl{0%{transform:translateY(-3px);opacity:.2}100%{transform:none;opacity:1}}
+.fop-tip{position:fixed;z-index:10001;pointer-events:none;font-size:12px;line-height:1.45;opacity:0;transform:translateY(4px) scale(.97);transition:opacity .14s,transform .14s;max-width:260px;background:var(--background-primary);padding:7px 12px;border-radius:4px;border:1px solid var(--background-modifier-border);box-shadow:0 5px 16px rgba(0,0,0,.18);}
+.fop-tip.show{opacity:1;transform:none;}
+.fop-tip .h{font-weight:600;white-space:nowrap;}
+.fop-tip .h b{font-weight:600;background:linear-gradient(transparent 55%,var(--fop-tip-hl,#a9d0ff) 55%,var(--fop-tip-hl,#a9d0ff) 92%,transparent 92%);padding:0 2px;}
+.fop-tip .d{display:block;color:var(--text-muted);font-size:11px;margin-top:3px;}
+.fop-tip .k{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;margin-left:6px;color:var(--text-faint);}
 .fop-drag-handle{cursor:grab;width:14px;flex-shrink:0;text-align:center;color:var(--text-faint);font-size:9px;line-height:14px;user-select:none;}
 .fop-drag-handle:hover{color:var(--text-normal);}
 .fop-drag-over{background:var(--background-modifier-hover)!important;border-radius:4px;}
@@ -552,6 +608,17 @@ const EDITOR_MENU_CSS = `
 .fop-em-tile[data-c="warning"]{background:var(--fop-c-warning-bg,#FAEEDA);color:var(--fop-c-warning-fg,#854F0B);}
 .fop-em-tile[data-c="regex"]{background:var(--fop-c-regex-bg,#FDE8E0);color:var(--fop-c-regex-fg,#B23A1A);}
 .fop-em-tile[data-c="neutral"]{background:var(--fop-c-neutral-bg,var(--background-primary));color:var(--fop-c-neutral-fg,var(--text-muted));border:0.5px solid var(--background-modifier-border);}
+
+.fop-fold-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;background:rgba(255,255,255,.4);backdrop-filter:blur(10px) saturate(1.4);-webkit-backdrop-filter:blur(10px) saturate(1.4);border:1px solid rgba(255,255,255,.7);box-shadow:0 2px 10px rgba(30,36,28,.12),inset 0 1px 0 rgba(255,255,255,.8);font-size:12px;color:#33392f;cursor:pointer;user-select:none;position:fixed;z-index:9999;transition:opacity .15s ease,transform .2s;max-width:92vw;}
+.fop-fold-chip:hover{transform:scale(1.06);}
+.fop-fold-chip span{white-space:nowrap;}
+.fop-fold-chip b{font-weight:600;font-variant-numeric:tabular-nums;background:var(--text-normal);color:var(--background-secondary);min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;font-size:11px;padding:0 5px;flex:none;}
+.fop-fold-chip svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;}
+.theme-dark .fop-fold-chip{background:rgba(40,42,48,.55);border-color:rgba(255,255,255,.18);color:#d8d8d8;box-shadow:0 2px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);}
+.fop-fold-btn{cursor:pointer;padding:0 5px;color:var(--text-muted);display:flex;align-items:center;user-select:none;}
+.fop-fold-btn:hover{color:var(--text-normal);}
+.fop-fold-btn svg{width:14px;height:14px;}
+.fop-fold-btn.is-active{color:var(--text-accent);}
 
 `;
 
@@ -622,8 +689,8 @@ const DEFAULT_EDITOR_MENU = {
             { icon: "file-plus", label: t("提取为新笔记"), type: "action", action: "extractToNote" },
             { icon: "heading", label: t("复制标题链接"), type: "action", action: "copyHeadingLink" },
             { icon: "clipboard-paste", label: t("剪贴板创建新笔记"), type: "action", action: "clipboardToNote" },
-            { icon: "git-fork", label: t("局部关系列表"), type: "graph" },
-            { icon: "clipboard-list", label: t("暂存"), type: "stash" },
+            { icon: "git-fork", label: t("局部关系列表"), type: "subwindow", subwindow: "local_relation" },
+            { icon: "clipboard-list", label: t("暂存"), type: "subwindow", subwindow: "stash" },
         ]},
         { id: "mark", label: t("高亮"), color: "warning", items: [
             { icon: "highlighter", label: t("黄"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background:#FFF3A3">$1</mark>', flags: "", color: "#FFF3A3|#5a4a00", requireSelection: true },
@@ -643,7 +710,7 @@ const DEFAULT_EDITOR_MENU = {
             { icon: "check-line", label: t("全选"), type: "cmd", cmd: "editor:select-all" },
         ]},
         { id: "ai", label: t("AI"), color: "pro", items: [
-            { icon: "sparkles", label: "AI", type: "ai", prompt: t("根据选中文本提供几个Insight") },
+            { icon: "sparkles", label: "AI", type: "subwindow", subwindow: "ai", prompt: t("根据选中文本提供几个Insight") },
         ]},
     ],
 };
@@ -683,14 +750,22 @@ class FileOpsPlusPlugin extends Plugin {
             }
             let needSave = false;
             for (const grp of this.editorMenuConfig.groups) {
+                if (Array.isArray(grp.folders) && grp.folders.length) {
+                    grp.items = grp.items || [];
+                    for (const f of grp.folders) { f.type = "folder"; grp.items.push(f); }
+                    delete grp.folders; needSave = true;
+                }
                 if (!grp.items) continue;
                 const dg = DEFAULT_EDITOR_MENU.groups.find(g => g.id === grp.id);
                 if (!dg) continue;
                 for (const item of grp.items) {
+                    if (item.type === "graph") { item.type = "subwindow"; item.subwindow = "local_relation"; delete item.cmd; delete item.custom; needSave = true; continue; }
+                    if (item.type === "stash") { item.type = "subwindow"; item.subwindow = "stash"; delete item.cmd; delete item.custom; needSave = true; continue; }
+                    if (item.type === "ai") { item.type = "subwindow"; item.subwindow = "ai"; delete item.cmd; delete item.custom; needSave = true; continue; }
                     const di = dg.items.find(i => i.label === item.label) || (item.pattern != null ? dg.items.find(i => i.pattern === item.pattern && i.replacement === item.replacement) : null);
                     if (!di) continue;
                     if (item.type !== di.type || (item.type === "cmd" && di.type === "cmd" && item.cmd !== di.cmd)) {
-                        item.type = di.type; item.custom = di.custom; item.cmd = di.cmd; needSave = true;
+                        item.type = di.type; item.custom = di.custom; item.cmd = di.cmd; if (di.subwindow) item.subwindow = di.subwindow; needSave = true;
                     }
                     if (di.requireSelection !== undefined && item.requireSelection === undefined) { item.requireSelection = di.requireSelection; needSave = true; }
                 }
@@ -783,11 +858,68 @@ class FileOpsPlusPlugin extends Plugin {
         this.applyColors();
         this.registerEvent(this.app.workspace.on("active-leaf-change", (leaf) => this.onActiveLeafChange(leaf)));
 
+        this._restoreFoldPanels = () => {
+            const av = this.app.workspace.getActiveViewOfType(MarkdownView);
+            if (!av) return;
+            const c = this.editorMenuConfig;
+            if (!c) return;
+            this._fopRestoringFold = true;
+            if (c.stashEnabled && !document.querySelector(".fop-stash-panel") && !document.querySelector(".fop-stash-chip")) { try { this.showStashPanel(av); } catch (e) {} }
+            if (c.graphEnabled && !document.querySelector(".fop-graph-panel") && !document.querySelector(".fop-graph-chip")) { try { this.showLocalGraphPanel(av); } catch (e) {} }
+            this._fopRestoringFold = false;
+        };
+        setTimeout(() => this._restoreFoldPanels(), 800);
+
 
         this.addCommand({
             id: "open-editor-menu-settings",
             name: t("右键菜单设置"),
             callback: () => this.openEditorMenuSettings(),
+        });
+
+        this._accordionHandler = (e) => {
+            if (!this.editorMenuConfig || this.editorMenuConfig.autoCollapseFolder !== true) return;
+            const titleEl = e.target.closest(".nav-folder-title");
+            if (!titleEl) return;
+            const navFolder = titleEl.closest(".nav-folder");
+            if (!navFolder) return;
+            setTimeout(() => {
+                if (navFolder.classList.contains("is-collapsed")) return;
+                const parentChildren = navFolder.parentElement;
+                if (!parentChildren) return;
+                const siblings = parentChildren.querySelectorAll(":scope > .nav-folder");
+                for (const sibling of siblings) {
+                    if (sibling !== navFolder && !sibling.classList.contains("is-collapsed")) {
+                        const st = sibling.querySelector(":scope > .nav-folder-title");
+                        if (st) st.click();
+                    }
+                }
+            }, 50);
+        };
+        document.addEventListener("click", this._accordionHandler, true);
+
+        this.registerEvent(this.app.workspace.on("file-open", (file) => {
+            if (!this.editorMenuConfig || this.editorMenuConfig.autoMergeTabs !== true) return;
+            if (!file) return;
+            setTimeout(() => {
+                const leaves = this.app.workspace.getLeavesOfType("markdown");
+                const dupLeaves = leaves.filter(l => l.view && l.view.file && l.view.file.path === file.path);
+                if (dupLeaves.length <= 1) return;
+                const activeLeaf = this.app.workspace.activeLeaf;
+                for (const leaf of dupLeaves) {
+                    if (leaf !== activeLeaf) leaf.detach();
+                }
+            }, 100);
+        }));
+
+        this.addCommand({
+            id: "toggle-auto-merge-tabs",
+            name: t("切换自动合并标签页"),
+            callback: () => {
+                this.editorMenuConfig.autoMergeTabs = !this.editorMenuConfig.autoMergeTabs;
+                this.saveEditorMenuConfig();
+                new Notice(this.editorMenuConfig.autoMergeTabs ? t("已开启自动合并标签页") : t("已关闭自动合并标签页"));
+            },
         });
 
     }
@@ -804,6 +936,7 @@ class FileOpsPlusPlugin extends Plugin {
         this._hideSelectionBall();
         if (this.colorInterval) window.clearInterval(this.colorInterval);
         if (this.revealTimer) clearTimeout(this.revealTimer);
+        if (this._accordionHandler) document.removeEventListener("click", this._accordionHandler, true);
         this.cancelMoveMode();
     }
 
@@ -921,14 +1054,10 @@ class FileOpsPlusPlugin extends Plugin {
                     btn.style.border = "1px solid var(--background-modifier-border)";
                     btn.title = item.title || "";
                     if (item.active) { btn.style.boxShadow = "0 0 4px var(--text-accent)"; btn.style.border = "2px solid var(--text-accent)"; }
-                    btn.addEventListener("mouseenter", () => btn.style.setProperty("background", "var(--background-modifier-hover)"));
-                    btn.addEventListener("mouseleave", () => btn.style.setProperty("background", item.colorDot));
                 } else if (item.bold) {
                     btn.textContent = "B"; btn.style.fontWeight = "bold";
                     btn.title = item.title || "";
                     if (item.active) { btn.style.background = "var(--interactive-accent)"; btn.style.color = "var(--text-on-accent)"; }
-                    btn.addEventListener("mouseenter", () => btn.style.setProperty("background", "var(--background-modifier-hover)"));
-                    btn.addEventListener("mouseleave", () => { if (item.active) btn.style.setProperty("background", "var(--interactive-accent)"); else btn.style.removeProperty("background"); });
                 } else {
                 if (item.danger) btn.style.color = "var(--text-error)";
                 if (item.icon) {
@@ -942,8 +1071,6 @@ class FileOpsPlusPlugin extends Plugin {
                     } else { try { const ic = getIcon(item.icon); if (ic) { ic.style.width = "14px"; ic.style.height = "14px"; btn.appendChild(ic); } } catch (e) {} }
                 }
                 if (item.title) { const sp = document.createElement("span"); sp.textContent = item.title; btn.appendChild(sp); }
-                btn.addEventListener("mouseenter", () => btn.style.setProperty("background", "var(--background-modifier-hover)"));
-                btn.addEventListener("mouseleave", () => btn.style.removeProperty("background"));
                 }
                 if (item.inline) btn.addEventListener("click", () => item.fn(panel, row));
                 else btn.addEventListener("click", () => { panel.remove(); item.fn(); });
@@ -963,7 +1090,7 @@ class FileOpsPlusPlugin extends Plugin {
                 if (e.button !== 0 || !isBlank(e.target)) return;
                 e.preventDefault();
                 let dragging = true, sx = e.clientX, sy = e.clientY, sl = panel.offsetLeft, st = panel.offsetTop;
-                const mv = (ev) => { if (dragging) { panel.style.left = (sl + ev.clientX - sx) + "px"; panel.style.top = (st + ev.clientY - sy) + "px"; } };
+                const mv = (ev) => { if (dragging) { panel.style.left = (sl + ev.clientX - sx) + "px"; panel.style.top = (st + ev.clientY - sy) + "px"; document.dispatchEvent(new CustomEvent("fop-menu-move")); } };
                 const up = () => { dragging = false; document.removeEventListener("mousemove", mv); document.removeEventListener("mouseup", up); };
                 document.addEventListener("mousemove", mv);
                 document.addEventListener("mouseup", up);
@@ -1062,6 +1189,15 @@ class FileOpsPlusPlugin extends Plugin {
         if (this.revealTimer) clearTimeout(this.revealTimer);
         if (!leaf) return;
         const file = leaf.file || (leaf.view && leaf.view.file) || null;
+        const cfg0 = this.editorMenuConfig;
+        if (cfg0 && leaf.view && leaf.view.getViewType && leaf.view.getViewType() === "markdown") {
+            if (cfg0.stashEnabled && !document.querySelector(".fop-stash-panel") && !document.querySelector(".fop-stash-chip")) {
+                try { this.showStashPanel(leaf.view); } catch (e) {}
+            }
+            if (cfg0.graphEnabled && file && !document.querySelector(".fop-graph-panel") && !document.querySelector(".fop-graph-chip")) {
+                try { this.showLocalGraphPanel(leaf.view); } catch (e) {}
+            }
+        }
         if (!file || !(file instanceof TFile)) return;
         const path = file.path;
         if (this.lastRevealedPath === path) return;
@@ -1132,6 +1268,11 @@ class FileOpsPlusPlugin extends Plugin {
                     } else if (item.color) {
                         items.push({ colorDot: item.color, title: item.label || item.color, active: this.colorMap[ctx.file.path] === item.color, fn: async () => { const now = this.colorMap[ctx.file.path]; await this.setColor(ctx.file, now === item.color ? null : item.color); } });
                     }
+                    continue;
+                }
+                if (item.type === "cmd") {
+                    const entry = { title: item.label || item.cmd || "", icon: item.icon || "square", fn: async () => { if (item.cmd) this.app.commands.executeCommandById(item.cmd); } };
+                    items.push(entry);
                     continue;
                 }
                 const a = actionTable[item.action];
@@ -1825,14 +1966,46 @@ class FileOpsPlusPlugin extends Plugin {
         const row = document.createElement("div");
         row.className = "fop-em-row";
 
-        const makeTile = (iconName, color, title, onClick) => {
+        const tipEl = document.createElement("div");
+        tipEl.className = "fop-tip";
+        document.body.appendChild(tipEl);
+        let tipTimer;
+        const showTip = (tile, title, desc, kbd) => {
+            clearTimeout(tipTimer);
+            tipTimer = setTimeout(() => {
+                if (!document.body.contains(tile)) return;
+                let html = '<span class="h"><b>' + (title || "") + '</b></span>';
+                if (desc) html += '<span class="d">' + desc + '</span>';
+                if (kbd) html += '<span class="k">' + kbd + '</span>';
+                tipEl.innerHTML = html;
+                const gc = GROUP_COLORS[tile.dataset.c];
+                if (gc) tipEl.style.setProperty("--fop-tip-hl", gc.bg);
+                const r = tile.getBoundingClientRect();
+                const w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+                let tx = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+                let ty = r.top - h - 8; if (ty < 8) ty = r.bottom + 8;
+                tipEl.style.left = tx + "px"; tipEl.style.top = ty + "px";
+                requestAnimationFrame(() => tipEl.classList.add("show"));
+            }, 200);
+        };
+        const hideTip = () => { clearTimeout(tipTimer); tipEl.classList.remove("show"); };
+        const _origRemove = panel.remove.bind(panel);
+        panel.remove = () => { hideTip(); tipEl.remove(); _origRemove(); };
+
+        const makeTile = (iconName, color, title, onClick, desc, kbd) => {
             const tile = document.createElement("div");
             tile.className = "fop-em-tile";
             const c = color || "neutral";
             if (GROUP_COLORS[c]) tile.dataset.c = c;
             else if (c.includes("|")) { const parts = c.split("|"); tile.style.background = parts[0]; tile.style.color = parts[1] || autoContrast(parts[0]); }
             else { tile.style.background = c; tile.style.color = autoContrast(c); }
-            tile.title = title || "";
+            const _title = title || "";
+            const _desc = desc || "";
+            const _kbd = kbd || "";
+            if (_title) {
+                tile.addEventListener("mouseenter", () => showTip(tile, _title, _desc, _kbd));
+                tile.addEventListener("mouseleave", hideTip);
+            }
             const raw = iconName || "";
             if (raw.includes("<svg")) {
                 tile.innerHTML = raw;
@@ -1850,14 +2023,24 @@ class FileOpsPlusPlugin extends Plugin {
             return tile;
         };
 
+        const labelStyle = cfg.groupLabelStyle || (cfg.showGroupLabels === false ? "none" : "label");
         for (const grp of cfg.groups) {
             if (!grp.items || grp.items.length === 0) continue;
             const col = document.createElement("div");
-            if (cfg.showGroupLabels !== false) {
+            const gc = GROUP_COLORS[grp.color];
+            const grpBg = gc ? gc.bg : (grp.color ? (grp.color.includes("|") ? grp.color.split("|")[0] : grp.color) : null);
+            const grpFg = gc ? gc.fg : (grp.color && grp.color.includes("|") ? grp.color.split("|")[1] : grpBg);
+            if (labelStyle === "watermark") {
+                col.className = "fop-em-col-wm";
+                const wm = document.createElement("span");
+                wm.className = "fop-em-wm";
+                wm.textContent = grp.label || "";
+                if (grpBg || grpFg) wm.style.color = _fopPickTitleColor(grpBg, grpFg);
+                col.appendChild(wm);
+            } else if (labelStyle === "label") {
                 const label = document.createElement("div");
                 label.className = "fop-em-group-label";
                 label.style.color = "var(--text-muted)";
-                const gc = GROUP_COLORS[grp.color];
                 if (gc) {
                     const bar = document.createElement("span");
                     bar.style.cssText = "display:inline-block;width:10px;height:3px;border-radius:2px;background:" + gc.bg + ";margin-right:4px;vertical-align:middle;";
@@ -1875,23 +2058,97 @@ class FileOpsPlusPlugin extends Plugin {
             }
             const grid = document.createElement("div");
             grid.className = "fop-em-grid";
-            for (let ii = 0; ii < grp.items.length; ii++) {
-                const item = grp.items[ii];
+            if (labelStyle === "watermark") { grid.style.position = "relative"; grid.style.zIndex = "1"; }
+            const renderTile = (item, itemIdx) => {
+                if (item.type === "folder") {
+                    const folderTile = makeTile(item.icon || "folder", item.color || grp.color, item.name || t("文件夹"), () => {});
+                    folderTile.style.cursor = "pointer";
+                    let pop = null, openT = null, closeT = null;
+                    const openPop = () => {
+                        clearTimeout(closeT);
+                        if (pop) return;
+                        pop = document.createElement("div");
+                        pop.className = "fop-em-folder-pop";
+                        pop.style.cssText = "position:fixed;z-index:10001;background:var(--background-primary);border:1px solid var(--background-modifier-border);border-radius:8px;box-shadow:0 8px 22px rgba(0,0,0,.2);padding:4px;min-width:180px;max-width:260px;";
+                        const subs = item.items || [];
+                        if (subs.length === 0) { const ph = document.createElement("div"); ph.textContent = t("空文件夹"); ph.style.cssText = "padding:6px 10px;color:var(--text-muted);font-size:var(--font-ui-smaller);"; pop.appendChild(ph); }
+                        for (const sub of subs) {
+                            const li = document.createElement("div");
+                            li.style.cssText = "display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:var(--font-ui-smaller);";
+                            const ic = document.createElement("span");
+                            ic.style.cssText = "flex:none;width:20px;height:20px;border-radius:5px;display:grid;place-items:center;background:var(--background-modifier-form-field);";
+                            const raw = sub.icon || "";
+                            if (raw.includes("<svg")) ic.innerHTML = raw;
+                            else { let ico = null; try { ico = getIcon(raw); } catch (e) {} if (ico) { ico.style.width = "14px"; ico.style.height = "14px"; ic.appendChild(ico); } else if (raw) ic.textContent = raw.trim()[0].toUpperCase(); }
+                            li.appendChild(ic);
+                            const tx = document.createElement("span");
+                            tx.textContent = sub.label || "";
+                            const hlColor = grpBg || "var(--interactive-accent)";
+                            tx.style.cssText = "font-weight:600;white-space:nowrap;background:linear-gradient(transparent 55%," + hlColor + " 55%," + hlColor + " 92%,transparent 92%);padding:0 2px;";
+                            li.appendChild(tx);
+                            let subDesc = "";
+                            if (sub.type === "cmd" && sub.cmd) { const cmd = this.app.commands.commands[sub.cmd]; subDesc = cmd && typeof cmd.name === "string" ? cmd.name : sub.cmd; }
+                            else if (sub.type === "subwindow" && sub.subwindow === "ai" && sub.prompt) subDesc = sub.prompt;
+                            else if (sub.type === "regex") subDesc = (sub.pattern || "") + " → " + (sub.replacement || "");
+                            else if (sub.type === "pipeline") subDesc = sub.pipeline || "";
+                            else if (sub.type === "text") subDesc = sub.text || "";
+                            else if (sub.type === "prompt") subDesc = sub.prompt || "";
+                            if (subDesc) {
+                                const desc = document.createElement("span");
+                                desc.textContent = subDesc;
+                                desc.style.cssText = "flex:1;color:var(--text-muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
+                                li.appendChild(desc);
+                            }
+                            li.addEventListener("mouseenter", () => li.style.background = "var(--background-modifier-hover)");
+                            li.addEventListener("mouseleave", () => li.style.background = "");
+                            li.addEventListener("click", () => {
+                                pop.remove(); pop = null;
+                                if (opts.onTileClick) { opts.onTileClick(sub, grp.id, null); }
+                                else { panel.remove(); this.execEditorItem(sub, view); }
+                            });
+                            pop.appendChild(li);
+                        }
+                        document.body.appendChild(pop);
+                        const r = folderTile.getBoundingClientRect();
+                        let px = r.left, py = r.bottom + 4;
+                        if (px + pop.offsetWidth > window.innerWidth - 8) px = window.innerWidth - pop.offsetWidth - 8;
+                        if (py + pop.offsetHeight > window.innerHeight - 8) py = Math.max(8, r.top - pop.offsetHeight - 4);
+                        pop.style.left = px + "px"; pop.style.top = py + "px";
+                        pop.addEventListener("mouseenter", () => clearTimeout(closeT));
+                        pop.addEventListener("mouseleave", closePop);
+                    };
+                    const closePop = () => { clearTimeout(openT); closeT = setTimeout(() => { if (pop) { pop.remove(); pop = null; } }, 200); };
+                    folderTile.addEventListener("mouseenter", () => { clearTimeout(closeT); openT = setTimeout(openPop, 120); });
+                    folderTile.addEventListener("mouseleave", closePop);
+                    grid.appendChild(folderTile);
+                    return;
+                }
+                let itemDesc = "";
+                if (item.type === "cmd" && item.cmd) { const cmd = this.app.commands.commands[item.cmd]; itemDesc = cmd && typeof cmd.name === "string" ? cmd.name : item.cmd; }
+                else if (item.type === "subwindow" && item.subwindow === "ai" && item.prompt) itemDesc = item.prompt;
+                else if (item.type === "regex") itemDesc = (item.pattern || "") + " → " + (item.replacement || "");
+                else if (item.type === "pipeline") itemDesc = item.pipeline || "";
+                else if (item.type === "text") itemDesc = item.text || "";
+                else if (item.type === "prompt") itemDesc = item.prompt || "";
                 grid.appendChild(makeTile(item.icon, item.color || grp.color, item.label || "", async () => {
-                    if (opts.onTileClick) { opts.onTileClick(item, grp.id, ii); }
-                    else if (item.type === "graph") {
-                        const gp = document.querySelector(".fop-graph-panel");
-                        if (gp) { gp.remove(); cfg.graphEnabled = false; this.saveEditorMenuConfig(); }
-                        else { cfg.graphEnabled = true; cfg.graphDocked = true; this.saveEditorMenuConfig(); this.showLocalGraphPanel(view); }
-                    }
-                    else if (item.type === "stash") {
-                        const sp = document.querySelector(".fop-stash-panel");
-                        if (sp) { sp.remove(); cfg.stashEnabled = false; this.saveEditorMenuConfig(); }
-                        else { cfg.stashEnabled = true; cfg.stashDocked = true; this.saveEditorMenuConfig(); this.showStashPanel(view); }
+                    if (opts.onTileClick) { opts.onTileClick(item, grp.id, itemIdx); }
+                    else if (item.type === "subwindow") {
+                        if (item.subwindow === "local_relation") {
+                            const gp = document.querySelector(".fop-graph-panel");
+                            if (gp) { gp.remove(); cfg.graphEnabled = false; this.saveEditorMenuConfig(); }
+                            else { cfg.graphEnabled = true; cfg.graphDocked = true; this.saveEditorMenuConfig(); this.showLocalGraphPanel(view); }
+                        } else if (item.subwindow === "stash") {
+                            const sp = document.querySelector(".fop-stash-panel");
+                            if (sp) { sp.remove(); cfg.stashEnabled = false; this.saveEditorMenuConfig(); }
+                            else { cfg.stashEnabled = true; cfg.stashDocked = true; this.saveEditorMenuConfig(); this.showStashPanel(view); }
+                        } else if (item.subwindow === "ai") {
+                            panel.remove(); this.execEditorItem(item, view);
+                        }
                     }
                     else { panel.remove(); this.execEditorItem(item, view); }
-                }));
-            }
+                }, itemDesc));
+            };
+            for (let ii = 0; ii < (grp.items || []).length; ii++) renderTile(grp.items[ii], ii);
             col.appendChild(grid);
             row.appendChild(col);
         }
@@ -1957,6 +2214,63 @@ class FileOpsPlusPlugin extends Plugin {
             document.addEventListener("mouseup", onUp);
         });
 
+        const footerTrigger = document.createElement("div");
+        footerTrigger.className = "fop-em-footer-trigger";
+        panel.appendChild(footerTrigger);
+        const footer = document.createElement("div");
+        footer.className = "fop-em-footer";
+        const _theme = getColorTheme(cfg.colorTheme);
+        const _styleDef = FOP_BUTTON_STYLES.find(s => s.id === cfg.buttonStyle) || FOP_BUTTON_STYLES[0];
+        footer.innerHTML = '<span class="fop-em-footer-name">' + this.manifest.name + ' v' + this.manifest.version + '</span>' +
+            '<span class="fop-em-footer-pill" data-k="style"><b class="fop-em-footer-vs">' + t(_styleDef.name) + '</b></span>' +
+            '<span class="fop-em-footer-pill" data-k="color"><i class="fop-em-footer-dot" style="background:' + _theme.groups.accent.bg + '"></i><b class="fop-em-footer-vc">' + t(_theme.name) + '</b></span>';
+        panel.appendChild(footer);
+        panel.style.paddingBottom = "26px";
+        let _fLastWheel = 0;
+        footer.querySelectorAll(".fop-em-footer-pill").forEach(_pill => {
+            _pill.addEventListener("wheel", (e) => {
+                e.preventDefault();
+                const now = Date.now();
+                if (now - _fLastWheel < 90) return;
+                _fLastWheel = now;
+                const dir = e.deltaY > 0 ? 1 : -1;
+                const k = _pill.dataset.k;
+                if (k === "style") {
+                    const len = FOP_BUTTON_STYLES.length;
+                    const ci = FOP_BUTTON_STYLES.findIndex(s => s.id === cfg.buttonStyle);
+                    const ni = ((ci + dir) % len + len) % len;
+                    const ns = FOP_BUTTON_STYLES[ni];
+                    cfg.buttonStyle = ns.id;
+                    this.saveEditorMenuConfig();
+                    document.querySelectorAll(".fop-em-panel").forEach(p => {
+                        p.classList.forEach(cls => { if (cls.startsWith("fop-style-")) p.classList.remove(cls); });
+                        if (ns.id !== "flat") p.classList.add("fop-style-" + ns.id);
+                    });
+                    const vs = _pill.querySelector(".fop-em-footer-vs");
+                    vs.textContent = t(ns.name);
+                    vs.classList.remove("fop-em-footer-flash");
+                    void vs.offsetWidth;
+                    vs.classList.add("fop-em-footer-flash");
+                    new Notice(t("风格") + ": " + t(ns.name), 800);
+                } else if (k === "color") {
+                    const len = FOP_COLOR_THEMES.length;
+                    const ci = FOP_COLOR_THEMES.findIndex(c => c.id === cfg.colorTheme);
+                    const ni = ((ci + dir) % len + len) % len;
+                    const nt2 = FOP_COLOR_THEMES[ni];
+                    cfg.colorTheme = nt2.id;
+                    applyColorTheme(nt2.id);
+                    this.saveEditorMenuConfig();
+                    _pill.querySelector(".fop-em-footer-dot").style.background = nt2.groups.accent.bg;
+                    const vc = _pill.querySelector(".fop-em-footer-vc");
+                    vc.textContent = t(nt2.name);
+                    vc.classList.remove("fop-em-footer-flash");
+                    void vc.offsetWidth;
+                    vc.classList.add("fop-em-footer-flash");
+                    new Notice(t("配色") + ": " + t(nt2.name), 800);
+                }
+            }, { passive: false });
+        });
+
         document.body.appendChild(panel);
         if (!opts.skipPosition) {
             const rect = panel.getBoundingClientRect();
@@ -2019,7 +2333,11 @@ class FileOpsPlusPlugin extends Plugin {
                     editor.replaceSelection(sel.replace(re, rep));
                 } else {
                     const text = editor.getValue();
+                    const si = (editor.cm && editor.cm.getScrollInfo) ? editor.cm.getScrollInfo() : null;
+                    const cursor = editor.getCursor();
                     editor.replaceRange(text.replace(re, rep), { line: 0, ch: 0 }, { line: editor.lastLine(), ch: editor.getLine(editor.lastLine()).length });
+                    try { editor.setCursor(cursor); } catch (e) {}
+                    if (si && editor.cm && editor.cm.scrollTo) { try { editor.cm.scrollTo(si.left, si.top); } catch (e) {} }
                 }
             } catch (e) { new Notice(t("正则错误：") + e.message); }
         } else if (item.type === "custom") {
@@ -2039,20 +2357,46 @@ class FileOpsPlusPlugin extends Plugin {
             if (!steps.length) return;
             const sel = editor.getSelection();
             let text = sel || editor.getValue();
+            let pipelineCopied = false;
             for (const stepName of steps) {
                 const stepItem = this.resolvePipelineStep(stepName);
                 if (!stepItem) { new Notice(t("管道步骤未找到：") + stepName); return; }
                 if (stepItem.type === "key") {
                     this.execKeystroke(editor, stepItem.keystroke, view);
                     text = editor.getSelection() || editor.getValue();
+                } else if (stepItem.type === "action") {
+                    if (stepItem.action === "copyBlockRef") {
+                        if (sel) editor.replaceSelection(text);
+                        else editor.replaceRange(text, { line: 0, ch: 0 }, { line: editor.lastLine(), ch: editor.getLine(editor.lastLine()).length });
+                        const file = view.file;
+                        if (file) {
+                            const to = editor.getCursor("to");
+                            const lastLine = editor.getLine(to.line);
+                            const existing = lastLine.match(/\s\^([a-zA-Z][\w-]+)$/);
+                            let blockId;
+                            if (existing) { blockId = existing[1]; } else {
+                                const used = new Set((editor.getValue().match(/\^[a-zA-Z][\w-]+/g) || []).map(m => m.slice(1)));
+                                do { blockId = "fop" + Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 5); } while (used.has(blockId));
+                                editor.replaceRange(` ^${blockId}`, { line: to.line, ch: lastLine.length });
+                            }
+                            const link = `[[${file.basename}#^${blockId}]]`;
+                            await navigator.clipboard.writeText(link);
+                            new Notice(t("已复制：") + link);
+                        }
+                        pipelineCopied = true;
+                    } else {
+                        text = this.applyPipelineStep(stepItem, text);
+                    }
                 } else {
                     text = this.applyPipelineStep(stepItem, text);
                 }
             }
-            if (sel) {
-                editor.replaceSelection(text);
-            } else {
-                editor.replaceRange(text, { line: 0, ch: 0 }, { line: editor.lastLine(), ch: editor.getLine(editor.lastLine()).length });
+            if (!pipelineCopied) {
+                if (sel) {
+                    editor.replaceSelection(text);
+                } else {
+                    editor.replaceRange(text, { line: 0, ch: 0 }, { line: editor.lastLine(), ch: editor.getLine(editor.lastLine()).length });
+                }
             }
         } else if (item.type === "action") {
             const file = view.file;
@@ -2142,19 +2486,33 @@ class FileOpsPlusPlugin extends Plugin {
                 modal.open();
             }
 
-        } else if (item.type === "ai") {
-            const sel = editor.getSelection();
-            if (!sel) { new Notice(t("请先选中文本")); return; }
+        } else if (item.type === "subwindow") {
+            if (item.subwindow === "ai") {
+                const sel = editor.getSelection() || "";
+                this.showAIPanel(item, view, sel);
+            } else if (item.subwindow === "local_relation") {
+                this.showLocalGraphPanel(view);
+            } else if (item.subwindow === "stash") {
+                this.showStashPanel(view);
+            }
+        } else if (item.type === "prompt") {
+            const sel = editor.getSelection() || "";
             this.showAIPanel(item, view, sel);
-        } else if (item.type === "graph") {
-            this.showLocalGraphPanel(view);
-        } else if (item.type === "stash") {
-
-            this.showStashPanel(view);
         } else if (item.type === "text") {
             const rep = (item.text || "").replace(/\\n/g, "\n").replace(/\\t/g, "\t");
             const sel = editor.getSelection();
-            editor.replaceSelection(rep.replace(/\{\{text\}\}/g, sel));
+            const now = window.moment ? window.moment() : null;
+            let out = rep.replace(/\{\{text\}\}/g, sel);
+            if (now) {
+                out = out.replace(/\{\{date\}\}/g, now.format("YYYY-MM-DD"))
+                         .replace(/\{\{time\}\}/g, now.format("HH:mm"))
+                         .replace(/\{\{datetime\}\}/g, now.format("YYYY-MM-DD HH:mm"))
+                         .replace(/\{\{timestamp\}\}/g, String(Date.now()))
+                         .replace(/\{\{year\}\}/g, now.format("YYYY"))
+                         .replace(/\{\{month\}\}/g, now.format("MM"))
+                         .replace(/\{\{day\}\}/g, now.format("DD"));
+            }
+            editor.replaceSelection(out);
         } else if (item.type === "key") {
             this.execKeystroke(editor, item.keystroke, view);
         }
@@ -2224,10 +2582,16 @@ class FileOpsPlusPlugin extends Plugin {
         ttl.textContent = item.label || "AI";
         ttl.style.cssText = "font-weight:600;flex:1;font-size:var(--font-ui-small);";
         header.appendChild(ttl);
+        const histBtn = document.createElement("div");
+        histBtn.textContent = "⏱";
+        histBtn.style.cssText = "cursor:pointer;padding:0 4px;color:var(--text-muted);font-size:14px;";
+        histBtn.title = t("历史");
+        header.appendChild(histBtn);
         const closeBtn = document.createElement("div");
         closeBtn.textContent = "✕";
-        closeBtn.style.cssText = "cursor:pointer;padding:0 6px;color:var(--text-muted);";
+        closeBtn.style.cssText = "cursor:pointer;padding:0 6px;color:var(--text-error);display:none;font-weight:700;";
         header.appendChild(closeBtn);
+
         panel.appendChild(header);
         const body = document.createElement("div");
         body.style.cssText = "flex:1;overflow:auto;padding:10px;min-height:40px;max-height:55vh;font-size:var(--font-ui-small);user-select:text;-webkit-user-select:text;white-space:pre-wrap;word-break:break-word;line-height:1.5;";
@@ -2267,7 +2631,7 @@ class FileOpsPlusPlugin extends Plugin {
 
         let drag = false, dgx = 0, dgy = 0;
         header.addEventListener("mousedown", (e) => {
-            if (e.target === closeBtn) return;
+            if (e.target === closeBtn || e.target === histBtn) return;
             drag = true; dgx = e.clientX - panel.getBoundingClientRect().left; dgy = e.clientY - panel.getBoundingClientRect().top;
             e.preventDefault();
         });
@@ -2275,10 +2639,38 @@ class FileOpsPlusPlugin extends Plugin {
         const du = () => { if (drag) { drag = false; cfg.aiPanelX = parseInt(panel.style.left); cfg.aiPanelY = parseInt(panel.style.top); this.saveEditorMenuConfig(); } };
         document.addEventListener("mousemove", dm);
         document.addEventListener("mouseup", du);
-        const closePanel = () => { panel.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("mousemove", rzm); document.removeEventListener("mouseup", rzu); document.removeEventListener("keydown", escH); };
+        const closePanel = () => { panel.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("mousemove", rzm); document.removeEventListener("mouseup", rzu); document.removeEventListener("keydown", escH); document.removeEventListener("mousedown", outsideH); };
         const escH = (e) => { if (e.key === "Escape") closePanel(); };
+        const outsideH = (e) => { if (!panel.contains(e.target)) closePanel(); };
         document.addEventListener("keydown", escH);
+        document.addEventListener("mousedown", outsideH);
         closeBtn.onclick = closePanel;
+
+        const renderHistory = () => {
+            body.innerHTML = "";
+            const hist = cfg.aiHistory || [];
+            if (hist.length === 0) { body.textContent = t("无历史"); return; }
+            const list = body.createEl("div", { attr: { style: "display:flex;flex-direction:column;gap:4px;" } });
+            for (let i = hist.length - 1; i >= 0; i--) {
+                const h = hist[i];
+                const row = list.createEl("div", { attr: { style: "padding:6px 8px;border:1px solid var(--background-modifier-border);border-radius:4px;cursor:pointer;" } });
+                const ts = new Date(h.ts);
+                const head = row.createEl("div", { attr: { style: "font-size:11px;color:var(--text-muted);margin-bottom:2px;display:flex;justify-content:space-between;" } });
+                head.createEl("span", { text: ts.toLocaleString() });
+                const delBtn = head.createEl("span", { text: "✕", attr: { style: "cursor:pointer;color:var(--text-error);padding:0 4px;" } });
+                delBtn.onclick = (e) => { e.stopPropagation(); cfg.aiHistory.splice(i, 1); this.saveEditorMenuConfig(); renderHistory(); };
+                const preview = row.createEl("div", { attr: { style: "white-space:pre-wrap;word-break:break-word;max-height:60px;overflow:hidden;color:var(--text-normal);" } });
+                preview.textContent = (h.result || "").slice(0, 200) + ((h.result || "").length > 200 ? "…" : "");
+                row.onclick = () => { result = h.result || ""; body.textContent = result; copyBtn.disabled = insBtn.disabled = repBtn.disabled = newFileBtn.disabled = false; histBtn.textContent = "⏱"; };
+                row.addEventListener("mouseenter", () => { row.style.background = "var(--background-modifier-hover);"; });
+                row.addEventListener("mouseleave", () => { row.style.background = ""; });
+            }
+            const clrBtn = body.createEl("button", { text: t("清空历史"), attr: { style: "margin-top:8px;font-size:var(--font-ui-smaller);padding:2px 10px;" } });
+            clrBtn.onclick = () => { cfg.aiHistory = []; this.saveEditorMenuConfig(); renderHistory(); };
+        };
+        let histView = false;
+        histBtn.onclick = (e) => { e.stopPropagation(); histView = !histView; if (histView) { renderHistory(); histBtn.textContent = "←"; } else { body.textContent = result || t("生成中…"); histBtn.textContent = "⏱"; } };
+
         let rzing = false, rsx = 0, rsy = 0, rsw = 0, rsh = 0;
         resizeHandle.addEventListener("mousedown", (e) => {
             e.preventDefault(); e.stopPropagation();
@@ -2298,21 +2690,29 @@ class FileOpsPlusPlugin extends Plugin {
         document.addEventListener("mouseup", rzu);
 
         this.callAIStream(fullPrompt, (chunk) => {
-            if (streaming) {
+            if (streaming && !histView) {
                 if (body.textContent === t("生成中…")) body.textContent = "";
                 result += chunk;
                 body.textContent = result;
                 body.scrollTop = body.scrollHeight;
+            } else if (streaming) {
+                result += chunk;
             }
         }).then(() => {
             streaming = false;
             result = result.trim();
-            if (!result) { body.textContent = t("AI 返回为空"); return; }
-            body.textContent = result;
-            copyBtn.disabled = insBtn.disabled = repBtn.disabled = newFileBtn.disabled = false;
+            if (!result) { if (!histView) body.textContent = t("AI 返回为空"); return; }
+            cfg.aiHistory = cfg.aiHistory || [];
+            cfg.aiHistory.push({ result, prompt: promptTpl, ts: Date.now(), source: sourcePath });
+            if (cfg.aiHistory.length > 10) cfg.aiHistory = cfg.aiHistory.slice(-10);
+            this.saveEditorMenuConfig();
+            if (!histView) {
+                body.textContent = result;
+                copyBtn.disabled = insBtn.disabled = repBtn.disabled = newFileBtn.disabled = false;
+            }
         }).catch((err) => {
             streaming = false;
-            body.textContent = t("AI 返回失败：") + (err && err.message ? err.message : err);
+            if (!histView) body.textContent = t("AI 返回失败：") + (err && err.message ? err.message : err);
         });
     }
 
@@ -2398,6 +2798,8 @@ class FileOpsPlusPlugin extends Plugin {
     showLocalGraphPanel(view) {
         const existing = document.querySelector(".fop-graph-panel");
         if (existing) { if (existing._fopCleanup) existing._fopCleanup(); else existing.remove(); }
+        const existingChip = document.querySelector(".fop-graph-chip");
+        if (existingChip) existingChip.remove();
         const file = view && view.file;
         if (!file) { new Notice(t("无活动文件")); return; }
         const cfg = this.editorMenuConfig;
@@ -2419,14 +2821,19 @@ class FileOpsPlusPlugin extends Plugin {
                 if (sf && sf instanceof TFile) incoming.push(sf);
             }
         }
-        if (outgoing.length === 0 && incoming.length === 0) { new Notice(t("未找到关联笔记")); return; }
+
 
         const w = cfg.graphPanelWidth || 300, h = cfg.graphPanelHeight || 400;
         const panel = document.createElement("div");
         panel.className = "fop-graph-panel fop-em-panel";
         const bs = cfg.buttonStyle;
         if (bs && bs !== "flat") panel.classList.add("fop-style-" + bs);
-        panel.style.cssText = "position:fixed;z-index:9999;width:" + w + "px;max-height:" + h + "px;max-width:92vw;display:flex;flex-direction:column;box-sizing:border-box;overflow:visible;";
+        panel.style.cssText = "position:fixed;z-index:9999;width:" + w + "px;max-height:" + h + "px;max-width:92vw;display:flex;flex-direction:column;box-sizing:border-box;overflow:" + (bs === "memphis" ? "visible" : "hidden") + ";";
+        if (bs === "memphis") {
+            const disc = document.createElement("div");
+            disc.style.cssText = "position:absolute;right:-14px;top:36px;width:20px;height:20px;border-radius:50%;background:#ffe066;border:3px solid #111;box-shadow:3px 3px 0 #111;pointer-events:none;z-index:2;";
+            panel.appendChild(disc);
+        }
         const header = document.createElement("div");
         header.style.cssText = "display:flex;align-items:center;gap:6px;padding:6px 10px;cursor:grab;border-bottom:1px solid var(--background-modifier-border);";
         const ttl = document.createElement("div");
@@ -2438,23 +2845,48 @@ class FileOpsPlusPlugin extends Plugin {
         closeBtn.textContent = "✕";
         closeBtn.style.cssText = "cursor:pointer;padding:0 6px;color:var(--text-error);display:none;font-weight:700;";
         header.appendChild(closeBtn);
+        const foldBtn = document.createElement("div");
+        foldBtn.className = "fop-fold-btn" + (cfg.graphAutoFold ? " is-active" : "");
+        foldBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>';
+        foldBtn.title = t("自动折叠");
+        header.appendChild(foldBtn);
         panel.appendChild(header);
 
         const content = document.createElement("div");
         content.style.cssText = "flex:1;min-height:0;overflow-y:auto;padding:6px 10px;";
-        const renderList = (title, files) => {
-            if (files.length === 0) return;
-            const sec = content.createEl("div", { attr: { style: "margin-bottom:10px;" } });
-            sec.createEl("div", { text: title + " (" + files.length + ")", attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);margin-bottom:4px;font-weight:600;" } });
-            for (const f of files) {
-                const item = sec.createEl("div", { text: f.basename, attr: { style: "padding:3px 6px;cursor:pointer;border-radius:4px;font-size:var(--font-ui-small);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" } });
-                item.addEventListener("mouseenter", () => item.style.background = "var(--background-modifier-hover)");
-                item.addEventListener("mouseleave", () => item.style.background = "");
-                item.addEventListener("click", () => this.app.workspace.getLeaf().openFile(f));
-            }
-        };
-        renderList(t("提及文档"), outgoing);
-        renderList(t("被提及文档"), incoming);
+        const outPaths = new Set(outgoing.map(f => f.path));
+        const inPaths = new Set(incoming.map(f => f.path));
+        const seen = new Set();
+        const uniqFiles = [];
+        for (const f of outgoing) { if (!seen.has(f.path)) { seen.add(f.path); uniqFiles.push(f); } }
+        for (const f of incoming) { if (!seen.has(f.path)) { seen.add(f.path); uniqFiles.push(f); } }
+        uniqFiles.sort((a, b) => {
+            const ab = outPaths.has(a.path) && inPaths.has(a.path);
+            const bb = outPaths.has(b.path) && inPaths.has(b.path);
+            return (bb ? 1 : 0) - (ab ? 1 : 0);
+        });
+        const bothCount = uniqFiles.filter(f => outPaths.has(f.path) && inPaths.has(f.path)).length;
+        const OUT_C = "#2a8a7e", IN_C = "#c47a2c";
+        const OUT_BG = "rgba(42,138,126,.15)", IN_BG = "rgba(196,122,44,.17)";
+        for (const f of uniqFiles) {
+            const isOut = outPaths.has(f.path), isIn = inPaths.has(f.path);
+            const isBoth = isOut && isIn;
+            const arrow = isBoth ? "⇄" : isOut ? "→" : "←";
+            const tag = isBoth ? t("双向") : isOut ? t("提及") : t("被提及");
+            const tagColor = isBoth ? "var(--text-muted)" : isOut ? OUT_C : IN_C;
+            const row = content.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;" } });
+            row.createEl("span", { text: arrow, attr: { style: "width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;flex:none;background:" + (isBoth || isOut ? OUT_BG : IN_BG) + ";color:" + (isBoth || isOut ? OUT_C : IN_C) + ";" } });
+            row.createEl("span", { text: f.basename, attr: { style: "flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:var(--font-ui-small);" } });
+            row.createEl("span", { text: tag, attr: { style: "font-size:11px;border:1px solid var(--background-modifier-border);border-radius:9px;padding:0 6px;background:rgba(255,255,255,.6);color:" + tagColor + ";flex:none;" } });
+            row.addEventListener("mouseenter", () => row.style.background = "var(--background-modifier-hover)");
+            row.addEventListener("mouseleave", () => row.style.background = "");
+            row.addEventListener("click", () => this.app.workspace.getLeaf().openFile(f));
+        }
+        if (uniqFiles.length > 0) {
+            const foot = content.createEl("div", { attr: { style: "margin-top:8px;padding-top:8px;border-top:1px solid var(--background-modifier-border);font-size:11px;color:var(--text-muted);display:flex;gap:12px;" } });
+            foot.createEl("span", { text: uniqFiles.length + " " + t("个页面") });
+            foot.createEl("span", { text: bothCount + " " + t("个双向") });
+        }
         panel.appendChild(content);
 
         const resizeHandle = document.createElement("div");
@@ -2486,6 +2918,30 @@ class FileOpsPlusPlugin extends Plugin {
         document.addEventListener("mouseup", rzUp);
 
         document.body.appendChild(panel);
+        let graphChip = null;
+        let graphHideTimer = null, graphShowTimer = null, graphChipDragging = false;
+        const graphShowPanel = () => {
+            panel.style.display = "";
+            const cl = parseInt(graphChip.style.left), ct = parseInt(graphChip.style.top);
+            const cw = graphChip.offsetWidth, ch = graphChip.offsetHeight;
+            let pl = cl, pt = ct + ch + 4;
+            if (pl + panel.offsetWidth > window.innerWidth - 2) pl = window.innerWidth - panel.offsetWidth - 2;
+            if (pt + panel.offsetHeight > window.innerHeight - 2) pt = Math.max(2, ct - panel.offsetHeight - 4);
+            panel.style.left = Math.max(2, pl) + "px";
+            panel.style.top = Math.max(2, pt) + "px";
+            panel.style.height = Math.max(150, Math.min(h, window.innerHeight - parseInt(panel.style.top) - 10)) + "px";
+            content.style.maxHeight = Math.max(100, parseInt(panel.style.height) - header.offsetHeight) + "px";
+        };
+        const graphScheduleHide = () => {
+            if (graphHideTimer) clearTimeout(graphHideTimer);
+            graphHideTimer = setTimeout(() => {
+                const mx = this._lastMouseX, my = this._lastMouseY;
+                const rc = graphChip.getBoundingClientRect(), rp = panel.getBoundingClientRect();
+                const inChip = mx >= rc.left && mx <= rc.right && my >= rc.top && my <= rc.bottom;
+                const inPanel = panel.style.display !== "none" && mx >= rp.left && mx <= rp.right && my >= rp.top && my <= rp.bottom;
+                if (!inChip && !inPanel) panel.style.display = "none";
+            }, 150);
+        };
         if (cfg.graphOpacity != null) panel.style.opacity = cfg.graphOpacity.toString();
         panel.addEventListener("wheel", (e) => {
             if (!e.ctrlKey) return;
@@ -2495,7 +2951,20 @@ class FileOpsPlusPlugin extends Plugin {
             panel.style.opacity = opa.toString();
             cfg.graphOpacity = opa; this.saveEditorMenuConfig();
         }, { passive: false });
-        let docked = cfg.graphDocked !== false;
+        panel.addEventListener("mouseenter", () => {
+            const base = cfg.graphOpacity != null ? cfg.graphOpacity : 1;
+            if (base < 1) panel.style.opacity = Math.min(1, base + 0.25).toString();
+            closeBtn.style.display = "";
+            if (graphHideTimer) { clearTimeout(graphHideTimer); graphHideTimer = null; }
+        });
+        panel.addEventListener("mouseleave", () => {
+            const base = cfg.graphOpacity != null ? cfg.graphOpacity : 1;
+            panel.style.opacity = base.toString();
+            closeBtn.style.display = "none";
+            if (cfg.graphAutoFold && graphChip) graphScheduleHide();
+        });
+
+        let docked = cfg.graphAutoFold ? false : (cfg.graphDocked !== false);
         const updatePosition = () => {
             const menuPanel = document.querySelector(".fop-em-panel:not(.fop-graph-panel):not(.fop-stash-panel):not(.file-ops-plus-menu)");
             if (docked && menuPanel) {
@@ -2512,13 +2981,65 @@ class FileOpsPlusPlugin extends Plugin {
             } else {
                 const px = cfg.graphPanelX != null ? cfg.graphPanelX : window.innerWidth - w - 20;
                 const py = cfg.graphPanelY != null ? cfg.graphPanelY : 80;
-                panel.style.left = Math.max(10, Math.min(px, window.innerWidth - panel.offsetWidth - 10)) + "px";
-                panel.style.top = Math.max(10, Math.min(py, window.innerHeight - panel.offsetHeight - 10)) + "px";
+                panel.style.left = Math.max(2, Math.min(px, window.innerWidth - panel.offsetWidth - 2)) + "px";
+                panel.style.top = Math.max(2, Math.min(py, window.innerHeight - panel.offsetHeight - 2)) + "px";
             }
             panel.style.height = Math.max(150, Math.min(h, window.innerHeight - parseInt(panel.style.top) - 10)) + "px";
             content.style.maxHeight = Math.max(100, parseInt(panel.style.height) - header.offsetHeight) + "px";
         };
         updatePosition();
+
+
+        const makeGraphChip = () => {
+            if (graphChip) graphChip.remove();
+            graphChip = document.createElement("div");
+            graphChip.className = "fop-fold-chip fop-graph-chip";
+            const cnt = uniqFiles.length;
+            graphChip.innerHTML = '<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1"/></svg><span>' + t("关联") + '</span><b>' + cnt + '</b>';
+            graphChip.style.cursor = "grab";
+            document.body.appendChild(graphChip);
+            const cx = cfg.graphChipX != null ? cfg.graphChipX : parseInt(panel.style.left);
+            const cy = cfg.graphChipY != null ? cfg.graphChipY : (parseInt(panel.style.top) - graphChip.offsetHeight - 4);
+            graphChip.style.left = Math.max(0, Math.min(cx, window.innerWidth - graphChip.offsetWidth - 2)) + "px";
+            graphChip.style.top = Math.max(0, cy) + "px";
+            graphChip.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                const menu = new Menu();
+                menu.addItem((item) => { item.setTitle(t("关闭")).setIcon("x").onClick(() => { cfg.graphEnabled = false; this.saveEditorMenuConfig(); closePanel(); }); });
+                menu.showAtPosition({ x: e.clientX, y: e.clientY });
+            });
+            graphChip.addEventListener("mouseenter", () => {
+                if (graphHideTimer) { clearTimeout(graphHideTimer); graphHideTimer = null; }
+                if (graphShowTimer) clearTimeout(graphShowTimer);
+                graphShowTimer = setTimeout(() => { graphShowPanel(); }, 200);
+            });
+            graphChip.addEventListener("mouseleave", () => {
+                if (graphShowTimer) { clearTimeout(graphShowTimer); graphShowTimer = null; }
+                graphScheduleHide();
+            });
+            graphChip.addEventListener("mousedown", (e) => {
+                if (e.button !== 0) return;
+                graphChip.style.cursor = "grabbing";
+                e.preventDefault();
+                if (graphShowTimer) { clearTimeout(graphShowTimer); graphShowTimer = null; }
+                graphChipDragging = true;
+                graphShowPanel();
+                const sx = e.clientX, sy = e.clientY, sl = graphChip.offsetLeft, st = graphChip.offsetTop;
+                const mv = (ev) => {
+                    graphChip.style.left = Math.max(0, Math.min(sl + ev.clientX - sx, window.innerWidth - graphChip.offsetWidth - 2)) + "px";
+                    graphChip.style.top = Math.max(0, Math.min(st + ev.clientY - sy, window.innerHeight - graphChip.offsetHeight - 2)) + "px";
+                    graphShowPanel();
+                };
+                const up = () => {
+                    graphChip.style.cursor = "grab";
+                    graphChipDragging = false;
+                    document.removeEventListener("mousemove", mv); document.removeEventListener("mouseup", up);
+                    cfg.graphChipX = parseInt(graphChip.style.left); cfg.graphChipY = parseInt(graphChip.style.top); this.saveEditorMenuConfig();
+                };
+                document.addEventListener("mousemove", mv); document.addEventListener("mouseup", up);
+            });
+        };
+        if (cfg.graphAutoFold) { makeGraphChip(); panel.style.display = "none"; }
 
         const checkMenu = () => {
             const menuPanel = document.querySelector(".fop-em-panel:not(.fop-graph-panel):not(.fop-stash-panel):not(.file-ops-plus-menu)");
@@ -2527,6 +3048,8 @@ class FileOpsPlusPlugin extends Plugin {
         };
         const observer = new MutationObserver(checkMenu);
         observer.observe(document.body, { childList: true, subtree: false });
+        const onMenuMove = () => { if (docked) updatePosition(); };
+        document.addEventListener("fop-menu-move", onMenuMove);
         checkMenu();
 
         let drag = false, dgx = 0, dgy = 0, dragged = false;
@@ -2541,9 +3064,9 @@ class FileOpsPlusPlugin extends Plugin {
                 drag = false;
                 if (dragged) {
                     docked = false; cfg.graphDocked = false;
-                    closeBtn.style.display = "";
                     cfg.graphPanelX = parseInt(panel.style.left); cfg.graphPanelY = parseInt(panel.style.top);
                     this.saveEditorMenuConfig();
+
                 }
             }
         };
@@ -2551,9 +3074,10 @@ class FileOpsPlusPlugin extends Plugin {
         document.addEventListener("mouseup", du);
         const escH = (e) => { if (e.key === "Escape" && !docked) closePanel(); };
         document.addEventListener("keydown", escH);
-        const closePanel = () => { observer.disconnect(); panel.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("keydown", escH); document.removeEventListener("mousemove", rzMove); document.removeEventListener("mouseup", rzUp); this.app.workspace.offref(leafRef); };
+        const closePanel = () => { observer.disconnect(); panel.remove(); if (graphChip) graphChip.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("keydown", escH); document.removeEventListener("mousemove", rzMove); document.removeEventListener("mouseup", rzUp); document.removeEventListener("fop-menu-move", onMenuMove); this.app.workspace.offref(leafRef); };
         panel._fopCleanup = closePanel;
         closeBtn.onclick = () => { cfg.graphEnabled = false; this.saveEditorMenuConfig(); closePanel(); };
+        foldBtn.addEventListener("click", (e) => { e.stopPropagation(); cfg.graphAutoFold = !cfg.graphAutoFold; this.saveEditorMenuConfig(); closePanel(); this.showLocalGraphPanel(view); });
         let lastPath = file.path;
         const leafHandler = () => {
             if (!cfg.graphEnabled) return;
@@ -2569,6 +3093,8 @@ class FileOpsPlusPlugin extends Plugin {
     showStashPanel(view) {
         const existing = document.querySelector(".fop-stash-panel");
         if (existing) { if (existing._fopCleanup) existing._fopCleanup(); else existing.remove(); }
+        const existingChip = document.querySelector(".fop-stash-chip");
+        if (existingChip) existingChip.remove();
         const cfg = this.editorMenuConfig;
         const items = cfg.stashItems || [];
 
@@ -2577,13 +3103,17 @@ class FileOpsPlusPlugin extends Plugin {
         panel.className = "fop-stash-panel fop-em-panel";
         const bs = cfg.buttonStyle;
         if (bs && bs !== "flat") panel.classList.add("fop-style-" + bs);
-        panel.style.cssText = "position:fixed;z-index:9999;width:" + w + "px;max-height:" + h + "px;max-width:92vw;display:flex;flex-direction:column;box-sizing:border-box;overflow:visible;";
+        panel.style.cssText = "position:fixed;z-index:9999;width:" + w + "px;max-height:" + h + "px;max-width:92vw;display:flex;flex-direction:column;box-sizing:border-box;overflow:" + (bs === "memphis" ? "visible" : "hidden") + ";";
+        if (bs === "memphis") {
+            const ring = document.createElement("div");
+            ring.style.cssText = "position:absolute;bottom:36px;right:-20px;width:26px;height:26px;border:6px solid #9b51e0;border-radius:50%;background:var(--background-primary);box-shadow:3px 3px 0 #111,inset 3px 3px 0 #111;pointer-events:none;z-index:2;";
+            panel.appendChild(ring);
+        }
         const header = document.createElement("div");
         header.style.cssText = "display:flex;align-items:center;gap:6px;padding:6px 10px;cursor:grab;border-bottom:1px solid var(--background-modifier-border);";
         const ttl = document.createElement("div");
         ttl.textContent = t("暂存列表") + " (" + items.length + ")";
         ttl.style.cssText = "font-weight:600;flex:1;font-size:var(--font-ui-small);";
-        header.appendChild(ttl);
         const addBtn = document.createElement("div");
         addBtn.textContent = "+";
         addBtn.style.cssText = "cursor:pointer;padding:0 6px;color:var(--text-accent);font-weight:700;font-size:var(--font-ui-small);user-select:none;";
@@ -2601,9 +3131,20 @@ class FileOpsPlusPlugin extends Plugin {
             closePanel(); this.showStashPanel(view);
         });
         header.appendChild(addBtn);
+        header.appendChild(ttl);
+        const closeBtn = document.createElement("div");
+        closeBtn.textContent = "✕";
+        closeBtn.style.cssText = "cursor:pointer;padding:0 6px;color:var(--text-error);display:none;font-weight:700;";
+        header.appendChild(closeBtn);
+        const foldBtn = document.createElement("div");
+        foldBtn.className = "fop-fold-btn" + (cfg.stashAutoFold ? " is-active" : "");
+        foldBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>';
+        foldBtn.title = t("自动折叠");
+        header.appendChild(foldBtn);
+        panel.appendChild(header);
         const clearBtn = document.createElement("div");
         clearBtn.textContent = "🗑";
-        clearBtn.style.cssText = "cursor:pointer;padding:0 6px;color:var(--text-warning);font-size:var(--font-ui-smaller);user-select:none;";
+        clearBtn.style.cssText = "position:absolute;bottom:2px;right:16px;cursor:pointer;color:var(--text-warning);font-size:var(--font-ui-smaller);z-index:10;user-select:none;";
         clearBtn.title = t("清空暂存");
         clearBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -2613,12 +3154,7 @@ class FileOpsPlusPlugin extends Plugin {
                 closePanel(); this.showStashPanel(view);
             }
         });
-        header.appendChild(clearBtn);
-        const closeBtn = document.createElement("div");
-        closeBtn.textContent = "✕";
-        closeBtn.style.cssText = "cursor:pointer;padding:0 6px;color:var(--text-error);display:none;font-weight:700;";
-        header.appendChild(closeBtn);
-        panel.appendChild(header);
+        panel.appendChild(clearBtn);
 
         const content = document.createElement("div");
         content.style.cssText = "flex:1;min-height:0;overflow-y:auto;padding:6px 10px;";
@@ -2681,6 +3217,30 @@ class FileOpsPlusPlugin extends Plugin {
         document.addEventListener("mouseup", rzUp);
 
         document.body.appendChild(panel);
+        let stashChip = null;
+        let stashHideTimer = null, stashShowTimer = null, stashChipDragging = false;
+        const stashShowPanel = () => {
+            panel.style.display = "";
+            const cl = parseInt(stashChip.style.left), ct = parseInt(stashChip.style.top);
+            const cw = stashChip.offsetWidth, ch = stashChip.offsetHeight;
+            let pl = cl, pt = ct + ch + 4;
+            if (pl + panel.offsetWidth > window.innerWidth - 2) pl = window.innerWidth - panel.offsetWidth - 2;
+            if (pt + panel.offsetHeight > window.innerHeight - 2) pt = Math.max(2, ct - panel.offsetHeight - 4);
+            panel.style.left = Math.max(2, pl) + "px";
+            panel.style.top = Math.max(2, pt) + "px";
+            panel.style.height = Math.max(150, Math.min(h, window.innerHeight - parseInt(panel.style.top) - 10)) + "px";
+            content.style.maxHeight = Math.max(100, parseInt(panel.style.height) - header.offsetHeight) + "px";
+        };
+        const stashScheduleHide = () => {
+            if (stashHideTimer) clearTimeout(stashHideTimer);
+            stashHideTimer = setTimeout(() => {
+                const mx = this._lastMouseX, my = this._lastMouseY;
+                const rc = stashChip.getBoundingClientRect(), rp = panel.getBoundingClientRect();
+                const inChip = mx >= rc.left && mx <= rc.right && my >= rc.top && my <= rc.bottom;
+                const inPanel = panel.style.display !== "none" && mx >= rp.left && mx <= rp.right && my >= rp.top && my <= rp.bottom;
+                if (!inChip && !inPanel) panel.style.display = "none";
+            }, 150);
+        };
         if (cfg.stashOpacity != null) panel.style.opacity = cfg.stashOpacity.toString();
         panel.addEventListener("wheel", (e) => {
             if (!e.ctrlKey) return;
@@ -2690,7 +3250,19 @@ class FileOpsPlusPlugin extends Plugin {
             panel.style.opacity = opa.toString();
             cfg.stashOpacity = opa; this.saveEditorMenuConfig();
         }, { passive: false });
-        let docked = cfg.stashDocked !== false;
+        panel.addEventListener("mouseenter", () => {
+            const base = cfg.stashOpacity != null ? cfg.stashOpacity : 1;
+            if (base < 1) panel.style.opacity = Math.min(1, base + 0.25).toString();
+            closeBtn.style.display = "";
+            if (stashHideTimer) { clearTimeout(stashHideTimer); stashHideTimer = null; }
+        });
+        panel.addEventListener("mouseleave", () => {
+            const base = cfg.stashOpacity != null ? cfg.stashOpacity : 1;
+            panel.style.opacity = base.toString();
+            closeBtn.style.display = "none";
+            if (cfg.stashAutoFold && stashChip) stashScheduleHide();
+        });
+        let docked = cfg.stashAutoFold ? false : (cfg.stashDocked !== false);
         const updatePosition = () => {
             const menuPanel = document.querySelector(".fop-em-panel:not(.fop-graph-panel):not(.fop-stash-panel):not(.file-ops-plus-menu)");
             const graphPanel = document.querySelector(".fop-graph-panel");
@@ -2710,13 +3282,65 @@ class FileOpsPlusPlugin extends Plugin {
             } else {
                 const px = cfg.stashPanelX != null ? cfg.stashPanelX : window.innerWidth - w - 20;
                 const py = cfg.stashPanelY != null ? cfg.stashPanelY : 80;
-                panel.style.left = Math.max(10, Math.min(px, window.innerWidth - panel.offsetWidth - 10)) + "px";
-                panel.style.top = Math.max(10, Math.min(py, window.innerHeight - panel.offsetHeight - 10)) + "px";
+                panel.style.left = Math.max(2, Math.min(px, window.innerWidth - panel.offsetWidth - 2)) + "px";
+                panel.style.top = Math.max(2, Math.min(py, window.innerHeight - panel.offsetHeight - 2)) + "px";
             }
             panel.style.height = Math.max(150, Math.min(h, window.innerHeight - parseInt(panel.style.top) - 10)) + "px";
             content.style.maxHeight = Math.max(100, parseInt(panel.style.height) - header.offsetHeight) + "px";
         };
         updatePosition();
+
+
+        const makeStashChip = () => {
+            if (stashChip) stashChip.remove();
+            stashChip = document.createElement("div");
+            stashChip.className = "fop-fold-chip fop-stash-chip";
+            const cnt = items.length;
+            stashChip.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 13l2-8h12l2-8"/><path d="M4 13v6h16v-6h-5a3 3 0 0 1-6 0z"/></svg><span>' + t("暂存") + '</span><b>' + cnt + '</b>';
+            stashChip.style.cursor = "grab";
+            document.body.appendChild(stashChip);
+            const cx = cfg.stashChipX != null ? cfg.stashChipX : parseInt(panel.style.left);
+            const cy = cfg.stashChipY != null ? cfg.stashChipY : (parseInt(panel.style.top) - stashChip.offsetHeight - 4);
+            stashChip.style.left = Math.max(0, Math.min(cx, window.innerWidth - stashChip.offsetWidth - 2)) + "px";
+            stashChip.style.top = Math.max(0, cy) + "px";
+            stashChip.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                const menu = new Menu();
+                menu.addItem((item) => { item.setTitle(t("关闭")).setIcon("x").onClick(() => { cfg.stashEnabled = false; this.saveEditorMenuConfig(); closePanel(); }); });
+                menu.showAtPosition({ x: e.clientX, y: e.clientY });
+            });
+            stashChip.addEventListener("mouseenter", () => {
+                if (stashHideTimer) { clearTimeout(stashHideTimer); stashHideTimer = null; }
+                if (stashShowTimer) clearTimeout(stashShowTimer);
+                stashShowTimer = setTimeout(() => { stashShowPanel(); }, 200);
+            });
+            stashChip.addEventListener("mouseleave", () => {
+                if (stashShowTimer) { clearTimeout(stashShowTimer); stashShowTimer = null; }
+                stashScheduleHide();
+            });
+            stashChip.addEventListener("mousedown", (e) => {
+                if (e.button !== 0) return;
+                stashChip.style.cursor = "grabbing";
+                e.preventDefault();
+                if (stashShowTimer) { clearTimeout(stashShowTimer); stashShowTimer = null; }
+                stashChipDragging = true;
+                stashShowPanel();
+                const sx = e.clientX, sy = e.clientY, sl = stashChip.offsetLeft, st = stashChip.offsetTop;
+                const mv = (ev) => {
+                    stashChip.style.left = Math.max(0, Math.min(sl + ev.clientX - sx, window.innerWidth - stashChip.offsetWidth - 2)) + "px";
+                    stashChip.style.top = Math.max(0, Math.min(st + ev.clientY - sy, window.innerHeight - stashChip.offsetHeight - 2)) + "px";
+                    stashShowPanel();
+                };
+                const up = () => {
+                    stashChip.style.cursor = "grab";
+                    stashChipDragging = false;
+                    document.removeEventListener("mousemove", mv); document.removeEventListener("mouseup", up);
+                    cfg.stashChipX = parseInt(stashChip.style.left); cfg.stashChipY = parseInt(stashChip.style.top); this.saveEditorMenuConfig();
+                };
+                document.addEventListener("mousemove", mv); document.addEventListener("mouseup", up);
+            });
+        };
+        if (cfg.stashAutoFold) { makeStashChip(); panel.style.display = "none"; }
 
         const checkMenu = () => {
             const menuPanel = document.querySelector(".fop-em-panel:not(.fop-graph-panel):not(.fop-stash-panel):not(.file-ops-plus-menu)");
@@ -2725,6 +3349,8 @@ class FileOpsPlusPlugin extends Plugin {
         };
         const observer = new MutationObserver(checkMenu);
         observer.observe(document.body, { childList: true, subtree: false });
+        const onMenuMove = () => { if (docked) updatePosition(); };
+        document.addEventListener("fop-menu-move", onMenuMove);
         checkMenu();
 
         let drag = false, dgx = 0, dgy = 0, dragged = false;
@@ -2739,9 +3365,10 @@ class FileOpsPlusPlugin extends Plugin {
                 drag = false;
                 if (dragged) {
                     docked = false; cfg.stashDocked = false;
-                    closeBtn.style.display = "";
+
                     cfg.stashPanelX = parseInt(panel.style.left); cfg.stashPanelY = parseInt(panel.style.top);
                     this.saveEditorMenuConfig();
+
                 }
             }
         };
@@ -2749,9 +3376,10 @@ class FileOpsPlusPlugin extends Plugin {
         document.addEventListener("mouseup", du);
         const escH = (e) => { if (e.key === "Escape" && !docked) closePanel(); };
         document.addEventListener("keydown", escH);
-        const closePanel = () => { observer.disconnect(); panel.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("keydown", escH); document.removeEventListener("mousemove", rzMove); document.removeEventListener("mouseup", rzUp); };
+        const closePanel = () => { observer.disconnect(); panel.remove(); if (stashChip) stashChip.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("keydown", escH); document.removeEventListener("mousemove", rzMove); document.removeEventListener("mouseup", rzUp); document.removeEventListener("fop-menu-move", onMenuMove); };
         panel._fopCleanup = closePanel;
         closeBtn.onclick = () => { cfg.stashEnabled = false; this.saveEditorMenuConfig(); closePanel(); };
+        foldBtn.addEventListener("click", (e) => { e.stopPropagation(); cfg.stashAutoFold = !cfg.stashAutoFold; this.saveEditorMenuConfig(); closePanel(); this.showStashPanel(view); });
     }
 
     async aiCreateNewFile(content, sel, view, foot, panel, closePanel) {
@@ -2979,6 +3607,31 @@ class FileOpsPlusPlugin extends Plugin {
         root.style.cssText = "flex:1;overflow:auto;padding:0 12px 12px;min-height:0;";
         body.appendChild(root);
 
+        const _dragWheelHandler = (e) => { if (this._fopDragging) { root.scrollTop += e.deltaY; e.preventDefault(); } };
+        document.addEventListener("wheel", _dragWheelHandler, { capture: true, passive: false });
+        const _cleanupWheel = () => { document.removeEventListener("wheel", _dragWheelHandler, { capture: true }); };
+
+        let _autoScrollRAF = null, _autoScrollDy = 0;
+        const _edgeScroll = (clientY) => {
+            const rect = root.getBoundingClientRect();
+            const margin = 100;
+            let dy = 0;
+            if (clientY < rect.top + margin) dy = -Math.max(2, (rect.top + margin - clientY) * 0.3);
+            else if (clientY > rect.bottom - margin) dy = Math.max(2, (clientY - (rect.bottom - margin)) * 0.3);
+            _autoScrollDy = dy;
+            if (dy !== 0 && !_autoScrollRAF) {
+                const tick = () => { root.scrollTop += _autoScrollDy; _autoScrollRAF = requestAnimationFrame(tick); };
+                _autoScrollRAF = requestAnimationFrame(tick);
+            } else if (dy === 0 && _autoScrollRAF) { cancelAnimationFrame(_autoScrollRAF); _autoScrollRAF = null; }
+        };
+        const _dragOverScroll = (e) => { if (this._fopDragging) _edgeScroll(e.clientY); };
+        const _dragScroll = (e) => { if (this._fopDragging) _edgeScroll(e.clientY); };
+        document.addEventListener("dragover", _dragOverScroll, { capture: true });
+        document.addEventListener("drag", _dragScroll, { capture: true });
+        const _stopAutoScroll = () => { if (_autoScrollRAF) { cancelAnimationFrame(_autoScrollRAF); _autoScrollRAF = null; } };
+        document.addEventListener("drop", _stopAutoScroll, { capture: true });
+        document.addEventListener("dragend", _stopAutoScroll, { capture: true });
+
         panel.appendChild(body);
 
 
@@ -3142,7 +3795,7 @@ class FileOpsPlusPlugin extends Plugin {
             dragging = true; dgx = e.clientX - panel.getBoundingClientRect().left; dgy = e.clientY - panel.getBoundingClientRect().top;
             header.style.cursor = "grabbing"; e.preventDefault();
         });
-        const closePanel = () => { hideAttachedMenu(); panel.remove(); document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); document.removeEventListener("keydown", escH); };
+        const closePanel = () => { hideAttachedMenu(); panel.remove(); document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); document.removeEventListener("keydown", escH); _cleanupWheel(); _stopAutoScroll(); document.removeEventListener("dragover", _dragOverScroll, { capture: true }); document.removeEventListener("drag", _dragScroll, { capture: true }); document.removeEventListener("drop", _stopAutoScroll, { capture: true }); document.removeEventListener("dragend", _stopAutoScroll, { capture: true }); };
         closeBtn.onclick = closePanel;
         const escH = (e) => { if (e.key === "Escape") closePanel(); };
         document.addEventListener("keydown", escH);
@@ -3189,6 +3842,11 @@ class FileOpsPlusPlugin extends Plugin {
                 autoCollapseCb.checked = cfg.autoCollapseFolder === true;
                 autoCollapseRow.createEl("span", { text: t("自动折叠文件夹") });
                 autoCollapseCb.onchange = () => { cfg.autoCollapseFolder = autoCollapseCb.checked; this.saveEditorMenuConfig(); };
+                const mergeRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
+                const mergeCb = mergeRow.createEl("input", { type: "checkbox" });
+                mergeCb.checked = cfg.autoMergeTabs === true;
+                mergeRow.createEl("span", { text: t("自动合并标签页") });
+                mergeCb.onchange = () => { cfg.autoMergeTabs = mergeCb.checked; this.saveEditorMenuConfig(); };
                 return;
             }
             if (currentTab === "appearance") {
@@ -3213,6 +3871,8 @@ class FileOpsPlusPlugin extends Plugin {
                     card.createEl("div", { text: t(style.name), attr: { style: "font-size:12px;" } });
                     card.onclick = () => {
                         cfg.buttonStyle = style.id; this.saveEditorMenuConfig();
+                        document.querySelectorAll(".fop-graph-panel, .fop-stash-panel").forEach(p => { if (p._fopCleanup) p._fopCleanup(); else p.remove(); });
+                        document.querySelectorAll(".fop-graph-chip, .fop-stash-chip").forEach(c => c.remove());
                         document.querySelectorAll(".fop-em-panel").forEach(p => {
                             p.classList.forEach(cls => { if (cls.startsWith("fop-style-")) p.classList.remove(cls); });
                             if (style.id !== "flat") p.classList.add("fop-style-" + style.id);
@@ -3295,11 +3955,6 @@ class FileOpsPlusPlugin extends Plugin {
                 tempIn.onchange = () => { const v = parseFloat(tempIn.value); const ac = aiCfg(); ac.temperature = isNaN(v) ? 0.7 : v; this.saveEditorMenuConfig(); };
                 renderAiBtns();
 
-                const accRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
-                const accCb = accRow.createEl("input", { type: "checkbox" });
-                accCb.checked = cfg.accordionMode === true;
-                accRow.createEl("span", { text: t("设置面板分组手风琴模式") });
-                accCb.onchange = () => { cfg.accordionMode = accCb.checked; this.saveEditorMenuConfig(); };
 
                 const tplBox = root.createEl("div", { attr: { style: "border:1px solid var(--background-modifier-border);border-radius:6px;padding:10px;margin-bottom:12px;" } });
                 tplBox.createEl("div", { text: t("新文件模板"), attr: { style: "font-weight:600;margin-bottom:8px;" } });
@@ -3326,6 +3981,17 @@ class FileOpsPlusPlugin extends Plugin {
                 lblCb2.checked = config.showGroupLabels !== false;
                 lblRow2.createEl("span", { text: t("显示分组标题") });
                 lblCb2.onchange = () => { config.showGroupLabels = lblCb2.checked; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
+                const chipRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
+                chipRow.createEl("span", { text: t("设置面板分组手风琴模式"), attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+                const accChip = chipRow.createEl("div", { attr: { style: "display:inline-flex;align-items:center;padding:2px 12px;border-radius:10px;cursor:pointer;font-size:var(--font-ui-smaller);user-select:none;transition:all .15s;" } });
+                const updateAccChip = () => {
+                    const on = config.accordionMode === true;
+                    accChip.textContent = on ? t("开") : t("关");
+                    accChip.style.background = on ? "var(--interactive-accent)" : "var(--background-modifier-border)";
+                    accChip.style.color = on ? "var(--text-on-accent)" : "var(--text-muted)";
+                };
+                updateAccChip();
+                accChip.onclick = () => { config.accordionMode = config.accordionMode !== true; this.saveEditorMenuConfig(); updateAccChip(); };
                 const sortRow2 = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
                 const sortBtn2 = sortRow2.createEl("button", { text: sortMode ? t("完成排序") : t("调整分组顺序"), attr: { style: "padding:2px 10px;" } });
                 sortBtn2.onclick = () => { sortMode = !sortMode; render(); };
@@ -3342,8 +4008,8 @@ class FileOpsPlusPlugin extends Plugin {
                         else if (c.includes("|")) sw.style.background = c.split("|")[0];
                         else if (c) sw.style.background = c;
                         row.draggable = true;
-                        row.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(gi)); row.style.opacity = "0.4"; });
-                        row.addEventListener("dragend", () => { row.style.opacity = ""; });
+                        row.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(gi)); row.style.opacity = "0.4"; this._fopDragging = true; });
+                        row.addEventListener("dragend", () => { row.style.opacity = ""; this._fopDragging = false; });
                         row.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; root.querySelectorAll(".fop-drag-over").forEach(el => el.classList.remove("fop-drag-over")); row.classList.add("fop-drag-over"); });
                         row.addEventListener("drop", (e) => {
                             e.preventDefault(); e.stopPropagation();
@@ -3368,11 +4034,11 @@ class FileOpsPlusPlugin extends Plugin {
                     config.collapsedState = config.collapsedState || {};
                     const ftCollapsed = config.collapsedState[grp.id] === true;
                     const ftChevron = head.createEl("span", { text: ftCollapsed ? "▶" : "▼", attr: { style: "cursor:pointer;font-size:10px;color:var(--text-muted);user-select:none;", title: t("折叠/展开") } });
-                    const grpContent = box.createEl("div");
+                    const grpContent = box.createEl("div", { cls: "fop-grp-content" });
                     if (ftCollapsed) grpContent.style.display = "none";
                     ftChevron.onclick = () => {
                         const isCol = grpContent.style.display === "none";
-                        const acc = this.editorMenuConfig.accordionMode === true;
+                        const acc = config.accordionMode === true;
                         if (isCol && acc) {
                             for (const g2 of config.groups) { if (g2.id !== grp.id) config.collapsedState[g2.id] = true; }
                         }
@@ -3380,6 +4046,25 @@ class FileOpsPlusPlugin extends Plugin {
                         this.saveEditorMenuConfig();
                         if (acc) render(); else { grpContent.style.display = isCol ? "" : "none"; ftChevron.textContent = isCol ? "▼" : "▶"; }
                     };
+                    head.addEventListener("dragover", (e) => {
+                        if (grpContent.style.display !== "none") return;
+                        e.preventDefault(); e.dataTransfer.dropEffect = "move";
+                        box.style.outline = "2px solid var(--interactive-accent)";
+                    });
+                    head.addEventListener("dragleave", () => { box.style.outline = ""; });
+                    head.addEventListener("drop", (e) => {
+                        if (grpContent.style.display !== "none") return;
+                        let from; try { from = JSON.parse(e.dataTransfer.getData("text/plain")); } catch (_) { return; }
+                        if (!from || from.g === gi) return;
+                        e.preventDefault(); e.stopPropagation();
+                        const moved = config.groups[from.g].items[from.i];
+                        config.groups[from.g].items.splice(from.i, 1);
+                        config.groups[gi].items.push(moved);
+                        config.collapsedState[grp.id] = false;
+                        const acc = config.accordionMode === true;
+                        if (acc) { for (const g2 of config.groups) { if (g2.id !== grp.id) config.collapsedState[g2.id] = true; } }
+                        this.saveEditorMenuConfig(); render();
+                    });
                     const ni = head.createEl("input", { type: "text", value: grp.label || "", attr: { style: "width:120px;padding:2px 4px;" } });
                     ni.onchange = () => { grp.label = ni.value; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
                     const swatchRow = head.createEl("div", { attr: { style: "display:flex;gap:3px;" } });
@@ -3397,12 +4082,15 @@ class FileOpsPlusPlugin extends Plugin {
                         dg.textContent = t("删除组");
                         dg.onclick = () => { config.groups.splice(gi, 1); this.saveEditorMenuConfig(); render(); };
                     }
+                    if (grp.id !== "color") {
                     const hdr = grpContent.createEl("div", { attr: { style: "display:flex;gap:6px;margin:4px 0 4px;font-size:var(--font-ui-smaller);color:var(--text-muted);background:var(--background-modifier-form-field);padding:3px 6px;border-radius:3px;" } });
                     hdr.createEl("div", { attr: { style: "width:14px;flex-shrink:0;" } });
                     hdr.createEl("div", { text: t("图标"), attr: { style: "width:123px;", title: t("lucide 图标名 / 粘贴 <svg> 代码 / 任意文字（识别不到则按文字显示）") } });
                     hdr.createEl("div", { text: t("名称"), attr: { style: "width:80px;text-indent:2px;", title: t("tile 鼠标悬停时显示的提示文字") } });
+                    hdr.createEl("div", { text: t("类型"), attr: { style: "width:70px;text-indent:2px;", title: t("预设=预设命令 cmd=任意命令") } });
                     hdr.createEl("div", { text: t("命令"), attr: { style: "flex:1;text-indent:2px;", title: t("选择该选项执行的命令") } });
                     hdr.createEl("div", { text: t("操作"), attr: { style: "margin-left:auto;", title: t("删除该选项") } });
+                    }
                     for (let ii = 0; ii < (grp.items || []).length; ii++) {
                         const item = grp.items[ii];
                         const a = actionTable[item.action] || {};
@@ -3428,8 +4116,8 @@ class FileOpsPlusPlugin extends Plugin {
                         ir.dataset.itemIdx = ii;
                         const handle = ir.createEl("span", { text: "⠿", attr: { style: "cursor:grab;color:var(--text-faint);" } });
                         handle.addEventListener("mousedown", () => { ir.draggable = true; });
-                        ir.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", JSON.stringify({ g: gi, i: ii })); ir.style.opacity = "0.3"; });
-                        ir.addEventListener("dragend", () => { ir.draggable = false; ir.style.opacity = ""; });
+                        ir.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", JSON.stringify({ g: gi, i: ii })); ir.style.opacity = "0.3"; this._fopDragging = true; });
+                        ir.addEventListener("dragend", () => { ir.draggable = false; ir.style.opacity = ""; this._fopDragging = false; });
                         ir.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
                         ir.addEventListener("drop", (e) => {
                             e.preventDefault(); e.stopPropagation();
@@ -3445,7 +4133,7 @@ class FileOpsPlusPlugin extends Plugin {
                             this.saveEditorMenuConfig(); render();
                         });
                         const icIn = ir.createEl("textarea", { attr: { placeholder: t("图标/svg/文字"), style: "width:90px;min-width:60px;max-width:200px;padding:1px 4px;resize:horizontal;height:24px;font-size:var(--font-ui-smaller);" } });
-                        icIn.value = item.icon || a.icon || "";
+                        icIn.value = item.icon || (item.type !== "cmd" ? a.icon : "") || "";
                         icIn.onchange = () => { item.icon = icIn.value.trim() || undefined; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
                         const icBtn = ir.createEl("button", { text: "▦", attr: { title: t("选择图标"), style: "padding:2px 6px;font-size:13px;line-height:1;" } });
                         icBtn.onclick = () => {
@@ -3470,13 +4158,48 @@ class FileOpsPlusPlugin extends Plugin {
                                 onPick: (name) => { item.icon = name; icIn.value = name; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); }
                             });
                         };
-                        const lbIn = ir.createEl("input", { type: "text", value: item.label !== undefined ? item.label : (a.label ? t(a.label) : ""), attr: { placeholder: t("名称"), style: "width:80px;padding:1px 4px;font-size:var(--font-ui-smaller);" } });
+                        const lbIn = ir.createEl("input", { type: "text", value: item.label !== undefined ? item.label : (item.type !== "cmd" && a.label ? t(a.label) : ""), attr: { placeholder: t("名称"), style: "width:80px;padding:1px 4px;font-size:var(--font-ui-smaller);" } });
                         lbIn.onchange = () => { item.label = lbIn.value.trim(); this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
-                        const as = ir.createEl("select");
-                        as.style.cssText = "flex:1;min-width:100px;padding:0 2px;box-sizing:border-box;";
-                        for (const ak of Object.keys(actionTable)) as.createEl("option", { value: ak, text: t(actionTable[ak].label) });
-                        as.value = item.action || "";
-                        as.onchange = () => { item.action = as.value; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
+                        const ftTypeSel = ir.createEl("select");
+                        ftTypeSel.style.cssText = "width:70px;padding:0 2px;box-sizing:border-box;";
+                        ftTypeSel.createEl("option", { value: "action", text: t("预设") });
+                        ftTypeSel.createEl("option", { value: "cmd", text: "cmd" });
+                        ftTypeSel.value = item.type === "cmd" ? "cmd" : "action";
+                        ftTypeSel.onchange = () => { item.type = ftTypeSel.value === "cmd" ? "cmd" : undefined; if (item.type !== "cmd") delete item.cmd; this.saveEditorMenuConfig(); render(); };
+                        if (item.type === "cmd") {
+                            const allCmds = this.app.commands.commands;
+                            const safeName = (cid) => (allCmds[cid] && typeof allCmds[cid].name === "string" && allCmds[cid].name) ? allCmds[cid].name : cid;
+                            const cmdIds = Object.keys(allCmds).sort((a2, b2) => safeName(a2).localeCompare(safeName(b2)));
+                            const cmdDisplay = ir.createEl("input", { type: "text", attr: { style: "flex:1;min-width:120px;padding:2px;", placeholder: t("命令ID，如 editor:toggle-bold") } });
+                            cmdDisplay.value = item.cmd || "";
+                            cmdDisplay.onchange = () => { item.cmd = cmdDisplay.value.trim(); this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
+                            const cmdBtn = ir.createEl("button", { text: "▾", attr: { style: "padding:2px 6px;font-size:12px;line-height:1;" } });
+                            cmdBtn.onclick = () => {
+                                fopPopupPicker(cmdBtn, {
+                                    placeholder: t("搜索命令…"), width: 380,
+                                    renderItems: (container, q, pick) => {
+                                        let count = 0;
+                                        for (const cid of cmdIds) {
+                                            const nm = safeName(cid);
+                                            if (q && nm.toLowerCase().indexOf(q) < 0 && cid.toLowerCase().indexOf(q) < 0) continue;
+                                            const row = container.createEl("div", { cls: "fop-picker-item", attr: { style: "padding:3px 6px;cursor:pointer;border-radius:4px;display:flex;justify-content:space-between;gap:8px;align-items:center;" } });
+                                            row.createEl("span", { text: nm, attr: { style: "white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;" } });
+                                            row.createEl("span", { text: cid, attr: { style: "color:var(--text-muted);font-size:11px;white-space:nowrap;" } });
+                                            row.onmousedown = (e) => { e.preventDefault(); pick(cid); };
+                                            count++;
+                                        }
+                                        if (count === 0) container.createEl("div", { text: t("无匹配"), attr: { style: "padding:8px;color:var(--text-muted);" } });
+                                    },
+                                    onPick: (cid) => { item.cmd = cid; cmdDisplay.value = cid; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); }
+                                });
+                            };
+                        } else {
+                            const as = ir.createEl("select");
+                            as.style.cssText = "flex:1;min-width:100px;padding:0 2px;box-sizing:border-box;";
+                            for (const ak of Object.keys(actionTable)) as.createEl("option", { value: ak, text: t(actionTable[ak].label) });
+                            as.value = item.action || "";
+                            as.onchange = () => { item.action = as.value; this.saveEditorMenuConfig(); renderFileTabPreview(config, actionTable); };
+                        }
                         const db = ir.createEl("button", { text: "✕", attr: { style: "padding:2px 6px;" } });
                         db.onclick = () => { grp.items.splice(ii, 1); this.saveEditorMenuConfig(); render(); };
                     }
@@ -3497,10 +4220,12 @@ class FileOpsPlusPlugin extends Plugin {
             }
             const cfg = this.editorMenuConfig;
             let dragState = null;
+            let dragFolderState = null;
             const clearDragIndicators = () => {
                 root.querySelectorAll(".fop-drag-over").forEach(el => el.classList.remove("fop-drag-over"));
                 root.querySelectorAll(".fop-drop-zone").forEach(el => { el.style.background = ""; el.style.height = "6px"; });
             };
+            const getItemList = (gi, fi) => fi == null ? cfg.groups[gi].items : (cfg.groups[gi].items[fi].items = cfg.groups[gi].items[fi].items || []);
 
             const enRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
             const cb = enRow.createEl("input", { type: "checkbox" });
@@ -3513,10 +4238,26 @@ class FileOpsPlusPlugin extends Plugin {
             };
 
             const lblRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
-            const lblCb = lblRow.createEl("input", { type: "checkbox" });
-            lblCb.checked = cfg.showGroupLabels !== false;
-            lblRow.createEl("span", { text: t("显示分组标题") });
-            lblCb.onchange = () => { cfg.showGroupLabels = lblCb.checked; this.saveEditorMenuConfig(); renderPreview(); };
+            lblRow.createEl("span", { text: t("分组标题样式") });
+            const lblSel = lblRow.createEl("select");
+            lblSel.style.cssText = "padding:2px 6px;";
+            lblSel.createEl("option", { value: "label", text: t("标签") });
+            lblSel.createEl("option", { value: "watermark", text: t("水印标题") });
+            lblSel.createEl("option", { value: "none", text: t("不显示") });
+            lblSel.value = cfg.groupLabelStyle || (cfg.showGroupLabels === false ? "none" : "label");
+            lblSel.onchange = () => { cfg.groupLabelStyle = lblSel.value; this.saveEditorMenuConfig(); renderPreview(); };
+
+            const accRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
+            accRow.createEl("span", { text: t("设置面板分组手风琴模式"), attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+            const accChip = accRow.createEl("div", { attr: { style: "display:inline-flex;align-items:center;padding:2px 12px;border-radius:10px;cursor:pointer;font-size:var(--font-ui-smaller);user-select:none;transition:all .15s;" } });
+            const updateAccChip = () => {
+                const on = cfg.accordionMode === true;
+                accChip.textContent = on ? t("开") : t("关");
+                accChip.style.background = on ? "var(--interactive-accent)" : "var(--background-modifier-border)";
+                accChip.style.color = on ? "var(--text-on-accent)" : "var(--text-muted)";
+            };
+            updateAccChip();
+            accChip.onclick = () => { cfg.accordionMode = cfg.accordionMode !== true; this.saveEditorMenuConfig(); updateAccChip(); };
 
 
             const ballRow = root.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;margin-bottom:12px;" } });
@@ -3554,8 +4295,8 @@ class FileOpsPlusPlugin extends Plugin {
                     else if (c.includes("|")) sw.style.background = c.split("|")[0];
                     else if (c) sw.style.background = c;
                     row.draggable = true;
-                    row.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(gi)); row.style.opacity = "0.4"; });
-                    row.addEventListener("dragend", () => { row.style.opacity = ""; clearDragIndicators(); });
+                    row.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(gi)); row.style.opacity = "0.4"; this._fopDragging = true; });
+                    row.addEventListener("dragend", () => { row.style.opacity = ""; clearDragIndicators(); this._fopDragging = false; });
                     row.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; clearDragIndicators(); row.classList.add("fop-drag-over"); });
                     row.addEventListener("drop", (e) => {
                         e.preventDefault(); e.stopPropagation();
@@ -3582,7 +4323,7 @@ class FileOpsPlusPlugin extends Plugin {
                 const head = box.createEl("div", { attr: { style: "display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;background:var(--background-primary);padding:6px 8px;border-radius:4px;" } });
                 const grpCollapsed = cfg.collapsedState[grp.id] === true;
                 const grpChevron = head.createEl("span", { text: grpCollapsed ? "▶" : "▼", attr: { style: "cursor:pointer;font-size:10px;color:var(--text-muted);user-select:none;", title: t("折叠/展开") } });
-                const grpContent = box.createEl("div");
+                const grpContent = box.createEl("div", { cls: "fop-grp-content" });
                 if (grpCollapsed) grpContent.style.display = "none";
                 grpChevron.onclick = () => {
                     const isCol = grpContent.style.display === "none";
@@ -3594,20 +4335,50 @@ class FileOpsPlusPlugin extends Plugin {
                     if (cfg.accordionMode) render(); else { grpContent.style.display = isCol ? "" : "none"; grpChevron.textContent = isCol ? "▼" : "▶"; }
                 };
                 head.addEventListener("dragover", (e) => {
-                    if (!dragState) return;
+                    if (!dragState && !dragFolderState) return;
                     if (grpContent.style.display !== "none") return;
                     e.preventDefault(); e.dataTransfer.dropEffect = "move";
                     clearDragIndicators(); box.style.outline = "2px solid var(--interactive-accent)";
                 });
                 head.addEventListener("dragleave", () => { box.style.outline = ""; });
                 head.addEventListener("drop", (e) => {
+                    if (grpContent.style.display !== "none") return;
+                    if (dragFolderState) {
+                        e.preventDefault(); e.stopPropagation();
+                        const fG = dragFolderState.fromGroup, fIdx = dragFolderState.fromIdx;
+                        if (fG === gi) return;
+                        const moved = cfg.groups[fG].items.splice(fIdx, 1)[0];
+                        cfg.groups[gi].items.push(moved);
+                        cfg.collapsedState = cfg.collapsedState || {};
+                        cfg.collapsedState[cfg.groups[gi].id] = false;
+                        if (cfg.accordionMode) { for (const g2 of cfg.groups) { if (g2.id !== cfg.groups[gi].id) cfg.collapsedState[g2.id] = true; } }
+                        this.saveEditorMenuConfig(); render();
+                        return;
+                    }
+                    if (!dragState) return;
+                    e.preventDefault(); e.stopPropagation();
+                    const fromG = dragState.fromGroup, fromF = dragState.fromFolder, fromI = dragState.fromItem;
+                    if (fromG === gi && fromF == null) return;
+                    const srcList = getItemList(fromG, fromF);
+                    const movedItem = srcList[fromI];
+                    srcList.splice(fromI, 1);
+
+                    cfg.groups[gi].items.push(movedItem);
+                    cfg.collapsedState = cfg.collapsedState || {};
+                    cfg.collapsedState[cfg.groups[gi].id] = false;
+                    if (cfg.accordionMode) { for (const g2 of cfg.groups) { if (g2.id !== cfg.groups[gi].id) cfg.collapsedState[g2.id] = true; } }
+                    this.saveEditorMenuConfig(); render();
+                });
+                head.addEventListener("dragleave", () => { box.style.outline = ""; });
+                head.addEventListener("drop", (e) => {
                     if (!dragState) return;
                     if (grpContent.style.display !== "none") return;
                     e.preventDefault(); e.stopPropagation();
-                    const fromG = dragState.fromGroup, fromI = dragState.fromItem;
-                    if (fromG === gi) return;
-                    const movedItem = cfg.groups[fromG].items[fromI];
-                    cfg.groups[fromG].items.splice(fromI, 1);
+                    const fromG = dragState.fromGroup, fromF = dragState.fromFolder, fromI = dragState.fromItem;
+                    if (fromG === gi && fromF == null) return;
+                    const srcList = getItemList(fromG, fromF);
+                    const movedItem = srcList[fromI];
+                    srcList.splice(fromI, 1);
                     cfg.groups[gi].items.push(movedItem);
                     cfg.collapsedState = cfg.collapsedState || {};
                     cfg.collapsedState[cfg.groups[gi].id] = false;
@@ -3647,35 +4418,51 @@ class FileOpsPlusPlugin extends Plugin {
                 hdr.createEl("div", { attr: { style: "width:14px;flex-shrink:0;" } });
                 hdr.createEl("div", { text: t("图标"), attr: { style: "width:153px;", title: t("lucide 图标名 / 粘贴 <svg> 代码 / 任意文字（识别不到则按文字显示）") } });
                 hdr.createEl("div", { text: t("名称"), attr: { style: "width:120px;text-indent:2px;", title: t("tile 鼠标悬停时显示的提示文字") } });
-                hdr.createEl("div", { text: t("类型"), attr: { style: "width:90px;text-indent:2px;", title: t("cmd=命令 regex=正则 text=文本 custom=转换 pipeline=管道 action=操作 key=按键 ai=AI") } });
+                hdr.createEl("div", { text: t("类型"), attr: { style: "width:90px;text-indent:2px;", title: t("cmd=命令 regex=正则 text=文本 custom=转换 pipeline=管道 action=操作 key=按键 prompt=提示词 subwindow=子窗口") } });
                 hdr.createEl("div", { text: t("操作"), attr: { style: "margin-left:auto;", title: t("删除该选项") } });
 
-                for (let ii = 0; ii < (grp.items || []).length; ii++) {
-                    const item = grp.items[ii];
-                    const ir = grpContent.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;" } });
-                    ir.dataset.itemIdx = ii;
+                const renderItemRow = (parent, item, loc, idx) => {
+                    const lgi = loc.g, lfi = loc.f;
+                    const ir = parent.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;" } });
+                    ir.dataset.itemIdx = idx;
                     const handle = ir.createEl("div", { cls: "fop-drag-handle", attr: { title: t("拖拽排序") } });
                     handle.textContent = "⠿";
-                    handle.addEventListener("mousedown", () => { ir.draggable = true; dragState = { fromGroup: gi, fromItem: ii }; });
-                    ir.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", ""); ir.style.opacity = "0.3"; });
-                    ir.addEventListener("dragend", () => { ir.draggable = false; ir.style.opacity = ""; clearDragIndicators(); dragState = null; });
+                    handle.addEventListener("mousedown", () => { ir.draggable = true; dragState = { fromGroup: lgi, fromFolder: lfi, fromItem: idx }; });
+                    ir.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", ""); ir.style.opacity = "0.3"; this._fopDragging = true; });
+                    ir.addEventListener("dragend", () => { ir.draggable = false; ir.style.opacity = ""; clearDragIndicators(); dragState = null; this._fopDragging = false; });
                     ir.addEventListener("dragover", (e) => {
-                        if (!dragState) return;
+                        if (!dragState && !dragFolderState) return;
                         e.preventDefault(); e.dataTransfer.dropEffect = "move";
                         clearDragIndicators(); ir.classList.add("fop-drag-over");
                     });
                     ir.addEventListener("drop", (e) => {
+                        if (dragFolderState && lfi == null) {
+                            e.preventDefault(); e.stopPropagation();
+                            const fG = dragFolderState.fromGroup, fIdx = dragFolderState.fromIdx;
+                            if (fG === lgi && fIdx === idx) return;
+                            const srcL = cfg.groups[fG].items, dstL = cfg.groups[lgi].items;
+                            const rect = ir.getBoundingClientRect();
+                            const after = e.clientY > rect.top + rect.height / 2;
+                            let targetI = idx + (after ? 1 : 0);
+                            const moved = srcL.splice(fIdx, 1)[0];
+                            if (fG === lgi && fIdx < targetI) targetI--;
+                            dstL.splice(targetI, 0, moved);
+                            this.saveEditorMenuConfig(); render();
+                            return;
+                        }
                         if (!dragState) return;
                         e.preventDefault(); e.stopPropagation();
-                        const fromG = dragState.fromGroup, fromI = dragState.fromItem;
-                        if (fromG === gi && fromI === ii) return;
+                        const fromG = dragState.fromGroup, fromF = dragState.fromFolder, fromI = dragState.fromItem;
+                        if (fromG === lgi && fromF === lfi && fromI === idx) return;
+                        const srcList = getItemList(fromG, fromF);
+                        const dstList = getItemList(lgi, lfi);
                         const rect = ir.getBoundingClientRect();
                         const after = e.clientY > rect.top + rect.height / 2;
-                        let targetI = ii + (after ? 1 : 0);
-                        const movedItem = cfg.groups[fromG].items[fromI];
-                        cfg.groups[fromG].items.splice(fromI, 1);
-                        if (fromG === gi && fromI < targetI) targetI--;
-                        cfg.groups[gi].items.splice(targetI, 0, movedItem);
+                        let targetI = idx + (after ? 1 : 0);
+                        const movedItem = srcList[fromI];
+                        srcList.splice(fromI, 1);
+                        if (fromG === lgi && fromF === lfi && fromI < targetI) targetI--;
+                        dstList.splice(targetI, 0, movedItem);
                         this.saveEditorMenuConfig(); render();
                     });
                     const iconTa = ir.createEl("textarea", { attr: { style: "width:120px;min-width:60px;max-width:240px;padding:2px;resize:horizontal;height:24px;font-size:var(--font-ui-smaller);", placeholder: t("图标/svg/文字") } });
@@ -3707,10 +4494,8 @@ class FileOpsPlusPlugin extends Plugin {
                     ir.createEl("input", { type: "text", value: item.label || "", attr: { style: "width:120px;padding:2px;", placeholder: t("名称") } }).onchange = (e) => { item.label = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
                     const ts = ir.createEl("select");
                     ts.style.cssText = "width:90px;padding:0 2px;box-sizing:border-box;";
-                    for (const t of ["cmd", "regex", "text", "custom", "pipeline", "action", "key"]) ts.createEl("option", { value: t, text: t });
-                    ts.createEl("option", { value: "ai", text: "AI Prompt" });
-                    ts.createEl("option", { value: "graph", text: t("局部关系列表") });
-                    ts.createEl("option", { value: "stash", text: t("暂存") });
+                    for (const tt of ["cmd", "regex", "text", "custom", "pipeline", "action", "key", "prompt"]) ts.createEl("option", { value: tt, text: tt });
+                    ts.createEl("option", { value: "subwindow", text: t("子窗口") });
                     ts.value = item.type || "cmd";
                     ts.onchange = () => { item.type = ts.value; this.saveEditorMenuConfig(); render(); };
                     if (item.type === "cmd") {
@@ -3754,8 +4539,8 @@ class FileOpsPlusPlugin extends Plugin {
                                 placeholder: t("搜索预设…"), width: 420,
                                 renderItems: (container, q, pick) => {
                                     let count = 0;
-                                    for (const grp of DEFAULT_EDITOR_MENU.groups) {
-                                        for (const di of (grp.items || [])) {
+                                    for (const dg of DEFAULT_EDITOR_MENU.groups) {
+                                        for (const di of (dg.items || [])) {
                                             if (di.type !== "regex") continue;
                                             const lbl = (typeof di.label === "string" && di.label) ? di.label : "";
                                             const nm = t(lbl) || lbl;
@@ -3797,10 +4582,49 @@ class FileOpsPlusPlugin extends Plugin {
                             }
                         });
                         plInput.onchange = () => { item.pipeline = plInput.value; this.saveEditorMenuConfig(); renderPreview(); };
-                    } else if (item.type === "ai") {
-                        ir.createEl("input", { type: "text", value: item.prompt || "", attr: { style: "flex:1;min-width:180px;padding:2px;", placeholder: t("提示词，{{text}}=选中文本") } }).onchange = (e) => { item.prompt = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
+                    } else if (item.type === "subwindow") {
+                        const sw = ir.createEl("select");
+                        sw.style.cssText = "flex:1;min-width:120px;padding:0 2px;box-sizing:border-box;";
+                        sw.createEl("option", { value: "local_relation", text: t("局部关系") });
+                        sw.createEl("option", { value: "stash", text: t("暂存") });
+                        sw.createEl("option", { value: "ai", text: "AI" });
+                        sw.value = item.subwindow || "local_relation";
+                        sw.onchange = () => { item.subwindow = sw.value; this.saveEditorMenuConfig(); renderPreview(); };
+                    } else if (item.type === "prompt") {
+                        ir.createEl("input", { type: "text", value: item.prompt || "", attr: { style: "flex:1;min-width:120px;padding:2px;", placeholder: t("提示词，{{text}}=选中文本") } }).onchange = (e) => { item.prompt = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
                     } else if (item.type === "text") {
-                        ir.createEl("input", { type: "text", value: item.text || "", attr: { style: "flex:1;min-width:120px;padding:2px;", placeholder: t("插入的文本，{{text}}=选中文本") } }).onchange = (e) => { item.text = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
+                        const textIn = ir.createEl("input", { type: "text", value: item.text || "", attr: { style: "flex:1;min-width:120px;padding:2px;", placeholder: t("插入的文本，{{text}}=选中文本") } });
+                        textIn.onchange = () => { item.text = textIn.value; this.saveEditorMenuConfig(); renderPreview(); };
+                        const presetBtn = ir.createEl("button", { text: t("预设"), attr: { style: "padding:2px 6px;font-size:12px;line-height:1;white-space:nowrap;" } });
+                        presetBtn.onclick = () => {
+                            fopPopupPicker(presetBtn, {
+                                placeholder: t("搜索预设…"), width: 300,
+                                renderItems: (container, q, pick) => {
+                                    const presets = [
+                                        { label: t("当前日期"), value: "{{date}}", desc: "YYYY-MM-DD" },
+                                        { label: t("当前时间"), value: "{{time}}", desc: "HH:mm" },
+                                        { label: t("日期时间"), value: "{{datetime}}", desc: "YYYY-MM-DD HH:mm" },
+                                        { label: t("时间戳"), value: "{{timestamp}}", desc: Date.now() },
+                                        { label: t("年份"), value: "{{year}}", desc: "YYYY" },
+                                        { label: t("月份"), value: "{{month}}", desc: "MM" },
+                                        { label: t("日"), value: "{{day}}", desc: "DD" },
+                                        { label: t("选中文本"), value: "{{text}}", desc: t("选中的文字") },
+                                        { label: t("换行"), value: "\\n", desc: "\\n" },
+                                    ];
+                                    let count = 0;
+                                    for (const p of presets) {
+                                        if (q && p.label.toLowerCase().indexOf(q) < 0 && p.value.toLowerCase().indexOf(q) < 0) continue;
+                                        const row = container.createEl("div", { cls: "fop-picker-item", attr: { style: "padding:3px 6px;cursor:pointer;border-radius:4px;display:flex;justify-content:space-between;gap:8px;align-items:center;" } });
+                                        row.createEl("span", { text: p.label, attr: { style: "white-space:nowrap;" } });
+                                        row.createEl("span", { text: p.desc, attr: { style: "color:var(--text-muted);font-size:11px;white-space:nowrap;font-family:var(--font-monospace);" } });
+                                        row.onmousedown = (e) => { e.preventDefault(); pick(p); };
+                                        count++;
+                                    }
+                                    if (count === 0) container.createEl("div", { text: t("无匹配"), attr: { style: "padding:8px;color:var(--text-muted);" } });
+                                },
+                                onPick: (p) => { item.text = (item.text || "") + p.value; textIn.value = item.text; this.saveEditorMenuConfig(); renderPreview(); }
+                            });
+                        };
                     } else if (item.type === "action") {
                         const as = ir.createEl("select");
                         as.style.cssText = "flex:1;min-width:120px;padding:0 2px;box-sizing:border-box;";
@@ -3833,24 +4657,140 @@ class FileOpsPlusPlugin extends Plugin {
                         };
                     }
                     const db = ir.createEl("button", { text: "✕", attr: { style: "margin-left:auto;padding:2px 6px;" } });
-                    db.onclick = () => { grp.items.splice(ii, 1); this.saveEditorMenuConfig(); render(); };
+                    db.onclick = () => { getItemList(lgi, lfi).splice(idx, 1); this.saveEditorMenuConfig(); render(); };
+                };
+                for (let ii = 0; ii < (grp.items || []).length; ii++) {
+                    const it = grp.items[ii];
+                    if (it.type === "folder") {
+                        const folderBox = grpContent.createEl("div", { attr: { style: "margin:6px 0;" } });
+                        const fhead = folderBox.createEl("div", { attr: { style: "display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--background-modifier-form-field);border-radius:6px;margin-top:6px;" } });
+                        const fhandle = fhead.createEl("span", { text: "⠿", attr: { style: "cursor:grab;color:var(--text-faint);", title: t("拖动文件夹排序") } });
+                        fhandle.addEventListener("mousedown", () => { folderBox.draggable = true; dragFolderState = { fromGroup: gi, fromIdx: ii }; });
+                        folderBox.addEventListener("dragstart", (e) => { if (!dragFolderState) return; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", ""); folderBox.style.opacity = "0.3"; this._fopDragging = true; });
+                        folderBox.addEventListener("dragend", () => { folderBox.draggable = false; folderBox.style.opacity = ""; clearDragIndicators(); dragFolderState = null; this._fopDragging = false; });
+                        folderBox.addEventListener("dragover", (e) => {
+                            if (!dragFolderState && !dragState) return;
+                            e.preventDefault(); e.dataTransfer.dropEffect = "move"; clearDragIndicators(); folderBox.classList.add("fop-drag-over");
+                        });
+                        folderBox.addEventListener("drop", (e) => {
+                            if (dragFolderState) {
+                                e.preventDefault(); e.stopPropagation();
+                                const fG = dragFolderState.fromGroup, fIdx = dragFolderState.fromIdx;
+                                if (fG === gi && fIdx === ii) return;
+                                const rect = folderBox.getBoundingClientRect();
+                                const after = e.clientY > rect.top + rect.height / 2;
+                                const srcL = cfg.groups[fG].items, dstL = cfg.groups[gi].items;
+                                const moved = srcL.splice(fIdx, 1)[0];
+                                let targetI = ii + (after ? 1 : 0);
+                                if (fG === gi && fIdx < targetI) targetI--;
+                                dstL.splice(targetI, 0, moved);
+                                this.saveEditorMenuConfig(); render();
+                                return;
+                            }
+                            if (dragState) {
+                                e.preventDefault(); e.stopPropagation();
+                                const fromG = dragState.fromGroup, fromF = dragState.fromFolder, fromI = dragState.fromItem;
+                                const rect = folderBox.getBoundingClientRect();
+                                const after = e.clientY > rect.top + rect.height / 2;
+                                const srcList = getItemList(fromG, fromF);
+                                const movedItem = srcList[fromI];
+                                srcList.splice(fromI, 1);
+                                cfg.groups[gi].items.splice(ii + (after ? 1 : 0), 0, movedItem);
+                                this.saveEditorMenuConfig(); render();
+                                return;
+                            }
+                        });
+                        const folderColKey = "f:" + it.id;
+                        const folderCollapsed = cfg.collapsedState[folderColKey] === true;
+                        const fchev = fhead.createEl("span", { text: folderCollapsed ? "▶" : "▼", attr: { style: "cursor:pointer;font-size:10px;color:var(--text-muted);user-select:none;", title: t("折叠/展开") } });
+                        fhead.createEl("span", { text: "▤", attr: { style: "color:var(--text-muted);" } });
+                        const fnameIn = fhead.createEl("input", { type: "text", value: it.name || "", attr: { placeholder: t("文件夹名称"), style: "flex:1;min-width:80px;padding:2px 4px;border:0;border-bottom:1px solid transparent;background:transparent;font-weight:600;" } });
+                        fnameIn.onchange = () => { it.name = fnameIn.value; this.saveEditorMenuConfig(); renderPreview(); };
+                        fhead.createEl("span", { text: String((it.items || []).length), attr: { style: "color:var(--text-muted);font-size:var(--font-ui-smaller);font-variant-numeric:tabular-nums;" } });
+                        const fdel = fhead.createEl("button", { text: "✕", attr: { style: "margin-left:auto;padding:2px 6px;", title: t("删除文件夹（选项移回自由区）") } });
+                        fdel.onclick = () => {
+                            const f = cfg.groups[gi].items[ii];
+                            const subs = f.items || [];
+                            cfg.groups[gi].items.splice(ii, 1, ...subs);
+                            this.saveEditorMenuConfig(); render();
+                        };
+                        const fbody = folderBox.createEl("div", { attr: { style: "margin-left:16px;padding-left:8px;border-left:2px solid var(--background-modifier-border);" + (folderCollapsed ? "display:none;" : "") } });
+                        fchev.onclick = () => {
+                            const isCol = fbody.style.display === "none";
+                            fbody.style.display = isCol ? "" : "none";
+                            fchev.textContent = isCol ? "▼" : "▶";
+                            cfg.collapsedState[folderColKey] = !isCol;
+                            this.saveEditorMenuConfig();
+                        };
+                        for (let si = 0; si < (it.items || []).length; si++) {
+                            renderItemRow(fbody, it.items[si], { g: gi, f: ii }, si);
+                        }
+                        const fdropZone = fbody.createEl("div", { cls: "fop-drop-zone", attr: { style: "height:6px;margin:2px 0;border-radius:4px;transition:background 0.15s,height 0.15s;" } });
+                        fdropZone.addEventListener("dragover", (e) => {
+                            if (!dragState) return;
+                            e.preventDefault(); e.dataTransfer.dropEffect = "move";
+                            clearDragIndicators(); fdropZone.style.background = "var(--interactive-accent)"; fdropZone.style.height = "20px";
+                        });
+                        fdropZone.addEventListener("dragleave", () => { fdropZone.style.background = ""; fdropZone.style.height = "6px"; });
+                        fdropZone.addEventListener("drop", (e) => {
+                            if (!dragState) return;
+                            e.preventDefault(); e.stopPropagation();
+                            const fromG = dragState.fromGroup, fromF = dragState.fromFolder, fromI = dragState.fromItem;
+                            const dstList = it.items = it.items || [];
+                            if (fromG === gi && fromF === ii && fromI === dstList.length - 1) return;
+                            const srcList = getItemList(fromG, fromF);
+                            const movedItem = srcList[fromI];
+                            srcList.splice(fromI, 1);
+                            dstList.push(movedItem);
+                            this.saveEditorMenuConfig(); render();
+                        });
+                        if (!it.items || it.items.length === 0) {
+                            const ph = fbody.createEl("div", { text: t("拖动选项到此处"), attr: { style: "padding:6px;text-align:center;color:var(--text-muted);font-size:var(--font-ui-smaller);border:1px dashed var(--background-modifier-border);border-radius:4px;margin:2px 0;" } });
+                            ph.addEventListener("dragover", (e) => { if (!dragState) return; e.preventDefault(); e.dataTransfer.dropEffect = "move"; clearDragIndicators(); ph.style.background = "var(--interactive-accent)"; });
+                            ph.addEventListener("dragleave", () => { ph.style.background = ""; });
+                            ph.addEventListener("drop", (e) => {
+                                if (!dragState) return;
+                                e.preventDefault(); e.stopPropagation();
+                                const fromG = dragState.fromGroup, fromF = dragState.fromFolder, fromI = dragState.fromItem;
+                                const srcList = getItemList(fromG, fromF);
+                                const movedItem = srcList[fromI];
+                                srcList.splice(fromI, 1);
+                                (it.items = it.items || []).push(movedItem);
+                                this.saveEditorMenuConfig(); render();
+                            });
+                        }
+                    } else {
+                        renderItemRow(grpContent, it, { g: gi, f: null }, ii);
+                    }
                 }
                 const dropZone = grpContent.createEl("div", { cls: "fop-drop-zone", attr: { style: "height:6px;margin:2px 0;border-radius:4px;transition:background 0.15s,height 0.15s;" } });
                 dropZone.addEventListener("dragover", (e) => {
-                    if (!dragState) return;
+                    if (!dragState && !dragFolderState) return;
                     e.preventDefault(); e.dataTransfer.dropEffect = "move";
                     clearDragIndicators(); dropZone.style.background = "var(--interactive-accent)"; dropZone.style.height = "20px";
                 });
                 dropZone.addEventListener("dragleave", () => { dropZone.style.background = ""; dropZone.style.height = "6px"; });
                 dropZone.addEventListener("drop", (e) => {
+                    if (dragFolderState) {
+                        e.preventDefault(); e.stopPropagation();
+                        const fG = dragFolderState.fromGroup, fIdx = dragFolderState.fromIdx;
+                        const srcL = cfg.groups[fG].items, dstL = cfg.groups[gi].items;
+                        if (fG === gi && fIdx === dstL.length - 1) return;
+                        const moved = srcL.splice(fIdx, 1)[0];
+                        if (fG === gi) { dstL.push(moved); } else { dstL.push(moved); }
+                        this.saveEditorMenuConfig(); render();
+                        return;
+                    }
                     if (!dragState) return;
                     e.preventDefault(); e.stopPropagation();
-                    const fromG = dragState.fromGroup, fromI = dragState.fromItem;
-                    if (fromG === gi && fromI === grp.items.length - 1) return;
-                    const movedItem = cfg.groups[fromG].items[fromI];
-                    cfg.groups[fromG].items.splice(fromI, 1);
-                    cfg.groups[gi].items.push(movedItem);
-                    if (fromG !== gi) {
+                    const fromG = dragState.fromGroup, fromF = dragState.fromFolder, fromI = dragState.fromItem;
+                    const dstList = cfg.groups[gi].items;
+                    if (fromG === gi && fromF == null && fromI === dstList.length - 1) return;
+                    const srcList = getItemList(fromG, fromF);
+                    const movedItem = srcList[fromI];
+                    srcList.splice(fromI, 1);
+                    dstList.push(movedItem);
+                    if (fromG !== gi || fromF != null) {
                         cfg.collapsedState = cfg.collapsedState || {};
                         cfg.collapsedState[cfg.groups[gi].id] = false;
                         if (cfg.accordionMode) { for (const g2 of cfg.groups) { if (g2.id !== cfg.groups[gi].id) cfg.collapsedState[g2.id] = true; } }
@@ -3859,6 +4799,10 @@ class FileOpsPlusPlugin extends Plugin {
                 });
                 const ab = grpContent.createEl("button", { text: t("+ 添加选项"), attr: { style: "margin-top:4px;" } });
                 ab.onclick = () => { grp.items = grp.items || []; grp.items.push({ icon: "square", label: t("新选项"), type: "cmd", cmd: "" }); this.saveEditorMenuConfig(); const s = root.scrollTop; render(); root.scrollTop = s; };
+                const af = grpContent.createEl("button", { text: t("+ 添加文件夹"), attr: { style: "margin-top:4px;margin-left:4px;" } });
+                af.onclick = () => { grp.items = grp.items || []; grp.items.push({ id: "f" + Date.now(), type: "folder", name: t("新文件夹"), items: [] }); this.saveEditorMenuConfig(); const s = root.scrollTop; render(); root.scrollTop = s; };
+
+
             }
             const ag = root.createEl("button", { text: t("+ 添加分组"), attr: { style: "margin-top:8px;" } });
             ag.onclick = () => { cfg.groups.push({ id: "g" + Date.now(), label: t("新分组"), color: "neutral", items: [] }); this.saveEditorMenuConfig(); const s = root.scrollTop; render(); root.scrollTop = s; };

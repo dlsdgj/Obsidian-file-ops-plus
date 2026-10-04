@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.9
+
+### Added
+
+- **Editor menu footer info bar** — Bottom-right footer shows plugin name + version + style pill + color pill; scroll wheel on pills cycles through styles/colors with flash animation and toast notification; footer hidden by default, fades in when mouse approaches bottom
+- **Folder support in settings panel** — Folders in editor menu settings panel with tree-line connectors, collapse/expand, and drag-to-reorder; unified data model uses `grp.items` with `type:"folder"` elements
+- **Folder tiles in editor menu** — Folders appear as tiles in the menu; folder position draggable between option tiles; hover shows a floating list (prototype F layout: icon + name + description inline)
+- **Independent prompt type** — New standalone `prompt` type; AI subwindow no longer bound to prompt
+- **Text type datetime presets** — Text type now supports `{{date}}`, `{{time}}`, `{{datetime}}`, `{{timestamp}}` presets
+- **Name highlight bar in folder list** — List item names get a bottom highlight bar consistent with menu tooltip highlight style (linear-gradient marker effect)
+
+### Fixed
+
+- **Group title color readability** — Added `_fopPickTitleColor` function to select the higher-contrast color (bg or fg) as the group title color against the panel background
+- **Folder drag insertion** — Fixed bug where folders couldn't be inserted at new positions after dragging; option row dragover handler now also checks `dragFolderState`
+- **No-link hint removal** — Removed "no link" hint; association chip now shows 0
+- **Scroll position preservation** — Full-text replacement now preserves page scroll position and cursor by saving/restoring `editor.cm.getScrollInfo()`
+- **Resize handle z-index** — Fixed resize handle being blocked by footer trigger zone; resize handle now has `z-index:3` above footer trigger (0) and footer (2)
+
 ## 1.0.8
 
 ### Changed
