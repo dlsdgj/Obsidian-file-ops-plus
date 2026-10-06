@@ -4,15 +4,13 @@ Obsidian 文件操作增强插件，为文件管理器、标签页、编辑器�
 
 > An Obsidian plugin providing configurable icon-based context menus for the file explorer, tab headers, and editor, with 27 color themes × 12 button styles, AI text processing, and a stash panel.
 
+![动图](screenshots/PixPin_2026-10-06_04-56-57.png)
 ![动图](screenshots/PixPin_2026-10-01_18-46-18.gif)
+![动图](screenshots/PixPin_2026-10-04_05-52-06.png)
+
+
 
 ## 外观自定义 / Appearance Customization
-
-![外观设置 — 配色方案与风格 / Appearance Settings](screenshots/appearance-flat.png)
-
-![孟菲斯风格预览 / Memphis Style Preview](screenshots/appearance-memphis.png)
-
-![孟菲斯风格实际使用 / Memphis Style in Use](screenshots/appearance-memphis-in-use.png)
 
 - **27 套配色方案**：柔彩粉彩、莫兰迪灰调、深色霓虹、孟菲斯、霓虹夜城、合成波日落、故宫红墙、浮世绘、黑金暗房、莫奈睡莲、青花瓷、敦煌矿彩、Nord极光、终端荧光等
 - **12 套按钮风格**：扁平、新拟态、玻璃拟态、新粗野、赛博朋克、蒸汽波、Win95、果冻、包豪斯、手绘、和纸、孟菲斯
@@ -26,7 +24,7 @@ Obsidian 文件操作增强插件，为文件管理器、标签页、编辑器�
 
 ## 编辑器右键菜单 / Editor Context Menu
 
-![编辑器右键菜单 / Editor Context Menu](screenshots/editor-menu.png)
+
 
 在 Markdown 源码模式下拦截右键，展示分组化图标菜单。支持 7 种选项类型：
 
