@@ -7,6 +7,9 @@ const _isZh = () => moment.locale().startsWith("zh");
 const I18N_EN = {
     "蓝": "Blue", "紫": "Purple", "绿": "Green", "橙": "Orange", "红": "Red", "灰": "Gray",
     "粉": "Pink", "青": "Cyan", "黄": "Yellow",
+    "问题/风险": "Problem/Risk", "因果/机制": "Cause/Mechanism", "概念": "Concept",
+    "解决方案": "Solution", "背景/关联": "Context/Link", "自己的思考": "My Thought",
+    "观点": "Opinion", "事实": "Fact", "洞见": "Insight",
     "链接": "Link", "新增链接": "Insert Link", "外部链接": "Embed", "查找": "Find",
     "格式": "Format", "加粗": "Bold", "倾斜": "Italic", "删除线": "Strikethrough",
     "高亮": "Highlight", "代码": "Code", "数学": "Math", "注释": "Comment", "清除格式": "Clear Formatting",
@@ -24,6 +27,7 @@ const I18N_EN = {
     "文件管理器": "File Explorer", "外观": "Appearance", "配色": "Color Theme", "风格": "Button Style",
     "实时预览": "Live Preview", "启用增强菜单（关闭则用原生右键）": "Enable enhanced menu (disable for native menu)", "启用": "Enable",
     "显示分组标题": "Show group labels", "删除组": "Delete Group", "颜色": "Color", "添加颜色": "Add Color",
+    "预览": "Preview", "设定颜色": "Set Color", "跟随组": "Follow Group", "完成": "Done",
     "分组标题样式": "Group label style", "不显示": "None", "标签": "Label", "水印标题": "Watermark title",
     "显示": "Show", "隐藏": "Hide",
     "添加选项": "Add Option", "添加分组": "Add Group",
@@ -82,7 +86,7 @@ const I18N_EN = {
     "阅读视图": "Reading View", "导出": "Export",
     "无活动文件": "No active file", "未找到关联笔记": "No linked notes found", "透明": "Opacity", "拖动调整面板宽高": "Drag to resize", "关系图": "Graph", "设置面板分组手风琴模式": "Settings panel group accordion mode", "局部关系列表": "Local relation list", "提及文档": "Mentions", "被提及文档": "Mentioned by", "吸附/脱离": "Dock/Undock", "开": "On", "关": "Off",
     "暂存": "Stash", "暂存列表": "Stash List", "插入到光标位置": "Insert at cursor", "空暂存": "Empty stash", "暂存为空": "Stash is empty",
-    "关联": "Links", "双向": "Bidirectional", "提及": "Mention", "被提及": "Mentioned by", "个页面": " pages", "个双向": " bidirectional", "自动折叠": "Auto fold", "添加选中文本到暂存": "Add selection to stash", "无选中文本或剪贴板内容": "No selection or clipboard", "清空暂存": "Clear stash", "已插入": "Inserted",
+    "关联": "Links", "双向": "Bidirectional", "提及": "Mention", "被提及": "Mentioned by", "个页面": " pages", "个双向": " bidirectional", "自动折叠": "Auto fold", "添加选中文本到暂存": "Add selection to stash", "无选中文本或剪贴板内容": "No selection or clipboard", "清空暂存": "Clear stash", "已插入": "Inserted", "引用此块": "Refs to this block",
     "已删除 ": "Deleted ", " 项": " item(s)",
     "确认删除": "Confirm Delete", "确定要删除 ": "Delete ",
     " 个文件吗？": " files?", "取消": "Cancel",
@@ -158,6 +162,13 @@ const I18N_EN = {
     "果冻": "Jelly", "包豪斯": "Bauhaus", "手绘": "Hand Drawn", "和纸": "Washi",
 };
 const t = (zh) => _isZh() ? zh : (I18N_EN[zh] || zh);
+
+const FOP_COLOR_PRESETS = [
+    ["朱红", "#e5484d", "#ffffff"], ["琥珀", "#f5a142", "#3b1f00"], ["明黄", "#f7d44c", "#4a3a00"], ["翠绿", "#1c8a54", "#ffffff"], ["湖青", "#0b7f90", "#ffffff"],
+    ["钴蓝", "#2f6fe0", "#ffffff"], ["靛紫", "#6d5bd0", "#ffffff"], ["洋红", "#d6409f", "#ffffff"], ["石墨", "#3a4147", "#f2f5f6"], ["墨绿", "#1f5c4a", "#d8f3e6"]
+];
+const fopNormHex = (s) => { const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec((s || "").trim()); if (!m) return null; let h = m[1].toLowerCase(); if (h.length === 3) h = [...h].map(x => x + x).join(""); return "#" + h; };
+const fopParseItemColor = (c) => { if (!c) return { bg: "", fg: "" }; if (GROUP_COLORS[c]) return { bg: GROUP_COLORS[c].bg, fg: GROUP_COLORS[c].fg }; if (c.includes("|")) { const p = c.split("|"); return { bg: p[0], fg: p[1] || "" }; } return { bg: c, fg: "" }; };
 
 const LUCIDE_ICONS = {
     format: "bold italic strikethrough underline highlighter code code-2 quote remove-formatting align-left align-center align-right align-justify align-start align-end list list-ordered list-checks list-tree list-collapse indent outdent pilcrow wrap-text superscript subscript type".split(" "),
@@ -619,6 +630,9 @@ const EDITOR_MENU_CSS = `
 .fop-fold-btn:hover{color:var(--text-normal);}
 .fop-fold-btn svg{width:14px;height:14px;}
 .fop-fold-btn.is-active{color:var(--text-accent);}
+.fop-block-ref-highlight{background:var(--interactive-accent) !important;border:1px solid var(--interactive-accent) !important;box-shadow:0 0 0 2px var(--interactive-accent) !important;}
+.fop-block-ref-highlight span{color:var(--text-on-accent) !important;}
+.fop-fold-chip b.fop-chip-badge-hit{background:#3fb950 !important;color:#fff !important;}
 
 `;
 
@@ -693,14 +707,15 @@ const DEFAULT_EDITOR_MENU = {
             { icon: "clipboard-list", label: t("暂存"), type: "subwindow", subwindow: "stash" },
         ]},
         { id: "mark", label: t("高亮"), color: "warning", items: [
-            { icon: "highlighter", label: t("黄"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background:#FFF3A3">$1</mark>', flags: "", color: "#FFF3A3|#5a4a00", requireSelection: true },
-            { icon: "highlighter", label: t("红"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background:#FFB3B3">$1</mark>', flags: "", color: "#FFB3B3|#7a0000", requireSelection: true },
-            { icon: "highlighter", label: t("绿"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background:#B3FFB3">$1</mark>', flags: "", color: "#B3FFB3|#006600", requireSelection: true },
-            { icon: "highlighter", label: t("蓝"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background:#B3D9FF">$1</mark>', flags: "", color: "#B3D9FF|#003a7a", requireSelection: true },
-            { icon: "highlighter", label: t("粉"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background:#FFB3D9">$1</mark>', flags: "", color: "#FFB3D9|#7a0033", requireSelection: true },
-            { icon: "highlighter", label: t("橙"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background:#FFD9B3">$1</mark>', flags: "", color: "#FFD9B3|#7a4500", requireSelection: true },
-            { icon: "highlighter", label: t("紫"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background:#D9B3FF">$1</mark>', flags: "", color: "#D9B3FF|#3a0066", requireSelection: true },
-            { icon: "highlighter", label: t("青"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background:#B3FFFF">$1</mark>', flags: "", color: "#B3FFFF|#006666", requireSelection: true },
+            { icon: "highlighter", label: t("问题/风险"), type: "regex", pattern: '([\\s\\S]+)', replacement: '==🔴$1==', flags: "", color: "#FFB3B3|#7a0000", requireSelection: true },
+            { icon: "highlighter", label: t("因果/机制"), type: "regex", pattern: '([\\s\\S]+)', replacement: '==🟠$1==', flags: "", color: "#FFD9B3|#7a4500", requireSelection: true },
+            { icon: "highlighter", label: t("概念"), type: "regex", pattern: '([\\s\\S]+)', replacement: '==🟡$1==', flags: "", color: "#FFF3A3|#5a4a00", requireSelection: true },
+            { icon: "highlighter", label: t("解决方案"), type: "regex", pattern: '([\\s\\S]+)', replacement: '==🟢$1==', flags: "", color: "#B3FFB3|#006600", requireSelection: true },
+            { icon: "highlighter", label: t("背景/关联"), type: "regex", pattern: '([\\s\\S]+)', replacement: '==🔵$1==', flags: "", color: "#B3D9FF|#003a7a", requireSelection: true },
+            { icon: "highlighter", label: t("自己的思考"), type: "regex", pattern: '([\\s\\S]+)', replacement: '==🟣$1==', flags: "", color: "#D9B3FF|#3a0066", requireSelection: true },
+            { icon: "highlighter", label: t("观点"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background-color:#FFB3D9;color:#7a0040">$1</mark>', flags: "", color: "#FFB3D9|#7a0040", requireSelection: true },
+            { icon: "highlighter", label: t("事实"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background-color:#B3F0F0;color:#004d4d">$1</mark>', flags: "", color: "#B3F0F0|#004d4d", requireSelection: true },
+            { icon: "highlighter", label: t("洞见"), type: "regex", pattern: '([\\s\\S]+)', replacement: '<mark style="background-color:#C9A3FF;color:#2d0066">$1</mark>', flags: "", color: "#C9A3FF|#2d0066", requireSelection: true },
         ]},
         { id: "clipboard", label: t("剪贴板"), color: "neutral", items: [
             { icon: "scissors", label: t("剪切"), type: "cmd", cmd: "editor:cut" },
@@ -845,7 +860,7 @@ class FileOpsPlusPlugin extends Plugin {
         }
         this.contextMenuHandler = (evt) => this.onContextMenu(evt);
         document.addEventListener("contextmenu", this.contextMenuHandler, { capture: true });
-        this.selectionChangeHandler = () => { if (this._selBallTimer) clearTimeout(this._selBallTimer); this._selBallTimer = setTimeout(() => this._updateSelectionBall(), 150); };
+        this.selectionChangeHandler = () => { if (this._selBallTimer) clearTimeout(this._selBallTimer); this._selBallTimer = setTimeout(() => this._updateSelectionBall(), 150); if (this._blockRefTimer) clearTimeout(this._blockRefTimer); this._blockRefTimer = setTimeout(() => this._updateBlockRefHighlight(), 200); };
         document.addEventListener("selectionchange", this.selectionChangeHandler);
         this._lastMouseX = 0; this._lastMouseY = 0; this._mouseDown = false;
         this.mouseMoveHandler = (e) => { this._lastMouseX = e.clientX; this._lastMouseY = e.clientY; };
@@ -980,6 +995,86 @@ class FileOpsPlusPlugin extends Plugin {
         if (this.selectionBallEl) { this.selectionBallEl.remove(); this.selectionBallEl = null; }
     }
 
+    _findBlockRefIncoming(file, blockId) {
+        const mc = this.app.metadataCache;
+        const vault = this.app.vault;
+        const result = [];
+
+        for (const srcPath of Object.keys(mc.resolvedLinks || {})) {
+            const fc = mc.getCache(srcPath);
+            if (!fc || !fc.links) continue;
+            for (const link of fc.links) {
+                const raw = link.link || "";
+                const hashIdx = raw.indexOf("#^");
+                if (hashIdx < 0) continue;
+                const linkPath = raw.slice(0, hashIdx);
+                const linkBlock = raw.slice(hashIdx + 2);
+                if (linkBlock !== blockId) continue;
+                const dest = mc.getFirstLinkpathDest(linkPath, srcPath);
+                if (!dest || !(dest instanceof TFile) || dest.path !== file.path) continue;
+                const sf = vault.getAbstractFileByPath(srcPath);
+                if (sf && sf instanceof TFile && !result.some(f => f.path === sf.path)) result.push(sf);
+            }
+        }
+        return result;
+    }
+
+    _clearBlockRefHighlight() {
+        const panel = document.querySelector(".fop-graph-panel");
+        if (panel) panel.querySelectorAll(".fop-block-ref-highlight").forEach(r => r.classList.remove("fop-block-ref-highlight"));
+        const chip = document.querySelector(".fop-graph-chip");
+        if (chip && chip._fopBlockRefActive) {
+            const b = chip.querySelector("b");
+            if (b && chip._fopOrigBadge != null) { b.textContent = chip._fopOrigBadge; b.classList.remove("fop-chip-badge-hit"); }
+            chip._fopBlockRefActive = false; chip._fopOrigBadge = null;
+        }
+    }
+
+    _highlightBlockRefInPanel(refs) {
+        const panel = document.querySelector(".fop-graph-panel");
+        if (!panel) return;
+        const refPaths = new Set(refs.map(f => f.path));
+        panel.querySelectorAll('[data-fop-path]').forEach(row => {
+            if (refPaths.has(row.getAttribute('data-fop-path'))) row.classList.add("fop-block-ref-highlight");
+            else row.classList.remove("fop-block-ref-highlight");
+        });
+    }
+
+    _highlightGraphChipBadge(refs) {
+        const chip = document.querySelector(".fop-graph-chip");
+        if (!chip) return;
+        const b = chip.querySelector("b");
+        if (!b) return;
+        if (!chip._fopBlockRefActive) chip._fopOrigBadge = b.textContent;
+        chip._fopBlockRefActive = true;
+        b.textContent = String(refs.length);
+        b.classList.add("fop-chip-badge-hit");
+    }
+
+
+    _updateBlockRefHighlight() {
+        const view = this.app.workspace.getActiveViewOfType && this.app.workspace.getActiveViewOfType(MarkdownView);
+        if (!view || !view.editor || !view.file) { this._clearBlockRefHighlight(); return; }
+        const domSel = window.getSelection();
+        if (!domSel || domSel.rangeCount === 0) { this._clearBlockRefHighlight(); return; }
+        const anchor = domSel.anchorNode;
+        if (!anchor || !anchor.parentElement || !anchor.parentElement.closest(".cm-editor, .markdown-source-view, .markdown-reading-view")) { this._clearBlockRefHighlight(); return; }
+        const sel = (view.editor.getSelection() || "").trim();
+        if (!sel) { this._clearBlockRefHighlight(); return; }
+        const m = sel.match(/^(?:\^)?([a-zA-Z][\w-]+)$/);
+        if (!m) { this._clearBlockRefHighlight(); return; }
+        const blockId = m[1];
+        const content = view.editor.getValue();
+        const idRegex = new RegExp("\\^" + blockId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![\\w-])");
+        if (!idRegex.test(content)) { this._clearBlockRefHighlight(); return; }
+        const refs = this._findBlockRefIncoming(view.file, blockId);
+        const panel = document.querySelector(".fop-graph-panel");
+        const chip = document.querySelector(".fop-graph-chip");
+        if (refs.length === 0) { this._clearBlockRefHighlight(); return; }
+        if (panel && panel.style.display !== "none") this._highlightBlockRefInPanel(refs);
+        if (chip) this._highlightGraphChipBadge(refs);
+    }
+
     onContextMenu(evt) {
         const tabHeader = evt.target.closest(".workspace-tab-header");
         if (tabHeader) {
@@ -1108,6 +1203,9 @@ class FileOpsPlusPlugin extends Plugin {
         let leaf = null;
         if (leafId && typeof this.app.workspace.getLeafById === "function") {
             leaf = this.app.workspace.getLeafById(leafId);
+        }
+        if (!leaf && typeof this.app.workspace.iterateAllLeaves === "function") {
+            this.app.workspace.iterateAllLeaves((l) => { if (!leaf && l && l.tabHeader === tabHeader) leaf = l; });
         }
         if (!leaf) leaf = this.app.workspace.activeLeaf;
         let file = null;
@@ -2076,7 +2174,9 @@ class FileOpsPlusPlugin extends Plugin {
                             const li = document.createElement("div");
                             li.style.cssText = "display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:var(--font-ui-smaller);";
                             const ic = document.createElement("span");
-                            ic.style.cssText = "flex:none;width:20px;height:20px;border-radius:5px;display:grid;place-items:center;background:var(--background-modifier-form-field);";
+                            const subColorKey = sub.color || item.color || grp.color;
+                            const subPC = fopParseItemColor(subColorKey);
+                            ic.style.cssText = "flex:none;width:20px;height:20px;border-radius:5px;display:grid;place-items:center;background:" + (subPC.bg || "var(--background-modifier-form-field)") + ";color:" + (subPC.fg || "") + ";";
                             const raw = sub.icon || "";
                             if (raw.includes("<svg")) ic.innerHTML = raw;
                             else { let ico = null; try { ico = getIcon(raw); } catch (e) {} if (ico) { ico.style.width = "14px"; ico.style.height = "14px"; ic.appendChild(ico); } else if (raw) ic.textContent = raw.trim()[0].toUpperCase(); }
@@ -2489,7 +2589,7 @@ class FileOpsPlusPlugin extends Plugin {
         } else if (item.type === "subwindow") {
             if (item.subwindow === "ai") {
                 const sel = editor.getSelection() || "";
-                this.showAIPanel(item, view, sel);
+                this.showAIPanel(Object.assign({}, item, { prompt: "" }), view, sel);
             } else if (item.subwindow === "local_relation") {
                 this.showLocalGraphPanel(view);
             } else if (item.subwindow === "stash") {
@@ -2874,7 +2974,7 @@ class FileOpsPlusPlugin extends Plugin {
             const arrow = isBoth ? "⇄" : isOut ? "→" : "←";
             const tag = isBoth ? t("双向") : isOut ? t("提及") : t("被提及");
             const tagColor = isBoth ? "var(--text-muted)" : isOut ? OUT_C : IN_C;
-            const row = content.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;" } });
+            const row = content.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;", "data-fop-path": f.path } });
             row.createEl("span", { text: arrow, attr: { style: "width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;flex:none;background:" + (isBoth || isOut ? OUT_BG : IN_BG) + ";color:" + (isBoth || isOut ? OUT_C : IN_C) + ";" } });
             row.createEl("span", { text: f.basename, attr: { style: "flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:var(--font-ui-small);" } });
             row.createEl("span", { text: tag, attr: { style: "font-size:11px;border:1px solid var(--background-modifier-border);border-radius:9px;padding:0 6px;background:rgba(255,255,255,.6);color:" + tagColor + ";flex:none;" } });
@@ -2882,12 +2982,12 @@ class FileOpsPlusPlugin extends Plugin {
             row.addEventListener("mouseleave", () => row.style.background = "");
             row.addEventListener("click", () => this.app.workspace.getLeaf().openFile(f));
         }
+        panel.appendChild(content);
         if (uniqFiles.length > 0) {
-            const foot = content.createEl("div", { attr: { style: "margin-top:8px;padding-top:8px;border-top:1px solid var(--background-modifier-border);font-size:11px;color:var(--text-muted);display:flex;gap:12px;" } });
+            const foot = panel.createEl("div", { attr: { style: "padding:6px 10px;border-top:1px solid var(--background-modifier-border);font-size:11px;color:var(--text-muted);display:flex;gap:12px;flex:none;" } });
             foot.createEl("span", { text: uniqFiles.length + " " + t("个页面") });
             foot.createEl("span", { text: bothCount + " " + t("个双向") });
         }
-        panel.appendChild(content);
 
         const resizeHandle = document.createElement("div");
         resizeHandle.style.cssText = "position:absolute;right:0;bottom:0;width:12px;height:12px;cursor:nwse-resize;z-index:10;border-top-left-radius:4px;background:var(--background-modifier-border);";
@@ -2931,6 +3031,7 @@ class FileOpsPlusPlugin extends Plugin {
             panel.style.top = Math.max(2, pt) + "px";
             panel.style.height = Math.max(150, Math.min(h, window.innerHeight - parseInt(panel.style.top) - 10)) + "px";
             content.style.maxHeight = Math.max(100, parseInt(panel.style.height) - header.offsetHeight) + "px";
+            if (this._blockRefTimer) clearTimeout(this._blockRefTimer); this._blockRefTimer = setTimeout(() => this._updateBlockRefHighlight(), 50);
         };
         const graphScheduleHide = () => {
             if (graphHideTimer) clearTimeout(graphHideTimer);
@@ -3010,6 +3111,7 @@ class FileOpsPlusPlugin extends Plugin {
             });
             graphChip.addEventListener("mouseenter", () => {
                 if (graphHideTimer) { clearTimeout(graphHideTimer); graphHideTimer = null; }
+
                 if (graphShowTimer) clearTimeout(graphShowTimer);
                 graphShowTimer = setTimeout(() => { graphShowPanel(); }, 200);
             });
@@ -3019,6 +3121,7 @@ class FileOpsPlusPlugin extends Plugin {
             });
             graphChip.addEventListener("mousedown", (e) => {
                 if (e.button !== 0) return;
+
                 graphChip.style.cursor = "grabbing";
                 e.preventDefault();
                 if (graphShowTimer) { clearTimeout(graphShowTimer); graphShowTimer = null; }
@@ -3074,7 +3177,7 @@ class FileOpsPlusPlugin extends Plugin {
         document.addEventListener("mouseup", du);
         const escH = (e) => { if (e.key === "Escape" && !docked) closePanel(); };
         document.addEventListener("keydown", escH);
-        const closePanel = () => { observer.disconnect(); panel.remove(); if (graphChip) graphChip.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("keydown", escH); document.removeEventListener("mousemove", rzMove); document.removeEventListener("mouseup", rzUp); document.removeEventListener("fop-menu-move", onMenuMove); this.app.workspace.offref(leafRef); };
+        const closePanel = () => { observer.disconnect(); panel.remove(); if (graphChip) graphChip.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("keydown", escH); document.removeEventListener("mousemove", rzMove); document.removeEventListener("mouseup", rzUp); document.removeEventListener("fop-menu-move", onMenuMove); this.app.workspace.offref(leafRef); this.app.metadataCache.offref(metaRef); if (metaTimer) clearTimeout(metaTimer); };
         panel._fopCleanup = closePanel;
         closeBtn.onclick = () => { cfg.graphEnabled = false; this.saveEditorMenuConfig(); closePanel(); };
         foldBtn.addEventListener("click", (e) => { e.stopPropagation(); cfg.graphAutoFold = !cfg.graphAutoFold; this.saveEditorMenuConfig(); closePanel(); this.showLocalGraphPanel(view); });
@@ -3088,6 +3191,14 @@ class FileOpsPlusPlugin extends Plugin {
             this.showLocalGraphPanel(av);
         };
         const leafRef = this.app.workspace.on("active-leaf-change", leafHandler);
+        let metaTimer = null;
+        const metaHandler = () => {
+            if (!cfg.graphEnabled) return;
+            if (metaTimer) clearTimeout(metaTimer);
+            metaTimer = setTimeout(() => { if (document.querySelector(".fop-graph-panel") === panel) this.showLocalGraphPanel(view); }, 500);
+        };
+        const metaRef = this.app.metadataCache.on("changed", metaHandler);
+
     }
 
     showStashPanel(view) {
@@ -4219,6 +4330,7 @@ class FileOpsPlusPlugin extends Plugin {
                 return;
             }
             const cfg = this.editorMenuConfig;
+            cfg.collapsedState = cfg.collapsedState || {};
             let dragState = null;
             let dragFolderState = null;
             const clearDragIndicators = () => {
@@ -4416,6 +4528,8 @@ class FileOpsPlusPlugin extends Plugin {
 
                 const hdr = grpContent.createEl("div", { attr: { style: "display:flex;gap:6px;margin:4px 0 4px;font-size:var(--font-ui-smaller);color:var(--text-muted);background:var(--background-modifier-form-field);padding:3px 6px;border-radius:3px;" } });
                 hdr.createEl("div", { attr: { style: "width:14px;flex-shrink:0;" } });
+                hdr.createEl("div", { text: t("预览"), attr: { style: "width:30px;text-align:center;" } });
+                hdr.createEl("div", { text: t("颜色"), attr: { style: "width:34px;text-align:center;" } });
                 hdr.createEl("div", { text: t("图标"), attr: { style: "width:153px;", title: t("lucide 图标名 / 粘贴 <svg> 代码 / 任意文字（识别不到则按文字显示）") } });
                 hdr.createEl("div", { text: t("名称"), attr: { style: "width:120px;text-indent:2px;", title: t("tile 鼠标悬停时显示的提示文字") } });
                 hdr.createEl("div", { text: t("类型"), attr: { style: "width:90px;text-indent:2px;", title: t("cmd=命令 regex=正则 text=文本 custom=转换 pipeline=管道 action=操作 key=按键 prompt=提示词 subwindow=子窗口") } });
@@ -4465,9 +4579,72 @@ class FileOpsPlusPlugin extends Plugin {
                         dstList.splice(targetI, 0, movedItem);
                         this.saveEditorMenuConfig(); render();
                     });
+                    const pvWrap = ir.createEl("span", { attr: { title: t("预览"), style: "position:static;z-index:auto;background:transparent;border:none;border-radius:0;padding:0;box-shadow:none;display:inline-flex;align-items:center;flex:none;" } });
+                    pvWrap.className = "fop-em-panel";
+                    const _bs = this.editorMenuConfig.buttonStyle;
+                    if (_bs && _bs !== "flat") pvWrap.classList.add("fop-style-" + _bs);
+                    const pv = pvWrap.createEl("div", { cls: "fop-em-tile", attr: { style: "--fop-tile-sz:24px;min-width:30px;width:auto;max-width:90px;height:24px;flex:none;padding:0 4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;" } });
+                    const refreshPv = () => {
+                        const ip = fopParseItemColor(item.color), gp = fopParseItemColor(grp.color);
+                        const cKey = (item.color && GROUP_COLORS[item.color]) ? item.color : (GROUP_COLORS[grp.color] ? grp.color : null);
+                        if (cKey) pv.dataset.c = cKey; else delete pv.dataset.c;
+                        if (ip.bg || ip.fg) { pv.style.background = ip.bg || ""; pv.style.color = ip.fg || ""; }
+                        else if (!cKey) { pv.style.background = gp.bg || "var(--background-modifier-form-field)"; pv.style.color = gp.fg || "var(--text-normal)"; }
+                        else { pv.style.background = ""; pv.style.color = ""; }
+                        pv.innerHTML = "";
+                        const raw = (item.icon || "").trim();
+                        if (raw.includes("<svg")) pv.innerHTML = raw;
+                        else { let ic = null; try { ic = getIcon(raw); } catch (e) {} if (ic) pv.appendChild(ic); else if (raw) pv.textContent = raw; else pv.textContent = "□"; }
+                    };
+                    refreshPv();
+                    const aaBtn = ir.createEl("button", { text: "Aa", attr: { title: t("设定颜色"), style: "padding:0 6px;height:24px;border-radius:6px;border:1px solid var(--background-modifier-border);font-size:11px;cursor:pointer;flex:none;background:var(--background-modifier-form-field);" } });
+                    aaBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        document.querySelectorAll(".fop-color-pop").forEach(p => p.remove());
+                        const pop = document.body.createEl("div", { cls: "fop-color-pop", attr: { style: "position:fixed;z-index:10001;background:var(--background-primary);border:1px solid var(--background-modifier-border);border-radius:8px;padding:10px;box-shadow:0 6px 20px rgba(0,0,0,.16);display:flex;flex-direction:column;gap:9px;width:262px;" } });
+                        pop.onclick = (ev) => ev.stopPropagation();
+                        const grid = pop.createEl("div", { attr: { style: "display:grid;grid-template-columns:repeat(5,1fr);gap:6px;" } });
+                        const cur = fopParseItemColor(item.color);
+                        FOP_COLOR_PRESETS.forEach(q => {
+                            const b = grid.createEl("button", { text: "Aa", attr: { style: "height:30px;border-radius:7px;border:1px solid rgba(0,0,0,.1);cursor:pointer;font-size:12px;font-weight:600;padding:0;background:" + q[1] + ";color:" + q[2] + ";" } });
+                            b.title = q[0] + "  " + q[1] + " / " + q[2];
+                            if (cur.bg === q[1] && cur.fg === q[2]) b.style.outline = "2px solid var(--interactive-accent)";
+                            b.onclick = () => { item.color = q[1] + "|" + q[2]; this.saveEditorMenuConfig(); refreshPv(); renderPreview(); pop.remove(); };
+                        });
+                        const hexRow = pop.createEl("div", { attr: { style: "display:flex;gap:10px;align-items:center;" } });
+                        const hexInputs = {};
+                        for (const [key, label] of [["bg", "BG"], ["fg", "FG"]]) {
+                            const w = hexRow.createEl("label", { attr: { style: "display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted);" } });
+                            w.createEl("span", { text: label });
+                            const sw = w.createEl("i", { attr: { style: "width:16px;height:16px;border-radius:4px;border:1px solid rgba(0,0,0,.15);flex:none;display:inline-block;" } });
+                            sw.style.background = cur[key] || "";
+                            const inp = w.createEl("input", { attr: { type: "text", spellcheck: "false", maxlength: "7", style: "width:78px;height:24px;border:1px solid var(--background-modifier-border);background:var(--background-modifier-form-field);border-radius:5px;padding:0 6px;font:12px ui-monospace,Consolas,monospace;" } });
+                            inp.value = cur[key] || "";
+                            inp.oninput = () => { const n = fopNormHex(inp.value.trim()); sw.style.background = n || ""; inp.classList.toggle("bad", inp.value.trim() !== "" && !n); };
+                            hexInputs[key] = inp;
+                        }
+                        const commitHex = () => {
+                            const bg = fopNormHex(hexInputs.bg.value.trim()) || "";
+                            const fg = fopNormHex(hexInputs.fg.value.trim()) || "";
+                            if (!bg && !fg) delete item.color;
+                            else item.color = (bg || "#ffffff") + "|" + (fg || "#000000");
+                            this.saveEditorMenuConfig(); refreshPv(); renderPreview();
+                        };
+                        hexInputs.bg.onchange = commitHex;
+                        hexInputs.fg.onchange = commitHex;
+                        const btnRow = pop.createEl("div", { attr: { style: "display:flex;gap:10px;align-items:center;" } });
+                        btnRow.createEl("button", { text: t("跟随组"), attr: { style: "font-size:12px;cursor:pointer;padding:2px 8px;border-radius:5px;background:var(--background-modifier-hover);border:0;color:var(--text-normal);" } }).onclick = () => { delete item.color; this.saveEditorMenuConfig(); refreshPv(); renderPreview(); pop.remove(); };
+                        btnRow.createEl("button", { text: t("完成"), attr: { style: "font-size:12px;cursor:pointer;padding:2px 8px;border-radius:5px;background:var(--background-modifier-hover);border:0;color:var(--text-normal);" } }).onclick = () => pop.remove();
+                        const r = aaBtn.getBoundingClientRect();
+                        pop.style.left = r.left + "px";
+                        pop.style.top = (r.bottom + 6) + "px";
+                        document.body.appendChild(pop);
+                        const closeH = (ev) => { if (!pop.contains(ev.target)) { pop.remove(); document.removeEventListener("mousedown", closeH, true); } };
+                        setTimeout(() => document.addEventListener("mousedown", closeH, true), 0);
+                    };
                     const iconTa = ir.createEl("textarea", { attr: { style: "width:120px;min-width:60px;max-width:240px;padding:2px;resize:horizontal;height:24px;font-size:var(--font-ui-smaller);", placeholder: t("图标/svg/文字") } });
                     iconTa.value = item.icon || "";
-                    iconTa.onchange = () => { item.icon = iconTa.value; this.saveEditorMenuConfig(); renderPreview(); };
+                    iconTa.onchange = () => { item.icon = iconTa.value; this.saveEditorMenuConfig(); refreshPv(); renderPreview(); };
                     const iconBtn = ir.createEl("button", { text: "▦", attr: { title: t("选择图标"), style: "padding:2px 6px;font-size:13px;line-height:1;" } });
                     iconBtn.onclick = () => {
                         fopPopupPicker(iconBtn, {

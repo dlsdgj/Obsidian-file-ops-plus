@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.1.0
+
+### Added
+
+- **Editor menu icon preview & color editing** — Icons in the editor menu can now be previewed and their colors edited inline
+- **Block reference highlight in local relation list** — Selecting a block reference identifier (e.g., `^fopmuogtm9e`) in the editor highlights documents referencing that block in the local relation list and expands the hover chip to show document names directly
+- **3 new highlight presets + semantic renaming** — Added 3 new HTML highlight presets (pink, cyan, deep purple) alongside existing Obsidian built-in highlights (red, yellow, orange, green, blue, purple); renamed all 9 presets with semantic labels: Problem/Risk, Cause/Mechanism, Concept, Solution, Background/Relation, Own Thinking, Viewpoint, Fact, Insight (with i18n)
+- **AI subwindow sends selected text** — When opening the AI subwindow with selected text, the selected text is sent directly (since the text may contain questions)
+
+### Fixed
+
+- **Relation list real-time update** — The relation list window now updates promptly after adding links to a document
+- **Menu folder icon style not following settings** — Icons in menu folders were displaying as white background with black text/symbols regardless of configured style; now follows the configured style
+- **Background tab context menu targets wrong tab** — Right-clicking a background tab and invoking menu actions (e.g., copy link) was operating on the current active tab instead of the right-clicked tab; now operates on the correct tab
+
 ## 1.0.9
 
 ### Added
