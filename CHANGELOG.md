@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.1.1
+
+### Added
+
+- **Flags hover tooltip** — Hovering over the flags input field in regex settings shows a floating table explaining g/i/m/s/u/y flags
+- **cursorScope option** — New checkbox for regex items; when enabled and no text is selected, only the match at the cursor position is replaced instead of all matches in the document
+- **Batch color preset import** — Color picker popup now has a "Batch" button to paste multiple `#bg #fg` lines and add them as custom color presets, persisted via `customColorPresets`
+
+### Fixed
+
+- **Background tab delete removes wrong page** — Right-clicking a background tab and selecting "Delete" was deleting the active page; improved leaf resolution with `tabHeaderEl`/`id` matching, only falls back to active leaf when both leaf and file are unresolved
+- **Remove highlight regex** — Updated to `==(🔴|🟠|🟡|🟢|🔵|🟣)?(.+?)==` with `gu` flags to handle both emoji and non-emoji highlights; added `cursorScope` so clicking a single highlight only removes that one
+- **Flags field empty string treated as "g"** — `item.flags || "g"` converted empty string to `"g"` on reopen; changed to null-check to preserve empty flags
+- **cursorScope regex duplicate `gg` flag** — RegExp constructor received `gg`; fixed by stripping existing g/y before appending
+
 ## 1.1.0
 
 ### Added

@@ -46,7 +46,7 @@ const I18N_EN = {
     "自动定位到当前文档": "Auto reveal current file", "自动折叠文件夹": "Auto collapse folder",
     "自动合并标签页": "Auto merge tabs", "切换自动合并标签页": "Toggle auto merge tabs", "已开启自动合并标签页": "Auto merge tabs enabled", "已关闭自动合并标签页": "Auto merge tabs disabled",
     "绝对路径": "Absolute Path", "相对路径": "Relative Path", "md链接": "MD Link", "wikilink": "Wikilink",
-    "导出PDF": "Export PDF", "删除": "Delete", "新标签页": "New Tab",
+    "导出PDF": "Export PDF", "删除": "Delete", "新标签页": "New Tab", "全局": "Global", "忽略大小写": "Case insensitive", "多行": "Multiline", "粘附": "Sticky", "仅替换光标所在匹配": "Replace only match at cursor", "批量": "Batch", "每行: #背景 #文字": "Each line: #bg #fg", "添加到分组": "Add to group", "添加配色": "Add Colors",
     "新建文件夹": "New Folder", "新建文件": "New File",
     "无法获取编辑器": "Cannot get editor", "请先选中文本": "Please select text first",
     "正则错误：": "Regex error: ", "未知转换：": "Unknown transform: ",
@@ -87,7 +87,7 @@ const I18N_EN = {
     "无活动文件": "No active file", "未找到关联笔记": "No linked notes found", "透明": "Opacity", "拖动调整面板宽高": "Drag to resize", "关系图": "Graph", "设置面板分组手风琴模式": "Settings panel group accordion mode", "局部关系列表": "Local relation list", "提及文档": "Mentions", "被提及文档": "Mentioned by", "吸附/脱离": "Dock/Undock", "开": "On", "关": "Off",
     "暂存": "Stash", "暂存列表": "Stash List", "插入到光标位置": "Insert at cursor", "空暂存": "Empty stash", "暂存为空": "Stash is empty",
     "关联": "Links", "双向": "Bidirectional", "提及": "Mention", "被提及": "Mentioned by", "个页面": " pages", "个双向": " bidirectional", "自动折叠": "Auto fold", "添加选中文本到暂存": "Add selection to stash", "无选中文本或剪贴板内容": "No selection or clipboard", "清空暂存": "Clear stash", "已插入": "Inserted", "引用此块": "Refs to this block",
-    "已删除 ": "Deleted ", " 项": " item(s)",
+    "已删除 ": "Deleted ", " 项": " item(s)", "已添加": "Added",
     "确认删除": "Confirm Delete", "确定要删除 ": "Delete ",
     " 个文件吗？": " files?", "取消": "Cancel",
     "撤销删除": "Undo Delete", "已恢复 ": "Restored ", "恢复失败": "Restore failed",
@@ -682,7 +682,7 @@ const DEFAULT_EDITOR_MENU = {
             { icon: "remove-formatting", label: t("移除加粗"), type: "regex", pattern: "\\*\\*(.+?)\\*\\*", replacement: "$1", flags: "g" },
             { icon: "remove-formatting", label: t("移除倾斜"), type: "regex", pattern: "\\*([^*]+)\\*", replacement: "$1", flags: "g" },
             { icon: "remove-formatting", label: t("移除删除线"), type: "regex", pattern: "~~(.+?)~~", replacement: "$1", flags: "g" },
-            { icon: "remove-formatting", label: t("移除高亮"), type: "regex", pattern: "==(.+?)==", replacement: "$1", flags: "g" },
+            { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/><path d="M3 3l18 18"/></svg>', label: t("移除高亮"), type: "regex", pattern: "==(\uD83D\uDD34|\uD83D\uDFE0|\uD83D\uDFE1|\uD83D\uDFE2|\uD83D\uDD35|\uD83D\uDFE3)?(.+?)==", replacement: "$2", flags: "gu", cursorScope: true },
             { icon: "remove-formatting", label: t("移除行内代码"), type: "regex", pattern: "`([^`]+)`", replacement: "$1", flags: "g" },
             { icon: "remove-formatting", label: t("移除emoji"), type: "regex", pattern: "\\p{Extended_Pictographic}(?:\\u200D\\p{Extended_Pictographic})*\\uFE0F?", replacement: "", flags: "gu" },
             { icon: "heading-up", label: t("标题升级"), type: "regex", pattern: "^(#)(#{1,5}\\s)", replacement: "$2", flags: "gm", requireSelection: true },
@@ -1205,9 +1205,8 @@ class FileOpsPlusPlugin extends Plugin {
             leaf = this.app.workspace.getLeafById(leafId);
         }
         if (!leaf && typeof this.app.workspace.iterateAllLeaves === "function") {
-            this.app.workspace.iterateAllLeaves((l) => { if (!leaf && l && l.tabHeader === tabHeader) leaf = l; });
+            this.app.workspace.iterateAllLeaves((l) => { if (!leaf && l && (l.tabHeader === tabHeader || l.tabHeaderEl === tabHeader || (leafId && l.id === leafId))) leaf = l; });
         }
-        if (!leaf) leaf = this.app.workspace.activeLeaf;
         let file = null;
         if (leaf) {
             file = leaf.file || (leaf.view && leaf.view.file) || null;
@@ -1220,6 +1219,7 @@ class FileOpsPlusPlugin extends Plugin {
                 if (files.length > 0) file = files[0];
             }
         }
+        if (!leaf && !file) leaf = this.app.workspace.activeLeaf;
 
         const { panel, addRow, finish } = this.createFopMenuPanel(x, y);
         const isPinned = leaf && leaf.pinned;
@@ -2431,6 +2431,27 @@ class FileOpsPlusPlugin extends Plugin {
                 if (item.requireSelection && !sel) { new Notice(t("请先选中文本")); return; }
                 if (sel) {
                     editor.replaceSelection(sel.replace(re, rep));
+                } else if (item.cursorScope) {
+                    const text = editor.getValue();
+                    const cursor = editor.getCursor();
+                    const posToOff = editor.posToOffset ? (p) => editor.posToOffset(p) : (p) => { let o = 0; for (let i = 0; i < p.line; i++) o += editor.getLine(i).length + 1; return o + p.ch; };
+                    const offToPos = editor.offsetToPos ? (o) => editor.offsetToPos(o) : (o) => { let l = 0, c = o; while (l < editor.lastLine()) { const ll = editor.getLine(l).length + 1; if (c < ll) break; c -= ll; l++; } return { line: l, ch: c }; };
+                    const curOff = posToOff(cursor);
+                    const reG = new RegExp(item.pattern, (item.flags || "").replace(/[gy]/g, "") + "g");
+                    const reS = new RegExp(item.pattern, (item.flags || "").replace(/[gy]/g, ""));
+                    let m, hit = null;
+                    while ((m = reG.exec(text)) !== null) {
+                        if (curOff >= m.index && curOff <= m.index + m[0].length) { hit = m; break; }
+                        if (m.index === reG.lastIndex) reG.lastIndex++;
+                    }
+                    if (hit) {
+                        editor.replaceRange(hit[0].replace(reS, rep), offToPos(hit.index), offToPos(hit.index + hit[0].length));
+                    } else {
+                        const si = (editor.cm && editor.cm.getScrollInfo) ? editor.cm.getScrollInfo() : null;
+                        editor.replaceRange(text.replace(re, rep), { line: 0, ch: 0 }, { line: editor.lastLine(), ch: editor.getLine(editor.lastLine()).length });
+                        try { editor.setCursor(cursor); } catch (e) {}
+                        if (si && editor.cm && editor.cm.scrollTo) { try { editor.cm.scrollTo(si.left, si.top); } catch (e) {} }
+                    }
                 } else {
                     const text = editor.getValue();
                     const si = (editor.cm && editor.cm.getScrollInfo) ? editor.cm.getScrollInfo() : null;
@@ -2542,6 +2563,22 @@ class FileOpsPlusPlugin extends Plugin {
                 const modal = new Modal(this.app);
                 modal.titleEl.setText(t("输入笔记名称"));
                 const inputEl = modal.contentEl.createEl("input", { type: "text", value: defaultName, attr: { style: "width:100%;padding:6px;margin:8px 0;box-sizing:border-box;" } });
+                const contentBox = modal.contentEl.createEl("div", { attr: { style: "margin:4px 0 8px;border:1px solid var(--background-modifier-border);border-radius:4px;padding:8px;max-height:240px;overflow:auto;background:var(--background-secondary);white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.5;user-select:text;-webkit-user-select:text;cursor:text;" } });
+                contentBox.setText(sel);
+                const fillSel = () => {
+                    const s = window.getSelection();
+                    if (!s || s.isCollapsed) return;
+                    let txt = s.toString();
+                    if (!txt) return;
+                    let node = s.anchorNode;
+                    let inside = false;
+                    while (node) { if (node === contentBox) { inside = true; break; } node = node.parentNode; }
+                    if (!inside) return;
+                    txt = txt.replace(/^#+\s*/, "").replace(/[#^[\]|\\/:*?<>"]/g, "").trim().slice(0, 50);
+                    if (txt) inputEl.value = txt;
+                };
+                contentBox.addEventListener("mouseup", fillSel);
+                document.addEventListener("selectionchange", fillSel);
                 const btnRow = modal.contentEl.createEl("div", { attr: { style: "text-align:right;margin-top:8px;" } });
                 const okBtn = btnRow.createEl("button", { text: t("打开"), attr: { style: "margin-left:4px;" } });
                 btnRow.createEl("button", { text: t("取消"), attr: { style: "margin-left:4px;" } }).onclick = () => modal.close();
@@ -2550,15 +2587,18 @@ class FileOpsPlusPlugin extends Plugin {
                     if (!name) return;
                     const newPath = (file.parent.path ? file.parent.path + "/" : "") + name + ".md";
                     const existing = this.app.vault.getAbstractFileByPath(newPath);
-                    if (existing instanceof TFile) { await this.app.vault.modify(existing, sel); }
-                    else { await this.app.vault.create(newPath, sel); }
+                    let nf;
+                    if (existing instanceof TFile) { await this.app.vault.modify(existing, sel); nf = existing; }
+                    else { nf = await this.app.vault.create(newPath, sel); }
                     editor.replaceSelection(`[[${name}]]`);
+                    document.removeEventListener("selectionchange", fillSel);
                     modal.close();
-                    this.app.workspace.openLinkText(name, file.path);
+                    this.app.workspace.getLeaf(true).openFile(nf);
                     new Notice(t("已创建：") + name);
                 };
                 okBtn.onclick = doExtract;
                 inputEl.addEventListener("keydown", (e) => { if (e.key === "Enter") doExtract(); });
+                modal.onClose = () => { document.removeEventListener("selectionchange", fillSel); };
                 modal.open();
             } else if (item.action === "clipboardToNote") {
                 let clipText = "";
@@ -2568,6 +2608,22 @@ class FileOpsPlusPlugin extends Plugin {
                 const modal = new Modal(this.app);
                 modal.titleEl.setText(t("输入笔记名称"));
                 const inputEl = modal.contentEl.createEl("input", { type: "text", value: defaultName, attr: { style: "width:100%;padding:6px;margin:8px 0;box-sizing:border-box;" } });
+                const contentBox = modal.contentEl.createEl("div", { attr: { style: "margin:4px 0 8px;border:1px solid var(--background-modifier-border);border-radius:4px;padding:8px;max-height:240px;overflow:auto;background:var(--background-secondary);white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.5;user-select:text;-webkit-user-select:text;cursor:text;" } });
+                contentBox.setText(clipText);
+                const fillSel = () => {
+                    const sel = window.getSelection();
+                    if (!sel || sel.isCollapsed) return;
+                    let txt = sel.toString();
+                    if (!txt) return;
+                    let node = sel.anchorNode;
+                    let inside = false;
+                    while (node) { if (node === contentBox) { inside = true; break; } node = node.parentNode; }
+                    if (!inside) return;
+                    txt = txt.replace(/^#+\s*/, "").replace(/[#^[\]|\\/:*?<>"]/g, "").trim().slice(0, 50);
+                    if (txt) inputEl.value = txt;
+                };
+                contentBox.addEventListener("mouseup", fillSel);
+                document.addEventListener("selectionchange", fillSel);
                 const btnRow = modal.contentEl.createEl("div", { attr: { style: "text-align:right;margin-top:8px;" } });
                 const okBtn = btnRow.createEl("button", { text: t("打开"), attr: { style: "margin-left:4px;" } });
                 btnRow.createEl("button", { text: t("取消"), attr: { style: "margin-left:4px;" } }).onclick = () => modal.close();
@@ -2577,12 +2633,14 @@ class FileOpsPlusPlugin extends Plugin {
                     const newPath = (file.parent.path ? file.parent.path + "/" : "") + name + ".md";
                     if (this.app.vault.getAbstractFileByPath(newPath)) { new Notice(t("已存在同名文件")); return; }
                     const nf = await this.app.vault.create(newPath, clipText);
-                    this.app.workspace.getLeaf().openFile(nf);
+                    this.app.workspace.getLeaf(true).openFile(nf);
+                    document.removeEventListener("selectionchange", fillSel);
                     modal.close();
                     new Notice(t("已创建：") + name);
                 };
                 okBtn.onclick = doCreate;
                 inputEl.addEventListener("keydown", (e) => { if (e.key === "Enter") doCreate(); });
+                modal.onClose = () => { document.removeEventListener("selectionchange", fillSel); };
                 modal.open();
             }
 
@@ -4605,9 +4663,10 @@ class FileOpsPlusPlugin extends Plugin {
                         pop.onclick = (ev) => ev.stopPropagation();
                         const grid = pop.createEl("div", { attr: { style: "display:grid;grid-template-columns:repeat(5,1fr);gap:6px;" } });
                         const cur = fopParseItemColor(item.color);
-                        FOP_COLOR_PRESETS.forEach(q => {
+                        const allPresets = FOP_COLOR_PRESETS.concat(this.editorMenuConfig.customColorPresets || []);
+                        allPresets.forEach(q => {
                             const b = grid.createEl("button", { text: "Aa", attr: { style: "height:30px;border-radius:7px;border:1px solid rgba(0,0,0,.1);cursor:pointer;font-size:12px;font-weight:600;padding:0;background:" + q[1] + ";color:" + q[2] + ";" } });
-                            b.title = q[0] + "  " + q[1] + " / " + q[2];
+                            b.title = (q[0] ? q[0] + "  " : "") + q[1] + " / " + q[2];
                             if (cur.bg === q[1] && cur.fg === q[2]) b.style.outline = "2px solid var(--interactive-accent)";
                             b.onclick = () => { item.color = q[1] + "|" + q[2]; this.saveEditorMenuConfig(); refreshPv(); renderPreview(); pop.remove(); };
                         });
@@ -4635,6 +4694,30 @@ class FileOpsPlusPlugin extends Plugin {
                         const btnRow = pop.createEl("div", { attr: { style: "display:flex;gap:10px;align-items:center;" } });
                         btnRow.createEl("button", { text: t("跟随组"), attr: { style: "font-size:12px;cursor:pointer;padding:2px 8px;border-radius:5px;background:var(--background-modifier-hover);border:0;color:var(--text-normal);" } }).onclick = () => { delete item.color; this.saveEditorMenuConfig(); refreshPv(); renderPreview(); pop.remove(); };
                         btnRow.createEl("button", { text: t("完成"), attr: { style: "font-size:12px;cursor:pointer;padding:2px 8px;border-radius:5px;background:var(--background-modifier-hover);border:0;color:var(--text-normal);" } }).onclick = () => pop.remove();
+                        btnRow.createEl("button", { text: t("批量"), attr: { style: "font-size:12px;cursor:pointer;padding:2px 8px;border-radius:5px;background:var(--background-modifier-hover);border:0;color:var(--text-normal);margin-left:auto;" } }).onclick = () => {
+                            if (pop.querySelector(".fop-batch-area")) return;
+                            const ba = pop.createEl("div", { cls: "fop-batch-area", attr: { style: "border-top:1px solid var(--background-modifier-border);padding-top:8px;" } });
+                            const ta = ba.createEl("textarea", { attr: { style: "width:100%;height:80px;resize:vertical;font:11px ui-monospace,Consolas,monospace;border:1px solid var(--background-modifier-border);border-radius:5px;padding:4px;background:var(--background-modifier-form-field);", placeholder: t("每行: #背景 #文字") } });
+                            ba.createEl("button", { text: t("添加配色"), attr: { style: "font-size:12px;cursor:pointer;padding:2px 8px;border-radius:5px;background:var(--interactive-accent);border:0;color:var(--text-on-accent);margin-top:6px;" } }).onclick = () => {
+                                const lines = ta.value.split("\n").map(l => l.trim()).filter(Boolean);
+                                let added = 0;
+                                this.editorMenuConfig.customColorPresets = this.editorMenuConfig.customColorPresets || [];
+                                for (const line of lines) {
+                                    const parts = line.split(/\s+/);
+                                    const bg = fopNormHex(parts[0]);
+                                    const fg = fopNormHex(parts[1]) || "";
+                                    if (bg || fg) {
+                                        const preset = ["", bg || "#ffffff", fg || "#000000"];
+                                        this.editorMenuConfig.customColorPresets.push(preset);
+                                        const b = grid.createEl("button", { text: "Aa", attr: { style: "height:30px;border-radius:7px;border:1px solid rgba(0,0,0,.1);cursor:pointer;font-size:12px;font-weight:600;padding:0;background:" + preset[1] + ";color:" + preset[2] + ";" } });
+                                        b.title = preset[1] + " / " + preset[2];
+                                        b.onclick = () => { item.color = preset[1] + "|" + preset[2]; this.saveEditorMenuConfig(); refreshPv(); renderPreview(); pop.remove(); };
+                                        added++;
+                                    }
+                                }
+                                if (added > 0) { this.saveEditorMenuConfig(); new Notice(t("已添加") + " " + added + " " + t("项")); ta.value = ""; }
+                            };
+                        };
                         const r = aaBtn.getBoundingClientRect();
                         pop.style.left = r.left + "px";
                         pop.style.top = (r.bottom + 6) + "px";
@@ -4708,8 +4791,22 @@ class FileOpsPlusPlugin extends Plugin {
                         patInput.onchange = (e) => { item.pattern = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
                         const repInput = ir.createEl("input", { type: "text", value: item.replacement || "", attr: { style: "flex:1;min-width:80px;padding:2px;", placeholder: t("替换 \\n=换行") } });
                         repInput.onchange = (e) => { item.replacement = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
-                        const flagInput = ir.createEl("input", { type: "text", value: item.flags || "g", attr: { style: "width:46px;padding:2px;", placeholder: t("标志"), title: t("g=全局 i=忽略大小写 m=多行 s=dotall u=unicode y=粘附") } });
+                        const flagInput = ir.createEl("input", { type: "text", value: item.flags != null ? item.flags : "g", attr: { style: "width:46px;padding:2px;", placeholder: t("标志") } });
+                        flagInput.addEventListener("mouseenter", () => {
+                            const tip = document.createElement("div");
+                            tip.style.cssText = "position:fixed;z-index:99999;background:var(--background-secondary);border:1px solid var(--background-modifier-border);border-radius:6px;padding:8px 10px;box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:11px;color:var(--text-normal);pointer-events:none;";
+                            tip.innerHTML = '<table style="border-collapse:collapse;"><tbody><tr><td style="font-weight:bold;padding:0 8px 0 0;">g</td><td style="padding:0 12px 0 0;">' + t("全局") + '</td><td style="font-weight:bold;padding:0 8px 0 0;">i</td><td>' + t("忽略大小写") + '</td></tr><tr><td style="font-weight:bold;padding:0 8px 0 0;">m</td><td style="padding:0 12px 0 0;">' + t("多行") + '</td><td style="font-weight:bold;padding:0 8px 0 0;">s</td><td>dotall</td></tr><tr><td style="font-weight:bold;padding:0 8px 0 0;">u</td><td style="padding:0 12px 0 0;">unicode</td><td style="font-weight:bold;padding:0 8px 0 0;">y</td><td>' + t("粘附") + '</td></tr></tbody></table>';
+                            document.body.appendChild(tip);
+                            const r = flagInput.getBoundingClientRect();
+                            tip.style.left = r.left + "px";
+                            tip.style.top = (r.bottom + 4) + "px";
+                            flagInput._fopFlagTip = tip;
+                        });
+                        flagInput.addEventListener("mouseleave", () => { if (flagInput._fopFlagTip) { flagInput._fopFlagTip.remove(); flagInput._fopFlagTip = null; } });
                         flagInput.onchange = (e) => { item.flags = e.target.value; this.saveEditorMenuConfig(); renderPreview(); };
+                        const csCb = ir.createEl("input", { type: "checkbox", attr: { style: "margin:0;accent-color:var(--interactive-accent);", title: t("仅替换光标所在匹配") } });
+                        csCb.checked = !!item.cursorScope;
+                        csCb.onchange = () => { item.cursorScope = csCb.checked; this.saveEditorMenuConfig(); renderPreview(); };
                         const presetBtn = ir.createEl("button", { text: t("预设"), attr: { style: "padding:2px 6px;font-size:12px;line-height:1;white-space:nowrap;" } });
                         presetBtn.onclick = () => {
                             fopPopupPicker(presetBtn, {
@@ -4734,7 +4831,8 @@ class FileOpsPlusPlugin extends Plugin {
                                 onPick: (di) => {
                                     item.pattern = di.pattern || ""; patInput.value = item.pattern;
                                     item.replacement = di.replacement || ""; repInput.value = item.replacement;
-                                    item.flags = di.flags || "g"; flagInput.value = item.flags;
+                                    item.flags = di.flags != null ? di.flags : "g"; flagInput.value = item.flags;
+                                    item.cursorScope = !!di.cursorScope; csCb.checked = item.cursorScope;
                                     if (!item.label || item.label === t("新选项")) { item.label = di.label; }
                                     this.saveEditorMenuConfig(); renderPreview();
                                 }
