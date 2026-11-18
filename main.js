@@ -30,7 +30,7 @@ const I18N_EN = {
     "预览": "Preview", "设定颜色": "Set Color", "跟随组": "Follow Group", "完成": "Done",
     "分组标题样式": "Group label style", "不显示": "None", "标签": "Label", "水印标题": "Watermark title",
     "显示": "Show", "隐藏": "Hide",
-    "添加选项": "Add Option", "添加分组": "Add Group",
+    "添加选项": "Add Option", "添加分组": "Add Group", "换行线": "Line Break", "+ 换行线": "+ Line Break",
     "图标": "Icon", "名称": "Name", "类型": "Type", "操作": "Action", "背景": "BG", "文字": "FG",
     "关闭编辑器增强菜单": "Disable Editor Enhanced Menu", "启用编辑器增强菜单": "Enable Editor Enhanced Menu",
     "已启用编辑器增强菜单": "Editor enhanced menu enabled", "已关闭编辑器增强菜单": "Editor enhanced menu disabled",
@@ -84,9 +84,9 @@ const I18N_EN = {
     "命令": "Command", "选择该选项执行的命令": "Command to-Option", "直接插入文本": "Insert Text", "插入的文本，{{text}}=选中文本": "Text to insert, {{text}}=selected text",
 
     "阅读视图": "Reading View", "导出": "Export",
-    "无活动文件": "No active file", "未找到关联笔记": "No linked notes found", "透明": "Opacity", "拖动调整面板宽高": "Drag to resize", "关系图": "Graph", "设置面板分组手风琴模式": "Settings panel group accordion mode", "局部关系列表": "Local relation list", "提及文档": "Mentions", "被提及文档": "Mentioned by", "吸附/脱离": "Dock/Undock", "开": "On", "关": "Off",
+    "无活动文件": "No active file", "未找到关联笔记": "No linked notes found", "透明": "Opacity", "拖动调整面板宽高": "Drag to resize", "关系图": "Graph", "设置面板分组手风琴模式": "Settings panel group accordion mode", "局部关系列表": "Links", "提及文档": "Mentions", "被提及文档": "Mentioned by", "吸附/脱离": "Dock/Undock", "开": "On", "关": "Off",
     "暂存": "Stash", "暂存列表": "Stash List", "插入到光标位置": "Insert at cursor", "空暂存": "Empty stash", "暂存为空": "Stash is empty",
-    "关联": "Links", "双向": "Bidirectional", "提及": "Mention", "被提及": "Mentioned by", "个页面": " pages", "个双向": " bidirectional", "自动折叠": "Auto fold", "添加选中文本到暂存": "Add selection to stash", "无选中文本或剪贴板内容": "No selection or clipboard", "清空暂存": "Clear stash", "已插入": "Inserted", "引用此块": "Refs to this block",
+    "关联": "Links", "双向": "Bidirectional", "提及": "Mention", "被提及": "Mentioned by", "个页面": " pages", "个双向": " bidirectional", "自动折叠": "Auto fold", "添加选中文本到暂存": "Add selection to stash", "无选中文本或剪贴板内容": "No selection or clipboard", "清空暂存": "Clear stash", "已插入": "Inserted", "引用此块": "Refs to this block", "文件": "Files", "块引用": "Block Refs", "当前文档": "Current doc", "全库": "Vault", "断链": "Broken", "文件不存在": "File missing", "块": " blocks",
     "已删除 ": "Deleted ", " 项": " item(s)", "已添加": "Added",
     "确认删除": "Confirm Delete", "确定要删除 ": "Delete ",
     " 个文件吗？": " files?", "取消": "Cancel",
@@ -121,7 +121,7 @@ const I18N_EN = {
     "AI 请求超时（60s）": "AI request timed out (60s)",
     "API Key 未配置，请在编辑器菜单设置的 AI 设置中填写": "API Key not configured. Set it in Editor Menu Settings → AI Settings",
     "替换选中": "Replace Selection",
-    "历史": "History", "子窗口": "Subwindow", "局部关系": "Local Relation", "清空历史": "Clear History", "无历史": "No History",
+    "历史": "History", "子窗口": "Subwindow", "局部关系": "Links", "清空历史": "Clear History", "无历史": "No History",
     "预设": "Preset", "预设=预设命令 cmd=任意命令": "Preset=preset command cmd=any command",
     "新建文件": "New File", "AI命名": "AI Name", "请选择文件名": "Choose a file name", "创建文件失败：": "File creation failed: ",
     "已创建文件：": "File created: ", "正在生成文件名…": "Generating file name…", "流式输出": "Stream",
@@ -141,6 +141,7 @@ const I18N_EN = {
     "导出设置": "Export Settings", "导入设置": "Import Settings",
     "设置已导出": "Settings exported", "设置已导入": "Settings imported",
     "导入失败：": "Import failed: ", "导出失败：": "Export failed: ",
+    "从自动备份恢复": "Restore from Auto Backup", "无可用备份": "No backups available", "恢复成功": "Restore successful", "备份时间": "Backup time", "自动备份数量": "Auto backup count", "关闭设置面板时自动备份": "Auto backup on settings panel close",
     "折叠/展开": "Collapse/Expand",
     "搜索图标…": "Search icon…", "搜索命令…": "Search command…",
     "所有分类": "All", "选择图标": "Pick icon", "选择命令": "Pick command",
@@ -641,6 +642,8 @@ const DEFAULT_EDITOR_MENU = {
     showGroupLabels: true,
     selectionBall: false,
     selectionBallOffset: { x: 12, y: -28 },
+    tileGap: 5,
+    groupGap: 15,
     groups: [
         { id: "link", label: t("链接"), color: "accent", items: [
             { icon: "link", label: t("新增链接"), type: "cmd", cmd: "editor:insert-link" },
@@ -871,7 +874,10 @@ class FileOpsPlusPlugin extends Plugin {
         document.addEventListener("mouseup", this.mouseUpHandler);
         this.colorInterval = window.setInterval(() => this.applyColors(), 500);
         this.applyColors();
-        this.registerEvent(this.app.workspace.on("active-leaf-change", (leaf) => this.onActiveLeafChange(leaf)));
+        this.registerEvent(this.app.workspace.on("active-leaf-change", (leaf) => { this.onActiveLeafChange(leaf); this._bidScanDebounced(); }));
+        this._bidObserver = new MutationObserver(() => this._bidScanDebounced());
+        this._bidObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+        setTimeout(() => this._scanDocBlockIdHighlights(), 1000);
 
         this._restoreFoldPanels = () => {
             const av = this.app.workspace.getActiveViewOfType(MarkdownView);
@@ -952,6 +958,10 @@ class FileOpsPlusPlugin extends Plugin {
         if (this.colorInterval) window.clearInterval(this.colorInterval);
         if (this.revealTimer) clearTimeout(this.revealTimer);
         if (this._accordionHandler) document.removeEventListener("click", this._accordionHandler, true);
+        if (this._bidObserver) this._bidObserver.disconnect();
+        if (this._bidScanTimer) clearTimeout(this._bidScanTimer);
+        if (this._bidHueStyles) { for (const hue of this._bidHueStyles) { const st = document.getElementById("fop-doc-bid-" + hue); if (st) st.remove(); } this._bidHueStyles = null; }
+        if (window.CSS && CSS.highlights) { for (const n of [...CSS.highlights.keys()]) if (n.indexOf("fop-doc-bid-") === 0) CSS.highlights.delete(n); }
         this.cancelMoveMode();
     }
 
@@ -1017,6 +1027,64 @@ class FileOpsPlusPlugin extends Plugin {
             }
         }
         return result;
+    }
+
+    _bidHue(id) {
+        let h = 0;
+        for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 360;
+        return h;
+    }
+
+    _ensureBidHighlightStyle(hue) {
+        if (!this._bidHueStyles) this._bidHueStyles = new Set();
+        if (this._bidHueStyles.has(hue)) return "fop-doc-bid-" + hue;
+        const st = document.createElement("style");
+        st.id = "fop-doc-bid-" + hue;
+        st.textContent = "::highlight(fop-doc-bid-" + hue + "){background-color:hsla(" + hue + ",70%,55%,.18);color:hsl(" + hue + ",70%,45%);font-weight:600;}";
+        document.head.appendChild(st);
+        this._bidHueStyles.add(hue);
+        return "fop-doc-bid-" + hue;
+    }
+
+    _scanDocBlockIdHighlights() {
+        if (!window.CSS || !CSS.highlights || !window.Highlight) return;
+        const clearAll = () => { for (const n of [...CSS.highlights.keys()]) if (n.indexOf("fop-doc-bid-") === 0) CSS.highlights.delete(n); };
+        const view = this.app.workspace.getActiveViewOfType && this.app.workspace.getActiveViewOfType(MarkdownView);
+        if (!view || !view.file) { clearAll(); return; }
+        const cmContent = view.containerEl ? view.containerEl.querySelector(".cm-content") : null;
+        if (!cmContent) { clearAll(); return; }
+        const blocks = this.app.metadataCache.getCache(view.file.path)?.blocks;
+        if (!blocks) { clearAll(); return; }
+        const idSet = new Set(Object.keys(blocks));
+        const byHue = new Map();
+        const walker = document.createTreeWalker(cmContent, NodeFilter.SHOW_TEXT);
+        const re = /\^([a-zA-Z][\w-]*)(?![\w-])/g;
+        let node;
+        while ((node = walker.nextNode())) {
+            const txt = node.textContent;
+            if (!txt || txt.indexOf("^") < 0) continue;
+            re.lastIndex = 0;
+            let m;
+            while ((m = re.exec(txt))) {
+                if (!idSet.has(m[1])) continue;
+                const hue = this._bidHue(m[1]);
+                if (!byHue.has(hue)) byHue.set(hue, []);
+                const r = document.createRange();
+                r.setStart(node, m.index);
+                r.setEnd(node, m.index + m[0].length);
+                byHue.get(hue).push(r);
+            }
+        }
+        clearAll();
+        for (const [hue, rs] of byHue) {
+            const name = this._ensureBidHighlightStyle(hue);
+            CSS.highlights.set(name, new Highlight(...rs));
+        }
+    }
+
+    _bidScanDebounced() {
+        if (this._bidScanTimer) clearTimeout(this._bidScanTimer);
+        this._bidScanTimer = setTimeout(() => this._scanDocBlockIdHighlights(), 300);
     }
 
     _clearBlockRefHighlight() {
@@ -1829,13 +1897,26 @@ class FileOpsPlusPlugin extends Plugin {
     }
 
 
+    async _saveColorData() {
+        const data = (await this.loadData()) || {};
+        await this.saveData({
+            colors: this.colorMap,
+            pins: Array.from(this.pinSet),
+            bolds: Array.from(this.boldSet),
+            colorPalette: this.colorPalette || undefined,
+            editorMenu: data.editorMenu || this.editorMenuConfig,
+            fileMenu: data.fileMenu || this.fileMenuConfig,
+            tabMenu: data.tabMenu || this.tabMenuConfig,
+        });
+    }
+
     async setColor(file, color) {
         if (color) {
             this.colorMap[file.path] = color;
         } else {
             delete this.colorMap[file.path];
         }
-        await this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet), colorPalette: this.colorPalette || undefined });
+        await this._saveColorData();
         this.applyColors();
     }
 
@@ -1847,7 +1928,7 @@ class FileOpsPlusPlugin extends Plugin {
             this.pinSet.add(file.path);
             new Notice(t("已置顶"));
         }
-        await this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet), colorPalette: this.colorPalette || undefined });
+        await this._saveColorData();
         this.applyColors();
     }
 
@@ -1859,7 +1940,7 @@ class FileOpsPlusPlugin extends Plugin {
         } else {
             this.boldSet.add(file.path);
         }
-        await this.saveData({ colors: this.colorMap, pins: Array.from(this.pinSet), bolds: Array.from(this.boldSet), colorPalette: this.colorPalette || undefined });
+        await this._saveColorData();
         this.applyColors();
     }
 
@@ -1886,7 +1967,37 @@ class FileOpsPlusPlugin extends Plugin {
                 if (content) content.style.removeProperty("font-weight");
             }
         }
+        this._applyTabColors();
         this.applyPin();
+    }
+
+    _applyTabColors() {
+        if (typeof this.app.workspace.iterateAllLeaves !== "function") return;
+        this.app.workspace.iterateAllLeaves((leaf) => {
+            if (!leaf) return;
+            const file = leaf.file || (leaf.view && leaf.view.file) || null;
+            if (!file) return;
+            const path = file.path;
+            const color = this.colorMap[path];
+            const bold = this.boldSet.has(path);
+            const tabEl = leaf.tabHeaderEl || leaf.tabHeader || null;
+            if (!tabEl) return;
+            const titleEl = tabEl.querySelector(".workspace-tab-header-inner-title");
+            if (color) {
+                tabEl.style.setProperty("color", color, "important");
+                if (titleEl) titleEl.style.setProperty("color", color, "important");
+            } else {
+                tabEl.style.removeProperty("color");
+                if (titleEl) titleEl.style.removeProperty("color");
+            }
+            if (bold) {
+                tabEl.style.setProperty("font-weight", "bold", "important");
+                if (titleEl) titleEl.style.setProperty("font-weight", "bold", "important");
+            } else {
+                tabEl.style.removeProperty("font-weight");
+                if (titleEl) titleEl.style.removeProperty("font-weight");
+            }
+        });
     }
 
     applyPin() {
@@ -2158,6 +2269,12 @@ class FileOpsPlusPlugin extends Plugin {
             grid.className = "fop-em-grid";
             if (labelStyle === "watermark") { grid.style.position = "relative"; grid.style.zIndex = "1"; }
             const renderTile = (item, itemIdx) => {
+                if (item.type === "br") {
+                    const br = document.createElement("div");
+                    br.style.cssText = "flex-basis:100%;height:0;order:0;";
+                    grid.appendChild(br);
+                    return;
+                }
                 if (item.type === "folder") {
                     const folderTile = makeTile(item.icon || "folder", item.color || grp.color, item.name || t("文件夹"), () => {});
                     folderTile.style.cursor = "pointer";
@@ -2993,6 +3110,7 @@ class FileOpsPlusPlugin extends Plugin {
             panel.appendChild(disc);
         }
         const header = document.createElement("div");
+        header.className = "fop-graph-header";
         header.style.cssText = "display:flex;align-items:center;gap:6px;padding:6px 10px;cursor:grab;border-bottom:1px solid var(--background-modifier-border);";
         const ttl = document.createElement("div");
         ttl.textContent = t("局部关系列表");
@@ -3003,12 +3121,18 @@ class FileOpsPlusPlugin extends Plugin {
         closeBtn.textContent = "✕";
         closeBtn.style.cssText = "cursor:pointer;padding:0 6px;color:var(--text-error);display:none;font-weight:700;";
         header.appendChild(closeBtn);
-        const foldBtn = document.createElement("div");
-        foldBtn.className = "fop-fold-btn" + (cfg.graphAutoFold ? " is-active" : "");
-        foldBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>';
-        foldBtn.title = t("自动折叠");
-        header.appendChild(foldBtn);
+        const graphChip = document.createElement("div");
+        graphChip.className = "fop-fold-chip fop-graph-chip";
+        graphChip.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1"/></svg><b>0</b><b class="fop-chip-blocks" style="display:none;background:var(--interactive-accent);color:var(--text-on-accent);border-radius:999px;padding:0 5px;font-size:11px;">0</b>';
+        graphChip.style.cssText = "cursor:pointer;display:flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;background:var(--background-modifier-form-field);border:1px solid var(--background-modifier-border);font-size:var(--font-ui-small);flex:none;";
+        header.appendChild(graphChip);
         panel.appendChild(header);
+
+        const tabBar = document.createElement("div");
+        tabBar.style.cssText = "display:flex;border-bottom:1px solid var(--background-modifier-border);flex:none;";
+        const tabFiles = tabBar.createEl("div", { text: t("文件"), attr: { style: "flex:1;text-align:center;padding:5px 0;cursor:pointer;font-size:var(--font-ui-small);border-bottom:2px solid var(--interactive-accent);font-weight:600;" } });
+        const tabBlocks = tabBar.createEl("div", { text: t("块引用"), attr: { style: "flex:1;text-align:center;padding:5px 0;cursor:pointer;font-size:var(--font-ui-small);color:var(--text-muted);border-bottom:2px solid transparent;" } });
+        panel.appendChild(tabBar);
 
         const content = document.createElement("div");
         content.style.cssText = "flex:1;min-height:0;overflow-y:auto;padding:6px 10px;";
@@ -3024,6 +3148,7 @@ class FileOpsPlusPlugin extends Plugin {
             return (bb ? 1 : 0) - (ab ? 1 : 0);
         });
         const bothCount = uniqFiles.filter(f => outPaths.has(f.path) && inPaths.has(f.path)).length;
+        graphChip.querySelector("b").textContent = String(uniqFiles.length);
         const OUT_C = "#2a8a7e", IN_C = "#c47a2c";
         const OUT_BG = "rgba(42,138,126,.15)", IN_BG = "rgba(196,122,44,.17)";
         for (const f of uniqFiles) {
@@ -3041,6 +3166,149 @@ class FileOpsPlusPlugin extends Plugin {
             row.addEventListener("click", () => this.app.workspace.getLeaf().openFile(f));
         }
         panel.appendChild(content);
+
+        const blockContent = document.createElement("div");
+        blockContent.style.cssText = "flex:1;min-height:0;display:none;flex-direction:column;overflow:hidden;";
+        const scopeBar = blockContent.createEl("div", { attr: { style: "display:flex;gap:4px;padding:4px 10px 6px;flex:none;" } });
+        const scopeDoc = scopeBar.createEl("span", { text: t("当前文档"), attr: { style: "flex:1;text-align:center;padding:3px 0;cursor:pointer;font-size:var(--font-ui-small);border:1px solid var(--background-modifier-border);border-radius:999px;background:var(--interactive-accent);color:var(--text-on-accent);" } });
+        const scopeVault = scopeBar.createEl("span", { text: t("全库"), attr: { style: "flex:1;text-align:center;padding:3px 0;cursor:pointer;font-size:var(--font-ui-small);border:1px solid var(--background-modifier-border);border-radius:999px;color:var(--text-muted);" } });
+        const blockList = blockContent.createEl("div", { attr: { style: "flex:1;min-height:0;overflow-y:auto;padding:0 10px 6px;" } });
+
+        const collectRefsDoc = () => {
+            const refs = [];
+            for (const link of (fileCache?.links || [])) {
+                if (link.link.includes("#^")) {
+                    const parts = link.link.split("#^");
+                    const tf = mc.getFirstLinkpathDest(parts[0], file.path);
+                    const bid = parts[1].split(/\s/)[0];
+                    const broken = !tf || !(mc.getCache(tf.path)?.blocks?.[bid]);
+                    refs.push({ src: file.basename, srcFile: file, target: tf ? tf.basename : parts[0], targetFile: tf, id: bid, line: link.position.start.line + 1, broken: broken ? (!tf ? "file" : "block") : null });
+                }
+            }
+            for (const srcPath of Object.keys(rl)) {
+                if (rl[srcPath] && rl[srcPath][file.path]) {
+                    const sf = vault.getAbstractFileByPath(srcPath);
+                    if (sf && sf instanceof TFile) {
+                        const sc = mc.getCache(srcPath);
+                        for (const link of (sc?.links || [])) {
+                            if (link.link.includes("#^")) {
+                                const parts = link.link.split("#^");
+                                const tf = mc.getFirstLinkpathDest(parts[0], srcPath);
+                                if (tf && tf.path === file.path) {
+                                    const bid = parts[1].split(/\s/)[0];
+                                    const broken = !(mc.getCache(file.path)?.blocks?.[bid]);
+                                    refs.push({ src: sf.basename, srcFile: sf, target: file.basename, targetFile: file, id: bid, line: link.position.start.line + 1, broken: broken ? "block" : null });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return refs;
+        };
+
+        const collectRefsVault = () => {
+            const refs = [];
+            for (const f of vault.getMarkdownFiles()) {
+                const fc = mc.getCache(f.path);
+                for (const link of (fc?.links || [])) {
+                    if (link.link.includes("#^")) {
+                        const parts = link.link.split("#^");
+                        const tf = mc.getFirstLinkpathDest(parts[0], f.path);
+                        const bid = parts[1].split(/\s/)[0];
+                        const broken = !tf || !(mc.getCache(tf.path)?.blocks?.[bid]);
+                        refs.push({ src: f.basename, srcFile: f, target: tf ? tf.basename : parts[0], targetFile: tf, id: bid, line: link.position.start.line + 1, broken: broken ? (!tf ? "file" : "block") : null });
+                    }
+                }
+            }
+            return refs;
+        };
+
+        const renderBlockRefs = (refs) => {
+            blockList.innerHTML = "";
+            const ph = parseInt(panel.style.height) || 400;
+            const used = header.offsetHeight + (tabBar ? tabBar.offsetHeight : 0) + scopeBar.offsetHeight + 12;
+            blockList.style.maxHeight = Math.max(80, ph - used) + "px";
+            if (refs.length === 0) {
+                blockList.createEl("div", { text: t("无匹配"), attr: { style: "padding:20px;text-align:center;color:var(--text-muted);" } });
+                return;
+            }
+            const bStats = blockList.createEl("div", { attr: { style: "display:flex;gap:6px;padding:4px 0 8px;" } });
+            const bFiles = new Set(); refs.forEach(r => { bFiles.add(r.src); bFiles.add(r.target); });
+            const bBlocks = new Set(refs.map(r => r.target + "|" + r.id));
+            const bBad = refs.filter(r => r.broken).length;
+            const mkS = (n, label, red) => { const s = bStats.createEl("div", { attr: { style: "flex:1;background:var(--background-modifier-form-field);border:1px solid var(--background-modifier-border);border-radius:8px;padding:3px 7px;" + (red ? "color:var(--text-error);" : "") } }); s.createEl("b", { text: String(n), attr: { style: "font-size:15px;display:block;line-height:1.2;" } }); s.createEl("small", { text: label, attr: { style: "font-size:11px;color:var(--text-muted);" } }); return s; };
+            mkS(refs.length, t("块引用")); mkS(bFiles.size, t("个页面")); mkS(bBlocks.size, t("块")); mkS(bBad, t("断链"), true);
+            const groups = new Map();
+            refs.forEach(r => { const k = r.target; if (!groups.has(k)) groups.set(k, new Map()); const bm = groups.get(k); if (!bm.has(r.id)) bm.set(r.id, []); bm.get(r.id).push(r); });
+            for (const [target, bm] of groups) {
+                const grp = blockList.createEl("div", { attr: { style: "border-bottom:1px solid var(--background-modifier-border);" } });
+                const gh = grp.createEl("div", { attr: { style: "display:flex;align-items:center;gap:6px;padding:7px 6px;cursor:pointer;" } });
+                const ar = gh.createEl("span", { text: "▸", attr: { style: "color:var(--text-muted);font-size:11px;transition:.15s;" } });
+                gh.createEl("span", { text: target + ".md", attr: { style: "flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:var(--font-ui-small);" } });
+                const nb = [...bm.values()].filter(a => a[0].broken).length;
+                if (nb) gh.createEl("span", { text: "⚠ " + nb, attr: { style: "font-size:11px;color:var(--text-error);border:1px solid var(--text-error);border-radius:9px;padding:0 5px;flex:none;" } });
+                gh.createEl("span", { text: bm.size + t("块"), attr: { style: "font-size:11px;color:var(--text-muted);border:1px solid var(--background-modifier-border);border-radius:9px;padding:0 5px;flex:none;" } });
+                const gb = grp.createEl("div", { attr: { style: "display:none;padding:2px 6px 8px 24px;" } });
+                let gOpen = false;
+                gh.onclick = () => { gOpen = !gOpen; gb.style.display = gOpen ? "block" : "none"; ar.style.transform = gOpen ? "rotate(90deg)" : ""; };
+                for (const [id, rs] of bm) {
+                    const blk = gb.createEl("div", { attr: { style: "padding:4px 0;border-bottom:1px dotted var(--background-modifier-border);" } });
+                    let hue = 0; for (let i = 0; i < id.length; i++) hue = (hue * 31 + id.charCodeAt(i)) % 360;
+                    const idEl = blk.createEl("code", { text: "^" + id, attr: { style: "background:hsla(" + hue + ",70%,55%,.18);color:hsl(" + hue + ",70%,45%);border-radius:4px;padding:0 4px;font-size:11px;cursor:pointer;font-weight:600;" } });
+                    if (rs[0].broken) blk.createEl("span", { text: rs[0].broken === "file" ? t("文件不存在") : t("断链"), attr: { style: "font-size:11px;color:var(--text-error);margin-left:4px;" } });
+                    const srcs = blk.createEl("div", { attr: { style: "display:flex;flex-wrap:wrap;gap:3px;margin-top:2px;" } });
+                    for (const r of rs) {
+                        const s = srcs.createEl("span", { text: r.src + ":" + r.line, attr: { style: "background:var(--background-secondary);border-radius:4px;padding:0 5px;font-size:11px;cursor:pointer;" } });
+                        s.onclick = (e) => { e.stopPropagation(); this._fopBlockJump = true; this.app.workspace.getLeaf().openFile(r.srcFile); };
+                    }
+                    idEl.onclick = (e) => { e.stopPropagation(); if (rs[0].targetFile) { this._fopBlockJump = true; this.app.workspace.openLinkText(rs[0].targetFile.path + "#^" + id, ""); } };
+                }
+            }
+        };
+
+        renderBlockRefs(collectRefsDoc());
+        const _updateChipBlockBadge = () => {
+            const cnt = collectRefsDoc().length;
+            const badge = graphChip.querySelector(".fop-chip-blocks");
+            if (badge) { if (cnt > 0) { badge.textContent = String(cnt); badge.style.display = ""; } else badge.style.display = "none"; }
+        };
+        _updateChipBlockBadge();
+
+        let tabHoverTimer = null;
+        const tabEnter = (fn) => { if (tabHoverTimer) clearTimeout(tabHoverTimer); tabHoverTimer = setTimeout(fn, 300); };
+        const tabLeave = () => { if (tabHoverTimer) { clearTimeout(tabHoverTimer); tabHoverTimer = null; } };
+        let scopeHoverTimer = null;
+        const scopeEnter = (fn) => { if (scopeHoverTimer) clearTimeout(scopeHoverTimer); scopeHoverTimer = setTimeout(fn, 300); };
+        const scopeLeave = () => { if (scopeHoverTimer) { clearTimeout(scopeHoverTimer); scopeHoverTimer = null; } };
+        scopeDoc.onmouseenter = () => { scopeEnter(() => {
+            scopeDoc.style.background = "var(--interactive-accent)"; scopeDoc.style.color = "var(--text-on-accent)";
+            scopeVault.style.background = ""; scopeVault.style.color = "var(--text-muted)";
+            renderBlockRefs(collectRefsDoc());
+        }); };
+        scopeDoc.onmouseleave = scopeLeave;
+        scopeVault.onmouseenter = () => { scopeEnter(() => {
+            scopeVault.style.background = "var(--interactive-accent)"; scopeVault.style.color = "var(--text-on-accent)";
+            scopeDoc.style.background = ""; scopeDoc.style.color = "var(--text-muted)";
+            renderBlockRefs(collectRefsVault());
+        }); };
+        scopeVault.onmouseleave = scopeLeave;
+        panel.appendChild(blockContent);
+
+
+        tabFiles.onmouseenter = () => { tabEnter(() => {
+            tabFiles.style.borderBottomColor = "var(--interactive-accent)"; tabFiles.style.fontWeight = "600"; tabFiles.style.color = "";
+            tabBlocks.style.borderBottomColor = "transparent"; tabBlocks.style.fontWeight = ""; tabBlocks.style.color = "var(--text-muted)";
+            content.style.display = ""; blockContent.style.display = "none";
+        }); };
+        tabFiles.onmouseleave = tabLeave;
+        tabBlocks.onmouseenter = () => { tabEnter(() => {
+            tabBlocks.style.borderBottomColor = "var(--interactive-accent)"; tabBlocks.style.fontWeight = "600"; tabBlocks.style.color = "";
+            tabFiles.style.borderBottomColor = "transparent"; tabFiles.style.fontWeight = ""; tabFiles.style.color = "var(--text-muted)";
+            content.style.display = "none"; blockContent.style.display = "flex";
+        }); };
+        tabBlocks.onmouseleave = tabLeave;
+
         if (uniqFiles.length > 0) {
             const foot = panel.createEl("div", { attr: { style: "padding:6px 10px;border-top:1px solid var(--background-modifier-border);font-size:11px;color:var(--text-muted);display:flex;gap:12px;flex:none;" } });
             foot.createEl("span", { text: uniqFiles.length + " " + t("个页面") });
@@ -3076,19 +3344,11 @@ class FileOpsPlusPlugin extends Plugin {
         document.addEventListener("mouseup", rzUp);
 
         document.body.appendChild(panel);
-        let graphChip = null;
+        let chipDetached = false;
+        let chipDx = 0; const chipGapY = 10;
         let graphHideTimer = null, graphShowTimer = null, graphChipDragging = false;
         const graphShowPanel = () => {
             panel.style.display = "";
-            const cl = parseInt(graphChip.style.left), ct = parseInt(graphChip.style.top);
-            const cw = graphChip.offsetWidth, ch = graphChip.offsetHeight;
-            let pl = cl, pt = ct + ch + 4;
-            if (pl + panel.offsetWidth > window.innerWidth - 2) pl = window.innerWidth - panel.offsetWidth - 2;
-            if (pt + panel.offsetHeight > window.innerHeight - 2) pt = Math.max(2, ct - panel.offsetHeight - 4);
-            panel.style.left = Math.max(2, pl) + "px";
-            panel.style.top = Math.max(2, pt) + "px";
-            panel.style.height = Math.max(150, Math.min(h, window.innerHeight - parseInt(panel.style.top) - 10)) + "px";
-            content.style.maxHeight = Math.max(100, parseInt(panel.style.height) - header.offsetHeight) + "px";
             if (this._blockRefTimer) clearTimeout(this._blockRefTimer); this._blockRefTimer = setTimeout(() => this._updateBlockRefHighlight(), 50);
         };
         const graphScheduleHide = () => {
@@ -3099,7 +3359,7 @@ class FileOpsPlusPlugin extends Plugin {
                 const inChip = mx >= rc.left && mx <= rc.right && my >= rc.top && my <= rc.bottom;
                 const inPanel = panel.style.display !== "none" && mx >= rp.left && mx <= rp.right && my >= rp.top && my <= rp.bottom;
                 if (!inChip && !inPanel) panel.style.display = "none";
-            }, 150);
+            }, 200);
         };
         if (cfg.graphOpacity != null) panel.style.opacity = cfg.graphOpacity.toString();
         panel.addEventListener("wheel", (e) => {
@@ -3120,98 +3380,113 @@ class FileOpsPlusPlugin extends Plugin {
             const base = cfg.graphOpacity != null ? cfg.graphOpacity : 1;
             panel.style.opacity = base.toString();
             closeBtn.style.display = "none";
-            if (cfg.graphAutoFold && graphChip) graphScheduleHide();
+            if (chipDetached) graphScheduleHide();
         });
 
-        let docked = cfg.graphAutoFold ? false : (cfg.graphDocked !== false);
-        const updatePosition = () => {
-            const menuPanel = document.querySelector(".fop-em-panel:not(.fop-graph-panel):not(.fop-stash-panel):not(.file-ops-plus-menu)");
-            if (docked && menuPanel) {
-                const mr = menuPanel.getBoundingClientRect();
-                const side = cfg.graphDockSide || "right";
-                if (side === "right") {
-                    panel.style.left = (mr.right + 6) + "px";
-                    if (mr.right + 6 + panel.offsetWidth > window.innerWidth - 10) panel.style.left = (mr.left - panel.offsetWidth - 6) + "px";
-                } else {
-                    panel.style.left = (mr.left - panel.offsetWidth - 6) + "px";
-                    if (parseInt(panel.style.left) < 10) panel.style.left = (mr.right + 6) + "px";
-                }
-                panel.style.top = mr.top + "px";
-            } else {
-                const px = cfg.graphPanelX != null ? cfg.graphPanelX : window.innerWidth - w - 20;
-                const py = cfg.graphPanelY != null ? cfg.graphPanelY : 80;
-                panel.style.left = Math.max(2, Math.min(px, window.innerWidth - panel.offsetWidth - 2)) + "px";
-                panel.style.top = Math.max(2, Math.min(py, window.innerHeight - panel.offsetHeight - 2)) + "px";
-            }
-            panel.style.height = Math.max(150, Math.min(h, window.innerHeight - parseInt(panel.style.top) - 10)) + "px";
-            content.style.maxHeight = Math.max(100, parseInt(panel.style.height) - header.offsetHeight) + "px";
-        };
-        updatePosition();
-
-
-        const makeGraphChip = () => {
-            if (graphChip) graphChip.remove();
-            graphChip = document.createElement("div");
-            graphChip.className = "fop-fold-chip fop-graph-chip";
-            const cnt = uniqFiles.length;
-            graphChip.innerHTML = '<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1"/></svg><span>' + t("关联") + '</span><b>' + cnt + '</b>';
-            graphChip.style.cursor = "grab";
+        const detachChip = () => {
+            chipDetached = true;
+            const r = panel.getBoundingClientRect();
+            graphChip.style.cssText = "cursor:grab;display:flex;align-items:center;gap:3px;padding:4px 10px;border-radius:999px;background:var(--background-modifier-form-field);border:1px solid var(--background-modifier-border);font-size:var(--font-ui-small);position:fixed;z-index:10000;";
             document.body.appendChild(graphChip);
-            const cx = cfg.graphChipX != null ? cfg.graphChipX : parseInt(panel.style.left);
-            const cy = cfg.graphChipY != null ? cfg.graphChipY : (parseInt(panel.style.top) - graphChip.offsetHeight - 4);
-            graphChip.style.left = Math.max(0, Math.min(cx, window.innerWidth - graphChip.offsetWidth - 2)) + "px";
-            graphChip.style.top = Math.max(0, cy) + "px";
-            graphChip.addEventListener("contextmenu", (e) => {
-                e.preventDefault();
-                const menu = new Menu();
-                menu.addItem((item) => { item.setTitle(t("关闭")).setIcon("x").onClick(() => { cfg.graphEnabled = false; this.saveEditorMenuConfig(); closePanel(); }); });
-                menu.showAtPosition({ x: e.clientX, y: e.clientY });
-            });
-            graphChip.addEventListener("mouseenter", () => {
-                if (graphHideTimer) { clearTimeout(graphHideTimer); graphHideTimer = null; }
+            chipDx = 0;
+            if (cfg.graphChipX != null && cfg.graphChipY != null) {
+                graphChip.style.left = Math.max(0, Math.min(cfg.graphChipX, window.innerWidth - graphChip.offsetWidth - 2)) + "px";
+                graphChip.style.top = Math.max(0, cfg.graphChipY) + "px";
+            } else {
+                graphChip.style.left = r.left + "px";
+                graphChip.style.top = Math.max(0, r.top - chipGapY - graphChip.offsetHeight) + "px";
+            }
+            panel.style.display = "none";
+        };
+        const syncChipFromPanel = () => {
+            if (!chipDetached) return;
+            const pl = parseInt(panel.style.left), pt = parseInt(panel.style.top);
+            const cw = graphChip.offsetWidth;
+            let cx = Math.max(pl, Math.min(pl + chipDx, pl + panel.offsetWidth - cw));
+            let cy = Math.max(0, pt - chipGapY - graphChip.offsetHeight);
+            graphChip.style.left = cx + "px";
+            graphChip.style.top = cy + "px";
+            chipDx = cx - pl;
+        };
+        const attachChip = () => {
+            chipDetached = false;
+            graphChip.style.cssText = "cursor:pointer;display:flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;background:var(--background-modifier-form-field);border:1px solid var(--background-modifier-border);font-size:var(--font-ui-small);flex:none;";
+            header.appendChild(graphChip);
+            panel.style.display = "";
 
-                if (graphShowTimer) clearTimeout(graphShowTimer);
-                graphShowTimer = setTimeout(() => { graphShowPanel(); }, 200);
-            });
-            graphChip.addEventListener("mouseleave", () => {
-                if (graphShowTimer) { clearTimeout(graphShowTimer); graphShowTimer = null; }
-                graphScheduleHide();
-            });
-            graphChip.addEventListener("mousedown", (e) => {
-                if (e.button !== 0) return;
-
+        };
+        graphChip.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            const menu = new Menu();
+            menu.addItem((item) => { item.setTitle(t("关闭")).setIcon("x").onClick(() => { cfg.graphEnabled = false; this.saveEditorMenuConfig(); closePanel(); }); });
+            menu.showAtPosition({ x: e.clientX, y: e.clientY });
+        });
+        graphChip.addEventListener("mouseenter", () => {
+            if (!chipDetached) return;
+            if (graphHideTimer) { clearTimeout(graphHideTimer); graphHideTimer = null; }
+            if (graphShowTimer) clearTimeout(graphShowTimer);
+            graphShowTimer = setTimeout(() => { graphShowPanel(); }, 200);
+        });
+        graphChip.addEventListener("mouseleave", () => {
+            if (!chipDetached) return;
+            if (graphShowTimer) { clearTimeout(graphShowTimer); graphShowTimer = null; }
+            graphScheduleHide();
+        });
+        graphChip.addEventListener("mousedown", (e) => {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            e.stopPropagation();
+            if (graphShowTimer) { clearTimeout(graphShowTimer); graphShowTimer = null; }
+            const sx = e.clientX, sy = e.clientY;
+            let moved = false;
+            if (chipDetached) {
                 graphChip.style.cursor = "grabbing";
-                e.preventDefault();
-                if (graphShowTimer) { clearTimeout(graphShowTimer); graphShowTimer = null; }
                 graphChipDragging = true;
-                graphShowPanel();
-                const sx = e.clientX, sy = e.clientY, sl = graphChip.offsetLeft, st = graphChip.offsetTop;
+                const sl = graphChip.offsetLeft, st = graphChip.offsetTop;
                 const mv = (ev) => {
-                    graphChip.style.left = Math.max(0, Math.min(sl + ev.clientX - sx, window.innerWidth - graphChip.offsetWidth - 2)) + "px";
-                    graphChip.style.top = Math.max(0, Math.min(st + ev.clientY - sy, window.innerHeight - graphChip.offsetHeight - 2)) + "px";
-                    graphShowPanel();
+                    const dx = ev.clientX - sx, dy = ev.clientY - sy;
+                    if (!moved && Math.hypot(dx, dy) < 4) return;
+                    moved = true;
+                    let ncl = sl + dx;
+                    const nct = Math.max(0, Math.min(st + dy, window.innerHeight - graphChip.offsetHeight - 2));
+                    let npl = ncl - chipDx;
+                    const minPl = 2, maxPl = window.innerWidth - panel.offsetWidth - 2;
+                    npl = Math.max(minPl, Math.min(npl, maxPl));
+                    const minCl = npl, maxCl = npl + panel.offsetWidth - graphChip.offsetWidth;
+                    ncl = Math.max(minCl, Math.min(ncl, maxCl));
+                    chipDx = ncl - npl;
+                    graphChip.style.left = ncl + "px";
+                    graphChip.style.top = nct + "px";
+                    panel.style.left = npl + "px";
+                    panel.style.top = (nct + chipGapY + graphChip.offsetHeight) + "px";
                 };
                 const up = () => {
                     graphChip.style.cursor = "grab";
                     graphChipDragging = false;
                     document.removeEventListener("mousemove", mv); document.removeEventListener("mouseup", up);
-                    cfg.graphChipX = parseInt(graphChip.style.left); cfg.graphChipY = parseInt(graphChip.style.top); this.saveEditorMenuConfig();
+                    if (moved) { cfg.graphChipX = parseInt(graphChip.style.left); cfg.graphChipY = parseInt(graphChip.style.top); this.saveEditorMenuConfig(); }
+                    else { attachChip(); }
                 };
                 document.addEventListener("mousemove", mv); document.addEventListener("mouseup", up);
-            });
-        };
-        if (cfg.graphAutoFold) { makeGraphChip(); panel.style.display = "none"; }
+            } else {
+                const up = () => {
+                    document.removeEventListener("mouseup", up);
+                    if (!moved) { detachChip(); }
+                };
+                const mv = (ev) => { if (Math.hypot(ev.clientX - sx, ev.clientY - sy) >= 4) moved = true; };
+                document.addEventListener("mousemove", mv); document.addEventListener("mouseup", up);
+            }
+        });
 
-        const checkMenu = () => {
-            const menuPanel = document.querySelector(".fop-em-panel:not(.fop-graph-panel):not(.fop-stash-panel):not(.file-ops-plus-menu)");
-            if (docked && !menuPanel) panel.style.display = "none";
-            else if (docked && menuPanel) { panel.style.display = ""; updatePosition(); }
+        const updatePosition = () => {
+            const px = cfg.graphPanelX != null ? cfg.graphPanelX : window.innerWidth - w - 20;
+            const py = cfg.graphPanelY != null ? cfg.graphPanelY : 80;
+            panel.style.left = Math.max(2, Math.min(px, window.innerWidth - panel.offsetWidth - 2)) + "px";
+            panel.style.top = Math.max(2, Math.min(py, window.innerHeight - panel.offsetHeight - 2)) + "px";
+            panel.style.height = Math.max(150, Math.min(h, window.innerHeight - parseInt(panel.style.top) - 10)) + "px";
+            content.style.maxHeight = Math.max(100, parseInt(panel.style.height) - header.offsetHeight) + "px";
         };
-        const observer = new MutationObserver(checkMenu);
-        observer.observe(document.body, { childList: true, subtree: false });
-        const onMenuMove = () => { if (docked) updatePosition(); };
-        document.addEventListener("fop-menu-move", onMenuMove);
-        checkMenu();
+        updatePosition();
 
         let drag = false, dgx = 0, dgy = 0, dragged = false;
         header.addEventListener("mousedown", (e) => {
@@ -3219,26 +3494,24 @@ class FileOpsPlusPlugin extends Plugin {
             drag = true; dragged = false; dgx = e.clientX - panel.getBoundingClientRect().left; dgy = e.clientY - panel.getBoundingClientRect().top;
             e.preventDefault();
         });
-        const dm = (e) => { if (!drag) return; dragged = true; panel.style.left = (e.clientX - dgx) + "px"; panel.style.top = (e.clientY - dgy) + "px"; };
+        const dm = (e) => { if (!drag) return; dragged = true; panel.style.left = Math.max(2, Math.min(e.clientX - dgx, window.innerWidth - panel.offsetWidth - 2)) + "px"; panel.style.top = (e.clientY - dgy) + "px"; syncChipFromPanel(); };
         const du = () => {
             if (drag) {
                 drag = false;
                 if (dragged) {
-                    docked = false; cfg.graphDocked = false;
                     cfg.graphPanelX = parseInt(panel.style.left); cfg.graphPanelY = parseInt(panel.style.top);
                     this.saveEditorMenuConfig();
-
                 }
             }
         };
         document.addEventListener("mousemove", dm);
         document.addEventListener("mouseup", du);
-        const escH = (e) => { if (e.key === "Escape" && !docked) closePanel(); };
+        const escH = (e) => { if (e.key === "Escape") closePanel(); };
         document.addEventListener("keydown", escH);
-        const closePanel = () => { observer.disconnect(); panel.remove(); if (graphChip) graphChip.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("keydown", escH); document.removeEventListener("mousemove", rzMove); document.removeEventListener("mouseup", rzUp); document.removeEventListener("fop-menu-move", onMenuMove); this.app.workspace.offref(leafRef); this.app.metadataCache.offref(metaRef); if (metaTimer) clearTimeout(metaTimer); };
+        const closePanel = () => { panel.remove(); if (graphChip) graphChip.remove(); document.removeEventListener("mousemove", dm); document.removeEventListener("mouseup", du); document.removeEventListener("keydown", escH); document.removeEventListener("mousemove", rzMove); document.removeEventListener("mouseup", rzUp); this.app.workspace.offref(leafRef); this.app.metadataCache.offref(metaRef); if (metaTimer) clearTimeout(metaTimer); };
         panel._fopCleanup = closePanel;
         closeBtn.onclick = () => { cfg.graphEnabled = false; this.saveEditorMenuConfig(); closePanel(); };
-        foldBtn.addEventListener("click", (e) => { e.stopPropagation(); cfg.graphAutoFold = !cfg.graphAutoFold; this.saveEditorMenuConfig(); closePanel(); this.showLocalGraphPanel(view); });
+
         let lastPath = file.path;
         const leafHandler = () => {
             if (!cfg.graphEnabled) return;
@@ -3246,7 +3519,20 @@ class FileOpsPlusPlugin extends Plugin {
             const nf = av && av.file;
             if (!nf || nf.path === lastPath) return;
             lastPath = nf.path;
+            if (this._fopBlockJump) { this._fopBlockJump = false; return; }
+            const wasVisible = panel.style.display !== "none";
+            const wasAttached = !chipDetached;
             this.showLocalGraphPanel(av);
+            const np = document.querySelector(".fop-graph-panel");
+            const nc = document.querySelector(".fop-graph-chip");
+            if (wasAttached && np && nc) {
+                nc.style.cssText = "cursor:pointer;display:flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;background:var(--background-modifier-form-field);border:1px solid var(--background-modifier-border);font-size:var(--font-ui-small);flex:none;";
+                const h = np.querySelector(".fop-graph-header");
+                if (h) h.appendChild(nc);
+                np.style.display = "";
+            } else if (wasVisible && np) {
+                np.style.display = "";
+            }
         };
         const leafRef = this.app.workspace.on("active-leaf-change", leafHandler);
         let metaTimer = null;
@@ -3257,6 +3543,7 @@ class FileOpsPlusPlugin extends Plugin {
         };
         const metaRef = this.app.metadataCache.on("changed", metaHandler);
 
+        detachChip();
     }
 
     showStashPanel(view) {
@@ -3692,6 +3979,26 @@ class FileOpsPlusPlugin extends Plugin {
             fileMenu: this.fileMenuConfig,
             tabMenu: this.tabMenuConfig,
         });
+        this._settingsDirty = true;
+    }
+
+    async _autoBackup() {
+        try {
+            const fs = require("fs");
+            const path = require("path");
+            const adapter = this.app.vault.adapter;
+            const dir = `${this.app.vault.configDir}/plugins/${this.manifest.id}/backups`;
+            const full = adapter.getFullPath(dir);
+            if (!fs.existsSync(full)) fs.mkdirSync(full, { recursive: true });
+            const ts = Date.now();
+            const payload = JSON.stringify({ editorMenu: this.editorMenuConfig, fileMenu: this.fileMenuConfig, tabMenu: this.tabMenuConfig, version: this.manifest.version, time: ts }, null, 2);
+            fs.writeFileSync(path.join(full, "backup_" + ts + ".json"), payload, "utf8");
+            const max = Math.max(1, parseInt(this.editorMenuConfig.backupCount) || 5);
+            const files = fs.readdirSync(full).filter(f => f.startsWith("backup_") && f.endsWith(".json")).sort();
+            if (files.length > max) {
+                for (let i = 0; i < files.length - max; i++) { try { fs.unlinkSync(path.join(full, files[i])); } catch (_) {} }
+            }
+        } catch (e) { console.error("fop autoBackup", e); }
     }
 
     openEditorMenuSettings() {
@@ -3716,17 +4023,10 @@ class FileOpsPlusPlugin extends Plugin {
         ttl.style.flex = "1";
         header.appendChild(ttl);
 
-        const exportBtn = document.createElement("div");
-        exportBtn.textContent = "⬇";
-        exportBtn.style.cssText = "cursor:pointer;padding:2px 6px;color:var(--text-muted);font-size:14px;";
-        exportBtn.title = t("导出设置");
-        exportBtn.addEventListener("mouseenter", () => exportBtn.style.color = "var(--text-normal)");
-        exportBtn.addEventListener("mouseleave", () => exportBtn.style.color = "var(--text-muted)");
-        header.appendChild(exportBtn);
         const importBtn = document.createElement("div");
-        importBtn.textContent = "⬆";
+        importBtn.textContent = "↻";
         importBtn.style.cssText = "cursor:pointer;padding:2px 6px;color:var(--text-muted);font-size:14px;";
-        importBtn.title = t("导入设置");
+        importBtn.title = t("从自动备份恢复");
         importBtn.addEventListener("mouseenter", () => importBtn.style.color = "var(--text-normal)");
         importBtn.addEventListener("mouseleave", () => importBtn.style.color = "var(--text-muted)");
         header.appendChild(importBtn);
@@ -3736,36 +4036,45 @@ class FileOpsPlusPlugin extends Plugin {
         header.appendChild(closeBtn);
         panel.appendChild(header);
 
-        exportBtn.onclick = () => {
-            try {
-                const data = { editorMenu: this.editorMenuConfig, fileMenu: this.fileMenuConfig, tabMenu: this.tabMenuConfig, version: this.manifest.version };
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url; a.download = "file-ops-plus-settings.json";
-                document.body.appendChild(a); a.click(); a.remove();
-                URL.revokeObjectURL(url);
-                new Notice(t("设置已导出"));
-            } catch (e) { new Notice(t("导出失败：") + e.message); }
-        };
         importBtn.onclick = () => {
-            const input = document.createElement("input");
-            input.type = "file"; input.accept = ".json,application/json";
-            input.onchange = async () => {
-                const file = input.files[0];
-                if (!file) return;
-                try {
-                    const text = await file.text();
-                    const data = JSON.parse(text);
-                    if (data.editorMenu) this.editorMenuConfig = data.editorMenu;
-                    if (data.fileMenu) this.fileMenuConfig = data.fileMenu;
-                    if (data.tabMenu) this.tabMenuConfig = data.tabMenu;
-                    this.saveEditorMenuConfig();
-                    new Notice(t("设置已导入"));
-                    render();
-                } catch (e) { new Notice(t("导入失败：") + e.message); }
-            };
-            input.click();
+            try {
+                const fs = require("fs");
+                const path = require("path");
+                const adapter = this.app.vault.adapter;
+                const dir = `${this.app.vault.configDir}/plugins/${this.manifest.id}/backups`;
+                const full = adapter.getFullPath(dir);
+                if (!fs.existsSync(full)) { new Notice(t("无可用备份")); return; }
+                const files = fs.readdirSync(full).filter(f => f.startsWith("backup_") && f.endsWith(".json")).sort().reverse();
+                if (files.length === 0) { new Notice(t("无可用备份")); return; }
+                const pop = document.createElement("div");
+                pop.style.cssText = "position:fixed;z-index:10001;background:var(--background-primary);border:1px solid var(--background-modifier-border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.3);padding:8px;min-width:240px;max-height:360px;overflow-y:auto;";
+                pop.createEl("div", { text: t("从自动备份恢复"), attr: { style: "font-weight:600;padding:4px 8px 8px;font-size:var(--font-ui-small);" } });
+                for (const f of files) {
+                    let ts = 0; try { ts = parseInt(f.replace("backup_", "").replace(".json", "")); } catch (_) {}
+                    const dt = ts > 0 ? new Date(ts).toLocaleString() : f;
+                    const row = pop.createEl("div", { text: dt, attr: { style: "padding:6px 10px;cursor:pointer;border-radius:6px;font-size:var(--font-ui-smaller);display:flex;align-items:center;gap:6px;" } });
+                    row.addEventListener("mouseenter", () => row.style.background = "var(--background-modifier-hover)");
+                    row.addEventListener("mouseleave", () => row.style.background = "");
+                    row.onclick = () => {
+                        try {
+                            const data = JSON.parse(fs.readFileSync(path.join(full, f), "utf8"));
+                            if (data.editorMenu) this.editorMenuConfig = data.editorMenu;
+                            if (data.fileMenu) this.fileMenuConfig = data.fileMenu;
+                            if (data.tabMenu) this.tabMenuConfig = data.tabMenu;
+                            this.saveEditorMenuConfig();
+                            new Notice(t("恢复成功"));
+                            pop.remove();
+                            render();
+                        } catch (e) { new Notice(t("导入失败：") + e.message); }
+                    };
+                }
+                document.body.appendChild(pop);
+                const r = importBtn.getBoundingClientRect();
+                pop.style.left = r.left + "px";
+                pop.style.top = (r.bottom + 4) + "px";
+                const closeH = (ev) => { if (!pop.contains(ev.target)) { pop.remove(); document.removeEventListener("mousedown", closeH, true); } };
+                setTimeout(() => document.addEventListener("mousedown", closeH, true), 0);
+            } catch (e) { new Notice(t("导入失败：") + e.message); }
         };
 
         const body = document.createElement("div");
@@ -3964,7 +4273,7 @@ class FileOpsPlusPlugin extends Plugin {
             dragging = true; dgx = e.clientX - panel.getBoundingClientRect().left; dgy = e.clientY - panel.getBoundingClientRect().top;
             header.style.cursor = "grabbing"; e.preventDefault();
         });
-        const closePanel = () => { hideAttachedMenu(); panel.remove(); document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); document.removeEventListener("keydown", escH); _cleanupWheel(); _stopAutoScroll(); document.removeEventListener("dragover", _dragOverScroll, { capture: true }); document.removeEventListener("drag", _dragScroll, { capture: true }); document.removeEventListener("drop", _stopAutoScroll, { capture: true }); document.removeEventListener("dragend", _stopAutoScroll, { capture: true }); };
+        const closePanel = () => { hideAttachedMenu(); panel.remove(); document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); document.removeEventListener("keydown", escH); _cleanupWheel(); _stopAutoScroll(); document.removeEventListener("dragover", _dragOverScroll, { capture: true }); document.removeEventListener("drag", _dragScroll, { capture: true }); document.removeEventListener("drop", _stopAutoScroll, { capture: true }); document.removeEventListener("dragend", _stopAutoScroll, { capture: true }); if (this._settingsDirty) { this._settingsDirty = false; this._autoBackup(); } };
         closeBtn.onclick = closePanel;
         const escH = (e) => { if (e.key === "Escape") closePanel(); };
         document.addEventListener("keydown", escH);
@@ -4055,12 +4364,12 @@ class FileOpsPlusPlugin extends Plugin {
                 const tgWrap = spGrid.createEl("div", { attr: { style: "display:flex;align-items:center;gap:6px;" } });
                 tgWrap.createEl("span", { text: t("按钮间距"), attr: { style: "font-size:var(--font-ui-smaller);" } });
                 const tgIn = tgWrap.createEl("input", { type: "number", attr: { style: "width:50px;padding:2px 4px;", min: "0", max: "20" } });
-                tgIn.value = cfg.tileGap != null ? cfg.tileGap : 3;
+                tgIn.value = cfg.tileGap != null ? cfg.tileGap : 5;
                 tgIn.onchange = () => { cfg.tileGap = parseInt(tgIn.value) || 0; this.saveEditorMenuConfig(); document.documentElement.style.setProperty("--fop-tile-gap", cfg.tileGap + "px"); };
                 const ggWrap = spGrid.createEl("div", { attr: { style: "display:flex;align-items:center;gap:6px;" } });
                 ggWrap.createEl("span", { text: t("分组间距"), attr: { style: "font-size:var(--font-ui-smaller);" } });
                 const ggIn = ggWrap.createEl("input", { type: "number", attr: { style: "width:50px;padding:2px 4px;", min: "0", max: "30" } });
-                ggIn.value = cfg.groupGap != null ? cfg.groupGap : 6;
+                ggIn.value = cfg.groupGap != null ? cfg.groupGap : 15;
                 ggIn.onchange = () => { cfg.groupGap = parseInt(ggIn.value) || 0; this.saveEditorMenuConfig(); document.documentElement.style.setProperty("--fop-group-gap", cfg.groupGap + "px"); };
                 return;
             }
@@ -4134,6 +4443,13 @@ class FileOpsPlusPlugin extends Plugin {
                 tplIn.onchange = () => { cfg.newFileTemplate = tplIn.value; this.saveEditorMenuConfig(); };
                 const rstBtn = tplBox.createEl("button", { text: t("恢复默认"), cls: "mod-warning", attr: { style: "margin-top:6px;" } });
                 rstBtn.onclick = () => { cfg.newFileTemplate = defaultTpl; this.saveEditorMenuConfig(); render(); };
+                const bkBox = root.createEl("div", { attr: { style: "border:1px solid var(--background-modifier-border);border-radius:6px;padding:10px;margin-bottom:12px;" } });
+                bkBox.createEl("div", { text: t("自动备份数量"), attr: { style: "font-weight:600;margin-bottom:6px;" } });
+                const bkRow = bkBox.createEl("div", { attr: { style: "display:flex;align-items:center;gap:8px;" } });
+                const bkIn = bkRow.createEl("input", { type: "number", attr: { style: "width:60px;padding:2px 4px;", min: "1", max: "30" } });
+                bkIn.value = cfg.backupCount != null ? cfg.backupCount : 5;
+                bkRow.createEl("span", { text: t("关闭设置面板时自动备份"), attr: { style: "font-size:var(--font-ui-smaller);color:var(--text-muted);" } });
+                bkIn.onchange = () => { cfg.backupCount = Math.max(1, Math.min(30, parseInt(bkIn.value) || 5)); this.saveEditorMenuConfig(); };
                 return;
             }
             if (currentTab !== "editor") {
@@ -4263,6 +4579,33 @@ class FileOpsPlusPlugin extends Plugin {
                     for (let ii = 0; ii < (grp.items || []).length; ii++) {
                         const item = grp.items[ii];
                         const a = actionTable[item.action] || {};
+                        if (item.type === "br") {
+                            const ir = grpContent.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;padding:3px 6px;border:1px dashed var(--background-modifier-border);border-radius:4px;background:var(--background-modifier-form-field);" } });
+                            ir.dataset.itemIdx = ii;
+                            const handle = ir.createEl("span", { text: "⠿", attr: { style: "cursor:grab;color:var(--text-faint);" } });
+                            handle.addEventListener("mousedown", () => { ir.draggable = true; });
+                            ir.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", JSON.stringify({ g: gi, i: ii })); ir.style.opacity = "0.3"; this._fopDragging = true; });
+                            ir.addEventListener("dragend", () => { ir.draggable = false; ir.style.opacity = ""; this._fopDragging = false; });
+                            ir.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
+                            ir.addEventListener("drop", (e) => {
+                                e.preventDefault(); e.stopPropagation();
+                                let from; try { from = JSON.parse(e.dataTransfer.getData("text/plain")); } catch (_) { return; }
+                                if (!from || (from.g === gi && from.i === ii)) return;
+                                const moved = config.groups[from.g].items[from.i];
+                                config.groups[from.g].items.splice(from.i, 1);
+                                const rect = ir.getBoundingClientRect();
+                                const after = e.clientY > rect.top + rect.height / 2;
+                                let target = ii + (after ? 1 : 0);
+                                if (from.g === gi && from.i < target) target--;
+                                config.groups[gi].items.splice(target, 0, moved);
+                                this.saveEditorMenuConfig(); render();
+                            });
+                            ir.createEl("span", { text: "↵", attr: { style: "color:var(--text-muted);font-size:14px;" } });
+                            ir.createEl("span", { text: t("换行线"), attr: { style: "color:var(--text-muted);font-size:var(--font-ui-smaller);flex:1;" } });
+                            const db = ir.createEl("button", { text: "✕", attr: { style: "margin-left:auto;padding:2px 6px;" } });
+                            db.onclick = () => { grp.items.splice(ii, 1); this.saveEditorMenuConfig(); render(); };
+                            continue;
+                        }
                         if (item.type === "着色") {
                             const ir = grpContent.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;" } });
                             ir.dataset.itemIdx = ii;
@@ -4374,6 +4717,8 @@ class FileOpsPlusPlugin extends Plugin {
                     }
                     const ab = grpContent.createEl("button", { text: t("+ 添加选项"), attr: { style: "margin-top:4px;" } });
                     ab.onclick = () => { grp.items = grp.items || []; grp.items.push({ action: Object.keys(actionTable)[0] }); this.saveEditorMenuConfig(); const s = root.scrollTop; render(); root.scrollTop = s; };
+                    const abBr = grpContent.createEl("button", { text: t("+ 换行线"), attr: { style: "margin-top:4px;margin-left:4px;" } });
+                    abBr.onclick = () => { grp.items = grp.items || []; grp.items.push({ type: "br" }); this.saveEditorMenuConfig(); const s = root.scrollTop; render(); root.scrollTop = s; };
                     if (grp.id === "color") {
                         const abColor = grpContent.createEl("button", { text: t("+ 着色"), attr: { style: "margin-top:4px;margin-left:4px;" } });
                         abColor.onclick = () => { grp.items = grp.items || []; grp.items.push({ type: "着色", color: "#3498db", icon: "circle", label: t("新颜色") }); this.saveEditorMenuConfig(); const s = root.scrollTop; render(); root.scrollTop = s; };
@@ -4595,6 +4940,37 @@ class FileOpsPlusPlugin extends Plugin {
 
                 const renderItemRow = (parent, item, loc, idx) => {
                     const lgi = loc.g, lfi = loc.f;
+                    if (item.type === "br") {
+                        const ir = parent.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;padding:4px 6px;border:1px dashed var(--background-modifier-border);border-radius:4px;background:var(--background-modifier-form-field);" } });
+                        ir.dataset.itemIdx = idx;
+                        const handle = ir.createEl("div", { cls: "fop-drag-handle", attr: { title: t("拖拽排序") } });
+                        handle.textContent = "⠿";
+                        handle.addEventListener("mousedown", () => { ir.draggable = true; dragState = { fromGroup: lgi, fromFolder: lfi, fromItem: idx }; });
+                        ir.addEventListener("dragstart", (e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", ""); ir.style.opacity = "0.3"; this._fopDragging = true; });
+                        ir.addEventListener("dragend", () => { ir.draggable = false; ir.style.opacity = ""; clearDragIndicators(); dragState = null; this._fopDragging = false; });
+                        ir.addEventListener("dragover", (e) => { if (!dragState && !dragFolderState) return; e.preventDefault(); e.dataTransfer.dropEffect = "move"; clearDragIndicators(); ir.classList.add("fop-drag-over"); });
+                        ir.addEventListener("drop", (e) => {
+                            if (!dragState) return;
+                            e.preventDefault(); e.stopPropagation();
+                            const fromG = dragState.fromGroup, fromF = dragState.fromFolder, fromI = dragState.fromItem;
+                            if (fromG === lgi && fromF === lfi && fromI === idx) return;
+                            const srcList = getItemList(fromG, fromF);
+                            const dstList = getItemList(lgi, lfi);
+                            const rect = ir.getBoundingClientRect();
+                            const after = e.clientY > rect.top + rect.height / 2;
+                            let targetI = idx + (after ? 1 : 0);
+                            const movedItem = srcList[fromI];
+                            srcList.splice(fromI, 1);
+                            if (fromG === lgi && fromF === lfi && fromI < targetI) targetI--;
+                            dstList.splice(targetI, 0, movedItem);
+                            this.saveEditorMenuConfig(); render();
+                        });
+                        ir.createEl("span", { text: "↵", attr: { style: "color:var(--text-muted);font-size:14px;" } });
+                        ir.createEl("span", { text: t("换行线"), attr: { style: "color:var(--text-muted);font-size:var(--font-ui-smaller);flex:1;" } });
+                        const db = ir.createEl("button", { text: "✕", attr: { style: "margin-left:auto;padding:2px 6px;" } });
+                        db.onclick = () => { getItemList(lgi, lfi).splice(idx, 1); this.saveEditorMenuConfig(); render(); };
+                        return;
+                    }
                     const ir = parent.createEl("div", { attr: { style: "display:flex;gap:6px;align-items:center;margin:2px 0;" } });
                     ir.dataset.itemIdx = idx;
                     const handle = ir.createEl("div", { cls: "fop-drag-handle", attr: { title: t("拖拽排序") } });
@@ -5074,6 +5450,8 @@ class FileOpsPlusPlugin extends Plugin {
                 });
                 const ab = grpContent.createEl("button", { text: t("+ 添加选项"), attr: { style: "margin-top:4px;" } });
                 ab.onclick = () => { grp.items = grp.items || []; grp.items.push({ icon: "square", label: t("新选项"), type: "cmd", cmd: "" }); this.saveEditorMenuConfig(); const s = root.scrollTop; render(); root.scrollTop = s; };
+                const abBr = grpContent.createEl("button", { text: t("+ 换行线"), attr: { style: "margin-top:4px;margin-left:4px;" } });
+                abBr.onclick = () => { grp.items = grp.items || []; grp.items.push({ type: "br" }); this.saveEditorMenuConfig(); const s = root.scrollTop; render(); root.scrollTop = s; };
                 const af = grpContent.createEl("button", { text: t("+ 添加文件夹"), attr: { style: "margin-top:4px;margin-left:4px;" } });
                 af.onclick = () => { grp.items = grp.items || []; grp.items.push({ id: "f" + Date.now(), type: "folder", name: t("新文件夹"), items: [] }); this.saveEditorMenuConfig(); const s = root.scrollTop; render(); root.scrollTop = s; };
 

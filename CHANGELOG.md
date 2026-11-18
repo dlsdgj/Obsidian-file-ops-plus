@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.2
+
+### Added
+
+- **Tab header color sync** — Filename colors now automatically apply to corresponding tab headers; tabs for colored/bold files display the same color and bold style in the tab bar
+- **Default spacing for new installs** — New installations now default to button spacing 5px and group spacing 15px (previously 3px/6px)
+
+### Fixed
+
+- **Plugin settings reset to default** — `setColor()`, `togglePin()`, `toggleBold()` were calling `saveData()` with only `{ colors, pins, bolds, colorPalette }`, omitting `editorMenu`/`fileMenu`/`tabMenu` configs; since Obsidian's `saveData()` is overwrite-based, these configs were wiped on every color/pin/bold operation, causing settings to revert to defaults on next load; fixed by adding `_saveColorData()` that merges all existing data before saving
+
 ## 1.1.1
 
 ### Added
